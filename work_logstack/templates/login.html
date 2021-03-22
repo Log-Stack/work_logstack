@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Hello Bulma!</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+    <style>
+        body{
+            height: 100vh;
+            display: flex;
+            align-items:center;
+            justify-content: center;
+        }
+
+        #login-form {
+          display: flex;
+          flex-direction: column;
+          margin: 0px 30px;
+        }
+
+        #login-form input {
+          border: none;
+          padding: 15px 0px;
+          font-size: 18px;
+          margin-bottom: 25px;
+        }
+
+
+        #login-form input:not([type="submit"]) {
+          border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+          transition: border-color 0.3s ease-in-out;
+        }
+
+
+        #login-form input::placeholder {
+          color: rgba(0, 0, 0, 0.4);
+        }
+
+        #login-form input[type="submit"] {
+          background-color: #66CCCC;
+          cursor: pointer;
+          padding: 20px 0px;
+          border-radius: 5px;
+        }
+
+    </style>
+  </head>
+  <body style="">
+
+    <form  method="get" id="login-form">
+      <input name="username" type="text" placeholder="ID" />
+      <input name="password" type="password" placeholder="Password" />
+      <input style="color:white; background:#01C4A7;" type="submit" value="Log In" />
+    </form>
+
+
+  </body>
+
+</html>

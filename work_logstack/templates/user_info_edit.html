@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+    <style>
+        body{
+            padding-top:220px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+
+        .profile{
+            width:500px;
+
+        }
+    </style>
+</head>
+<body>
+
+<!-- 일반 회원 본인 정보 수정 페이지 -->
+    <div class="profile">
+
+        <div class="card">
+          <div class="card-content">
+            <div class="media">
+              <div class="media-left">
+                <figure class="image is-128x128">
+                  <img src="https://bulma.io/images/placeholders/96x96.png" alt="Placeholder image">
+                </figure>
+              </div>
+              <div class="media-content">
+                <p class="title is-4">Name</p>
+                <p class="subtitle is-6">@Team</p>
+                <button style="margin-top:12px;" class="button is-primary">Change Password</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-content">
+            <div class="content">
+                <form>
+                    <label for="name">Name</label><br>
+                    <input class="input" type="text" id="name" name="name"><br><br>
+                    <label for="birth">Birth Date</label><br>
+                    <input class="input" type="text" id="birth" name="birth"><br><br>
+                    <label for="email">Email Address</label><br>
+                    <input class="input" type="text" id="email" name="email"><br><br>
+                    <label for="mobile">Mobile</label><br>
+                    <input class="input" type="text" id="mobile" name="mobile"><br><br><br>
+                    <input class="button is-primary" type="submit" value="Submit">
+
+                </form>
+            </div>
+          </div>
+        </div>
+
+    </div>
+
+
+</body>
+</html>

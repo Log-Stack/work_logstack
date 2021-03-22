@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+          rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.1/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.1/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.1/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.1/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.1/main.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.1/main.css">
+
+<script src='http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery.min.js'></script>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: 'dayGridMonth',
+
+        });
+
+        calendar.render();
+
+
+});
+
+function testF(){
+var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: 'dayGridMonth',
+        events : [
+                    {
+                      title: '이름 시작시간: 퇴근시가',
+                      start: '2021-03-12',
+                      end: '2021-03-12'
+                    },
+                    {
+                      title: '이름 시작시간: 퇴근시가',
+                      start: '2021-03-12',
+                      end: '2021-03-12'
+                    },
+                    {
+                      title: '이름 시작시간: 퇴근시가',
+                      start: '2021-03-12',
+                      end: '2021-03-12'
+                    },
+                    {
+                      title: 'Event Title2',
+                      start: '2021-03-17T13:13:55-0400',
+                      end: '2021-03-19T13:13:55-0400'
+                    },
+                    {
+                      title: '개같은거',
+                      start: '2021-03-13',
+                      end: '2021-03-16'
+                    }
+                ]
+        });
+
+        calendar.render();
+        };
+    </script>
+</head>
+<body>
+
+<br>
+
+<button id="test" onclick="testF()">test</button>
+<div class="columns is-centered">
+    <div class="column is-10">
+        <div class="box">
+            <b>이번 주 근무</b>
+        </div>
+
+        <div id='calendar'></div>
+
+
+    </div>
+</div>
+</body>
+</html>
