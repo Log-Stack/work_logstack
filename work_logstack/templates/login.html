@@ -1,14 +1,12 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Hello Bulma!</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
-      rel="stylesheet">
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+<div class="login_form">
+
     <style>
-        body{
+        #login_form{
             height: 100vh;
             display: flex;
             align-items:center;
@@ -46,17 +44,23 @@
           border-radius: 5px;
         }
 
+
     </style>
-  </head>
-  <body style="">
+<form method="post" action="" role="form" id="login-form">
+    {% csrf_token %}
+    {{ form.username }}
+    {{ form.password }}
+    {% if form.errors %}
+    <div class="row">
+        <div class="col s12">
+            <span style="color: red; font-weight: bold;">Your username or password did not match.</span>
+        </div>
+    </div>
+    {% endif %}
 
-    <form  method="get" id="login-form">
-      <input name="username" type="text" placeholder="ID" />
-      <input name="password" type="password" placeholder="Password" />
-      <input style="color:white; background:#01C4A7;" type="submit" value="Log In" />
-    </form>
+    <input style="color:white; background:#01C4A7;" type="submit" value="Log In"/>
 
+</form>
 
-  </body>
-
-</html>
+</div>
+{% endblock %}

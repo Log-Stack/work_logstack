@@ -1,0 +1,109 @@
+{% load static %}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<body>
+<div class="container">
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <img src="{% static 'img/logstack.png' %}" width="122" height="104">
+
+            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false"
+               data-target="navbarBasicExample">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
+        </div>
+
+        <div id="navbarBasicExample" class="navbar-menu">
+            <div class="navbar-start">
+                <a class="navbar-item">
+                    Home
+                </a>
+                <div class="navbar-item has-dropdown is-hoverable">
+                    <a class="navbar-link">
+                        Schedule
+                    </a>
+                    <div class="navbar-dropdown">
+                        <a class="navbar-item">
+                            Register Schedule
+                        </a>
+                        <a class="navbar-item">
+                            View Schedule
+                        </a>
+
+                        <!-- 팀장 -->
+                        <hr class="navbar-divider">
+                        <a class="navbar-item">
+                            Approve Schedule
+                        </a>
+                        <!-- end -->
+                    </div>
+                </div>
+
+                <a class="navbar-item">
+                    Work Log
+                </a>
+
+                <div class="navbar-item has-dropdown is-hoverable">
+                    <a class="navbar-link">
+                        Staff
+                    </a>
+
+                    <div class="navbar-dropdown">
+                        <a class="navbar-item">
+                            Search Staff
+                        </a>
+                        <!-- 팀장 -->
+                        <hr class="navbar-divider">
+                        <a class="navbar-item">
+                            Create Staff
+                        </a>
+                        <a class="navbar-item">
+                            Manage Staff
+                        </a>
+                        <!-- end -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="navbar-end">
+                <div class="navbar-item">
+                    <div class="buttons">
+                        <!-- log in 안했을 시-->
+                        <!--                    <a class="button is-light">-->
+                        <!--                        Log in-->
+                        <!--                    </a>-->
+                        <!-- end -->
+
+                        <!-- log in 했을 시-->
+                        <a class="button is-light">
+                            Log out
+                        </a>
+                        <a class="button is-light">
+                            <strong>{{ request.user }}</strong>
+                        </a>
+                        <a class="button is-primary">
+                            <strong>Edit Profile</strong>
+                        </a>
+                        <!-- end -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+</div>
+
+{% block content %}
+{% endblock %}
+
+
+</body>
+</html>

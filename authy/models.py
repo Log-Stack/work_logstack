@@ -19,8 +19,8 @@ class TeamManager(models.Model):
 
 class Profile(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    team = models.ForeignKey(Team, on_delete=models.SET_NULL)
-    position = models.ForeignKey(Position, on_delete=models.SET_NULL)
+    team = models.ForeignKey(Team, on_delete=models.SET_NULL, null=True)
+    position = models.ForeignKey(Position, on_delete=models.SET_NULL, null=True)
 
     name = models.CharField(max_length=25)
     birth_day = models.DateField()
