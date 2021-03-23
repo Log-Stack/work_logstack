@@ -6,8 +6,8 @@
 <div class="login_form">
 
     <style>
-        #login_form{
-            height: 100vh;
+        .login_body {
+            height: 70vh;
             display: flex;
             align-items:center;
             justify-content: center;
@@ -46,21 +46,22 @@
 
 
     </style>
-<form method="post" action="" role="form" id="login-form">
-    {% csrf_token %}
-    {{ form.username }}
-    {{ form.password }}
-    {% if form.errors %}
-    <div class="row">
-        <div class="col s12">
-            <span style="color: red; font-weight: bold;">Your username or password did not match.</span>
-        </div>
+    <div class="login_body">
+        <form method="post" action="" role="form" id="login-form">
+            {% csrf_token %}
+            {{ form.username }}
+            {{ form.password }}
+            {% if form.errors %}
+            <div class="row">
+                <div class="col s12">
+                    <span style="color: red; font-weight: bold;">Your username or password did not match.</span>
+                </div>
+            </div>
+            {% endif %}
+
+            <input style="color:white; background:#01C4A7;" type="submit" value="Log In"/>
+
+        </form>
     </div>
-    {% endif %}
-
-    <input style="color:white; background:#01C4A7;" type="submit" value="Log In"/>
-
-</form>
-
 </div>
 {% endblock %}
