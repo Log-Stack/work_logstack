@@ -1,13 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'base.html' %}
 
-<head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
-    <title>Title</title>
-</head>
 
-<body>
+{% block content %}
 <div class="container">
     <br>
     <div class="hero is-primary is-small">
@@ -18,39 +12,37 @@
         </div>
     </div>
     <div class="card">
-        <header class="card-header">
-            <p class="card-header-title">
-                Writer: 윤명훈
-            </p>
-            <p class="card-header-title">
-                <time datetime="2016-1-1"> Date: 2021.03.20</time>
-            </p>
-        </header>
         <div class="card-content">
-            <div class="content">
-                <div class="field">
-                    <label class="label">Work Log</label>
-                    <div class="control">
-                        <textarea class="textarea is-primary" placeholder="Work Log input"></textarea>
+
+            <form method="post" role="form">
+                {% csrf_token %}
+
+                <div class="content">
+                    <div class="field">
+                        <label class="label">Work Log</label>
+                        <div class="control">
+                            {{ form.content }}
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="content">
-                <div class="field is-grouped">
-                    <div class="control">
-                        <button class="button is-primary">Submit</button>
-                    </div>
-                    <div class="control">
-                        <button class="button is-primary is-light">Cancel</button>
+
+                <div class="content">
+                    <div class="field is-grouped">
+                        <div class="control">
+                            <button type="submit" class="button is-primary">Submit</button>
+                        </div>
+                        <div class="control">
+                            <button type="reset" class="button is-primary is-light">Cancel</button>
+                        </div>
                     </div>
                 </div>
-            </div>
+
+            </form>
+
         </div>
     </div>
 
 
 </div>
 
-</body>
-
-</html>
+{% endblock %}
