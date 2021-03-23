@@ -1,52 +1,59 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
-    <style>
-        body{
-            padding-top:220px;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
+{% extends 'base.html' %}
+{% block content %}
+    <form method="post">{% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Save">
+    </form>
+{% endblock %}
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>Title</title>-->
+<!--    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">-->
+<!--    <style>-->
+<!--        body{-->
+<!--            padding-top:220px;-->
+<!--          display: flex;-->
+<!--          justify-content: center;-->
+<!--          align-items: center;-->
+<!--        }-->
 
-        .profile{
-            width:500px;
+<!--        .profile{-->
+<!--            width:500px;-->
 
-        }
-    </style>
-</head>
-<body>
+<!--        }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body>-->
 
-<!-- 회원 생성 페이지 -->
-    <div class="profile">
-
-
-        <div class="card">
-          <div class="card-content">
-            <div class="content">
-                <h1>Create User</h1>
-                <form>
-                    <label for="user_id">ID</label><br>
-                    <input class="input" type="text" id="user_id" name="user_id"><br><br>
-                    <div style="margin-right:20px;" class="select">
-                      <select>
-                        <option>개발1팀</option>
-                        <option>개발2팀</option>
-                        <option>기획팀</option>
-                      </select>
-                    </div>
-                    <input class="button is-primary" type="submit" value="Create">
-
-                </form>
-            </div>
-          </div>
-        </div>
-
-    </div>
+<!--&lt;!&ndash; 회원 생성 페이지 &ndash;&gt;-->
+<!--    <div class="profile">-->
 
 
-</body>
-</html>
+<!--        <div class="card">-->
+<!--          <div class="card-content">-->
+<!--            <div class="content">-->
+<!--                <h1>Create User</h1>-->
+<!--                <form>-->
+<!--                    <label for="user_id">ID</label><br>-->
+<!--                    <input class="input" type="text" id="user_id" name="user_id"><br><br>-->
+<!--                    <div style="margin-right:20px;" class="select">-->
+<!--                      <select>-->
+<!--                        <option>개발1팀</option>-->
+<!--                        <option>개발2팀</option>-->
+<!--                        <option>기획팀</option>-->
+<!--                      </select>-->
+<!--                    </div>-->
+<!--                    <input class="button is-primary" type="submit" value="Create">-->
+
+<!--                </form>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+
+<!--    </div>-->
+
+
+<!--</body>-->
+<!--</html>-->

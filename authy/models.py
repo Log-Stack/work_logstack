@@ -6,9 +6,15 @@ class Team(models.Model):
     name = models.CharField(max_length=50)
     date = models.DateField(auto_now_add=True)
 
+    def __str__(self):
+        return self.name
+
 
 class Position(models.Model):
     name = models.CharField(max_length=26)
+
+    def __str__(self):
+        return self.name
 
 
 class TeamManager(models.Model):
@@ -26,4 +32,7 @@ class Profile(models.Model):
     birth_day = models.DateField()
     phone_number = models.CharField(max_length=50)
     currently_employed = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.team} - {self.name}"
 
