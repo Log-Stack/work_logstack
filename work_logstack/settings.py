@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'authy',
     'schedule',
     'work_log',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
