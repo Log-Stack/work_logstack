@@ -1,26 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
-    <style>
-        body{
-            padding-top:220px;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
+{% extends 'base.html' %}
+{% block content %}
+<style>
+    .profile_body{
+        padding-top:220px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
 
-        .profile{
-            width:500px;
+    .profile{
+        width:500px;
 
-        }
-    </style>
-</head>
-<body>
+    }
+</style>
 
-<!-- 일반 회원 본인 정보 수정 페이지 -->
+
+<div class="profile_body">
     <div class="profile">
 
         <div class="card">
@@ -32,7 +27,7 @@
                 </figure>
               </div>
               <div class="media-content">
-                <p class="title is-4">Name</p>
+                <p class="title is-4">{{ id }}</p>
                 <p class="subtitle is-6">@Team</p>
                 <button style="margin-top:12px;" class="button is-primary">Change Password</button>
               </div>
@@ -44,15 +39,20 @@
         <div class="card">
           <div class="card-content">
             <div class="content">
-                <form>
+                <form action="{% url 'editprofile' %}" method="POST">
+                    {% csrf_token %}
                     <label for="name">Name</label><br>
                     <input class="input" type="text" id="name" name="name"><br><br>
-                    <label for="birth">Birth Date</label><br>
-                    <input class="input" type="text" id="birth" name="birth"><br><br>
-                    <label for="email">Email Address</label><br>
-                    <input class="input" type="text" id="email" name="email"><br><br>
-                    <label for="mobile">Mobile</label><br>
-                    <input class="input" type="text" id="mobile" name="mobile"><br><br><br>
+
+                    <label for="birth_day">Birth Date</label><br>
+                    <input class="input" type="date" id="birth_day" name="birth_day"><br><br>
+
+                    <label for="email_address">Email Address</label><br>
+                    <input class="input" type="text" id="email_address" name="email_address"><br><br>
+
+                    <label for="phone_number">Mobile</label><br>
+                    <input class="input" type="text" id="phone_number" name="phone_number"><br><br><br>
+
                     <input class="button is-primary" type="submit" value="Submit">
 
                 </form>
@@ -61,7 +61,5 @@
         </div>
 
     </div>
-
-
-</body>
-</html>
+</div>
+{% endblock %}
