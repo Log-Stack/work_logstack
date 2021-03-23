@@ -5,8 +5,10 @@
 {% block content %}
 
 
-
 <script>
+
+var selected_date = {{selected_date}}
+
 
 function setDateTest(){
 var d = new Date(Date.now());
@@ -14,6 +16,8 @@ d.setDate(d.getDate() - d.getDay());
 result_str = d.getFullYear() + " " + (d.getMonth() + 1) + " " + d.getDate();
 document.getElementById("dateTest").innerHTML = result_str;
 }
+
+
 
 </script>
 
@@ -43,12 +47,11 @@ document.getElementById("dateTest").innerHTML = result_str;
                             </span>
                         </button>
                     </div>
-                        <h3 class="title" id="dateTest">3.21 ~ 3.27 </h3>
+                    <h3 class="title" id="dateTest">3.21 ~ 3.27 </h3>
                     <button onclick="setDateTest()">test</button>
                 </div>
 
                 <div class="column is-3">
-                    <button class="button is-info is-fullwidth">신청</button>
 
                 </div>
                 <div class="column is-2">
@@ -80,261 +83,281 @@ document.getElementById("dateTest").innerHTML = result_str;
 
 <div class="columns is-centered">
     <div class="column is-10">
-        <div class="box">
-            <b>이번 주 근무</b>
-        </div>
+        <form method="post" action="" role="form">
+            {% csrf_token %}
 
-        <div class="box">
-            <div class="columns is-centered">
-                <div class="column is-2">
-                    3.21(일)
-                </div>
-                <div class="column is-7">
-                    <div class="columns is-centered">
+            <div class="box">
 
-                        <div class="column is-3">
-                            <div class="select is-success">
-                                <select>
-                                    <option>근무 / 휴가</option>
-                                    <option>근무</option>
-                                    <option>휴가</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="column is-3">
-                            <input class="input" type="time" placeholder="time input">
-                        </div>
-                        <div class="column is-1">
-                            -
-                        </div>
-                        <div class="column is-3">
-                            <input class="input" type="time" placeholder="time input">
-                        </div>
+                <div class="columns is-centered">
+                    <div class="column is-4">
+                        <b>이번 주 근무 form TEST</b>
+                    </div>
+                    <div class="column is-8">
+                        <button type="submit" class="button is-info is-fullwidth">신청</button>
                     </div>
                 </div>
-                <div class="column is-3">
+            </div>
+            <div class="box">
+                <div class="columns is-centered">
+                    <div class="column is-2">
+                        <p class='title is-5' class="date">3.21(일)</p>
+                    </div>
+                    <div class="column is-7">
+                        <div class="columns is-centered">
 
-                    <div class="columns is-centered">
-                        <div class="column">
-                            <span class="tag is-primary is-medium">근무 1H</span>
+                            <div class="column is-3">
+                                <div class="select is-success">
+                                    {{ forms.sun_work_type }}
+                                </div>
+                            </div>
+                            <div class="column is-3">
+                                {{ forms.sun_start }}
+                            </div>
+                            <div class="column is-1">
+                                -
+                            </div>
+                            <div class="column is-3">
+                                {{ forms.sun_end }}
+                            </div>
                         </div>
-                        <div class="column">
-                            <span class="tag is-light is-medium">식사 1H</span>
+                    </div>
+                    <div class="column is-3">
+
+                        <div class="columns is-centered">
+                            <div class="column">
+                                <span class="tag is-primary is-medium">근무<p class="work_time">1</p>H</span>
+                            </div>
+                            <div class="column">
+                                <span class="tag is-light is-medium">식사<p class="meal_time">1</p>H</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+            <div class="box">
+                <div class="columns is-centered">
+                    <div class="column is-2">
+                        <p class='title is-5' class="date">3.21(일)</p>
+                    </div>
+                    <div class="column is-7">
+                        <div class="columns is-centered">
 
-        <div class="box">
-            <div class="columns is-centered">
-                <div class="column is-2">
-                    3.21(일)
-                </div>
-                <div class="column is-7">
-                    <div class="columns is-centered">
-
-                        <div class="column is-3">
-                            <div class="select is-success">
-                                <select>
-                                    <option>근무 / 휴가</option>
-                                    <option>근무</option>
-                                    <option>휴가</option>
-                                </select>
+                            <div class="column is-3">
+                                <div class="select is-success">
+                                    {{ forms.mon_work_type }}
+                                </div>
+                            </div>
+                            <div class="column is-3">
+                                {{ forms.mon_start }}
+                            </div>
+                            <div class="column is-1">
+                                -
+                            </div>
+                            <div class="column is-3">
+                                {{ forms.mon_end }}
                             </div>
                         </div>
-                        <div class="column is-3">
-                            <input class="input" type="time" placeholder="time input">
-                        </div>
-                        <div class="column is-1">
-                            -
-                        </div>
-                        <div class="column is-3">
-                            <input class="input" type="time" placeholder="time input">
-                        </div>
                     </div>
-                </div>
-                <div class="column is-3">
+                    <div class="column is-3">
 
-                    <div class="columns is-centered">
-                        <div class="column">
-                            <span class="tag is-primary is-medium">근무 1H</span>
-                        </div>
-                        <div class="column">
-                            <span class="tag is-light is-medium">식사 1H</span>
+                        <div class="columns is-centered">
+                            <div class="column">
+                                <span class="tag is-primary is-medium">근무<p class="work_time">1</p>H</span>
+                            </div>
+                            <div class="column">
+                                <span class="tag is-light is-medium">식사<p class="meal_time">1</p>H</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+            <div class="box">
+                <div class="columns is-centered">
+                    <div class="column is-2">
+                        <p class='title is-5' class="date">3.21(일)</p>
+                    </div>
+                    <div class="column is-7">
+                        <div class="columns is-centered">
 
-        <div class="box">
-            <div class="columns is-centered">
-                <div class="column is-2">
-                    3.21(일)
-                </div>
-                <div class="column is-7">
-                    <div class="columns is-centered">
-
-                        <div class="column is-3">
-                            <div class="select is-success">
-                                <select>
-                                    <option>근무 / 휴가</option>
-                                    <option>근무</option>
-                                    <option>휴가</option>
-                                </select>
+                            <div class="column is-3">
+                                <div class="select is-success">
+                                    {{ forms.tue_work_type }}
+                                </div>
+                            </div>
+                            <div class="column is-3">
+                                {{ forms.tue_start }}
+                            </div>
+                            <div class="column is-1">
+                                -
+                            </div>
+                            <div class="column is-3">
+                                {{ forms.tue_end }}
                             </div>
                         </div>
-                        <div class="column is-3">
-                            <input class="input" type="time" placeholder="time input">
-                        </div>
-                        <div class="column is-1">
-                            -
-                        </div>
-                        <div class="column is-3">
-                            <input class="input" type="time" placeholder="time input">
-                        </div>
                     </div>
-                </div>
-                <div class="column is-3">
+                    <div class="column is-3">
 
-                    <div class="columns is-centered">
-                        <div class="column">
-                            <span class="tag is-primary is-medium">근무 1H</span>
-                        </div>
-                        <div class="column">
-                            <span class="tag is-light is-medium">식사 1H</span>
+                        <div class="columns is-centered">
+                            <div class="column">
+                                <span class="tag is-primary is-medium">근무<p class="work_time">1</p>H</span>
+                            </div>
+                            <div class="column">
+                                <span class="tag is-light is-medium">식사<p class="meal_time">1</p>H</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+            <div class="box">
+                <div class="columns is-centered">
+                    <div class="column is-2">
+                        <p class='title is-5' class="date">3.21(일)</p>
+                    </div>
+                    <div class="column is-7">
+                        <div class="columns is-centered">
 
-        <div class="box">
-            <div class="columns is-centered">
-                <div class="column is-2">
-                    3.21(일)
-                </div>
-                <div class="column is-7">
-                    <div class="columns is-centered">
-
-                        <div class="column is-3">
-                            <div class="select is-success">
-                                <select>
-                                    <option>근무 / 휴가</option>
-                                    <option>근무</option>
-                                    <option>휴가</option>
-                                </select>
+                            <div class="column is-3">
+                                <div class="select is-success">
+                                    {{ forms.wed_work_type }}
+                                </div>
+                            </div>
+                            <div class="column is-3">
+                                {{ forms.wed_start }}
+                            </div>
+                            <div class="column is-1">
+                                -
+                            </div>
+                            <div class="column is-3">
+                                {{ forms.wed_end }}
                             </div>
                         </div>
-                        <div class="column is-3">
-                            <input class="input" type="time" placeholder="time input">
-                        </div>
-                        <div class="column is-1">
-                            -
-                        </div>
-                        <div class="column is-3">
-                            <input class="input" type="time" placeholder="time input">
-                        </div>
                     </div>
-                </div>
-                <div class="column is-3">
+                    <div class="column is-3">
 
-                    <div class="columns is-centered">
-                        <div class="column">
-                            <span class="tag is-primary is-medium">근무 1H</span>
-                        </div>
-                        <div class="column">
-                            <span class="tag is-light is-medium">식사 1H</span>
+                        <div class="columns is-centered">
+                            <div class="column">
+                                <span class="tag is-primary is-medium">근무<p class="work_time">1</p>H</span>
+                            </div>
+                            <div class="column">
+                                <span class="tag is-light is-medium">식사<p class="meal_time">1</p>H</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+            <div class="box">
+                <div class="columns is-centered">
+                    <div class="column is-2">
+                        <p class='title is-5' class="date">3.21(일)</p>
+                    </div>
+                    <div class="column is-7">
+                        <div class="columns is-centered">
 
-        <div class="box">
-            <div class="columns is-centered">
-                <div class="column is-2">
-                    3.21(일)
-                </div>
-                <div class="column is-7">
-                    <div class="columns is-centered">
-
-                        <div class="column is-3">
-                            <div class="select is-success">
-                                <select>
-                                    <option>근무 / 휴가</option>
-                                    <option>근무</option>
-                                    <option>휴가</option>
-                                </select>
+                            <div class="column is-3">
+                                <div class="select is-success">
+                                    {{ forms.thu_work_type }}
+                                </div>
+                            </div>
+                            <div class="column is-3">
+                                {{ forms.thu_start }}
+                            </div>
+                            <div class="column is-1">
+                                -
+                            </div>
+                            <div class="column is-3">
+                                {{ forms.thu_end }}
                             </div>
                         </div>
-                        <div class="column is-3">
-                            <input class="input" type="time" placeholder="time input">
-                        </div>
-                        <div class="column is-1">
-                            -
-                        </div>
-                        <div class="column is-3">
-                            <input class="input" type="time" placeholder="time input">
-                        </div>
                     </div>
-                </div>
-                <div class="column is-3">
+                    <div class="column is-3">
 
-                    <div class="columns is-centered">
-                        <div class="column">
-                            <span class="tag is-primary is-medium">근무 1H</span>
-                        </div>
-                        <div class="column">
-                            <span class="tag is-light is-medium">식사 1H</span>
+                        <div class="columns is-centered">
+                            <div class="column">
+                                <span class="tag is-primary is-medium">근무<p class="work_time">1</p>H</span>
+                            </div>
+                            <div class="column">
+                                <span class="tag is-light is-medium">식사<p class="meal_time">1</p>H</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+            <div class="box">
+                <div class="columns is-centered">
+                    <div class="column is-2">
+                        <p class='title is-5' class="date">3.21(일)</p>
+                    </div>
+                    <div class="column is-7">
+                        <div class="columns is-centered">
 
-        <div class="box">
-            <div class="columns is-centered">
-                <div class="column is-2">
-                    3.21(일)
-                </div>
-                <div class="column is-7">
-                    <div class="columns is-centered">
-
-                        <div class="column is-3">
-                            <div class="select is-success">
-                                <select>
-                                    <option>근무 / 휴가</option>
-                                    <option>근무</option>
-                                    <option>휴가</option>
-                                </select>
+                            <div class="column is-3">
+                                <div class="select is-success">
+                                    {{ forms.fri_work_type }}
+                                </div>
+                            </div>
+                            <div class="column is-3">
+                                {{ forms.fri_start }}
+                            </div>
+                            <div class="column is-1">
+                                -
+                            </div>
+                            <div class="column is-3">
+                                {{ forms.fri_end }}
                             </div>
                         </div>
-                        <div class="column is-3">
-                            <input class="input" type="time" placeholder="time input">
-                        </div>
-                        <div class="column is-1">
-                            -
-                        </div>
-                        <div class="column is-3">
-                            <input class="input" type="time" placeholder="time input">
-                        </div>
                     </div>
-                </div>
-                <div class="column is-3">
+                    <div class="column is-3">
 
-                    <div class="columns is-centered">
-                        <div class="column">
-                            <span class="tag is-primary is-medium">근무 1H</span>
-                        </div>
-                        <div class="column">
-                            <span class="tag is-light is-medium">식사 1H</span>
+                        <div class="columns is-centered">
+                            <div class="column">
+                                <span class="tag is-primary is-medium">근무<p class="work_time">1</p>H</span>
+                            </div>
+                            <div class="column">
+                                <span class="tag is-light is-medium">식사<p class="meal_time">1</p>H</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+            <div class="box">
+                <div class="columns is-centered">
+                    <div class="column is-2">
+                        <p class='title is-5' class="date">3.21(일)</p>
+                    </div>
+                    <div class="column is-7">
+                        <div class="columns is-centered">
+
+                            <div class="column is-3">
+                                <div class="select is-success">
+                                    {{ forms.sat_work_type }}
+                                </div>
+                            </div>
+                            <div class="column is-3">
+                                {{ forms.sat_start }}
+                            </div>
+                            <div class="column is-1">
+                                -
+                            </div>
+                            <div class="column is-3">
+                                {{ forms.sat_end }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column is-3">
+
+                        <div class="columns is-centered">
+                            <div class="column">
+                                <span class="tag is-primary is-medium">근무<p class="work_time">1</p>H</span>
+                            </div>
+                            <div class="column">
+                                <span class="tag is-light is-medium">식사<p class="meal_time">1</p>H</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </form>
 
     </div>
 </div>

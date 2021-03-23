@@ -5,7 +5,7 @@ from authy.models import Profile
 
 
 class Schedule(models.Model):
-    WORK_TYPES = ((1, 'work'), (2, 'vacation'),)
+    WORK_TYPES = ((0, 'holiday'), (1, 'work'), (2, 'vacation'),)
     # 근무, 휴가 ,(추가사항) 외근, ...
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     date = models.DateField()

@@ -4,6 +4,7 @@ from django.template import loader
 
 from django.contrib.auth.models import User
 from authy.models import Profile
+from .forms import NewScheduleForm
 from .models import Schedule
 
 
@@ -34,13 +35,27 @@ def approved(request):
 
 
 @login_required
-def register(request):
+def register_index(request):
     user = request.user
-
     template = loader.get_template('schedule_register.html')
-
+    form = NewScheduleForm()
     context = {
         'user': user,
+        'forms': form
+    }
+
+    return HttpResponse(template.render(context, request))
+
+@login_required
+def register_select_date(request, year, month, date):
+    user = request.user
+    selected_date = year + "-" + month + "-" + date
+    template = loader.get_template('schedule_register.html')
+    form = NewScheduleForm()
+    context = {
+        'user': user,
+        'selected_date': selected_date,
+        'forms': form
     }
 
     return HttpResponse(template.render(context, request))
