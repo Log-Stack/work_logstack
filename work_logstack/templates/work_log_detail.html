@@ -1,13 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'base.html' %}
 
-<head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
-    <title>Title</title>
-</head>
 
-<body>
+{% block content %}
     <div class="container">
         <br>
         <div class="hero is-primary is-small">
@@ -21,39 +15,36 @@
         <div class="card">
             <header class="card-header">
                 <p class="card-header-title">
-                    Writer: 윤명훈
+                    Writer: {{ request.user.username }}
                 </p>
                 <p class="card-header-title">
-                    <time datetime="2016-1-1"> Date: 2021.03.20</time> 
+                    Date: {{ work_hour.date }}
                 </p>
                 <p class="card-header-title">
-                    <time datetime="2016-1-1"> Working Time: 10:50 AM ~ 06:10 PM</time> 
+                    Working Time: {{ work_hour.start_time|time }} ~ {{ work_hour.end_time|time }}
                 </p>
             </header>
             <div class="card-content">
                 <div class="content">
-                    <h3>Content</h3>
                     <p>
-                        오늘도 많은 것을 했다.
+                        {{ work_log.content }}
                     </p>
                     <br>
-                    <time datetime="2016-1-1">Created: 2021.03.20 - 06:10 PM</time><br>
-                    <time datetime="2016-1-1">Updated: 2021.03.20 - 06:12 PM</time>
+                    <time datetime="{{ work_log.create_time }}">Create Time: {{ work_log.create_time }}</time><br>
+                    {% if work_log.is_updated %}
+                        <time datetime="{{ work_log.update_time }}">Update Time: {{ work_log.update_time }}</time>
+                    {% endif %}
                 </div>
-                <div class="content">
-                    <div class="field is-grouped">
-                        <div class="control">
-                            <button class="button is-primary">Edit</button>
-                        </div>
-                        <div class="control">
-                            <button class="button is-primary is-light">Delete</button>
+                {% if work_log.user == request.user %}
+                    <div class="content">
+                        <div class="field is-grouped">
+                            <div class="control">
+                                <a href="{% url 'work_log_edit' work_log.pk %}" class="button is-primary">Edit</a>
+                            </div>
                         </div>
                     </div>
-                </div>
+                {% endif %}
             </div>
         </div>
     </div>
-
-</body>
-
-</html>
+{% endblock %}
