@@ -11,7 +11,7 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from authy.forms import TeamCreateForm
+from authy.forms import TeamCreateForm, UserCreateForm
 from authy.models import Team, Profile
 from authy.serializers import TeamSerializer, ProfileSerializer
 
@@ -29,13 +29,31 @@ def index(request):
     return HttpResponse(template.render(context, request))
 
 
-# 팀장이 회원 생성하는
-class UserCreateView(CreateView):
-    model = User  # 연결할 클래스 or table명
-    fields = ['username', 'email']
-    template_name = 'user_create.html'
-    success_url = reverse_lazy('login')
+# # 팀장이 회원 생성하는
+# class UserCreateView(CreateView):
+#     model = User  # 연결할 클래스 or table명
+#     fields = ['username', 'email']
+#     template_name = 'user_create.html'
+#     success_url = reverse_lazy('login')
 
+@login_required
+def CreateUserView(request):
+    if request.method == 'POST':
+        form = UserCreateForm(request.POST)
+        if form.is_valid():
+            form.save()
+            print("ok")
+            return redirect('index')
+        else:
+            print("not ok")
+    else:
+        form = TeamCreateForm()
+
+    context = {
+        'form': form,
+    }
+
+    return render(request, 'user_create.html')
 
 
 @login_required
