@@ -1,22 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
-          rel="stylesheet">
+{% extends 'base.html' %}
 
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.1/main.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.1/main.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.1/main.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.1/main.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.1/main.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.1/main.css">
+{% load static %}
 
+{% block content %}
+
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.1/main.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.1/main.css">
 <script src='http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery.min.js'></script>
 
-    <script>
+<script>
       document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
         var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -29,58 +21,98 @@
 
 });
 
-function testF(){
-var calendarEl = document.getElementById('calendar');
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-          initialView: 'dayGridMonth',
-        events : [
-                    {
-                      title: '이름 시작시간: 퇴근시가',
-                      start: '2021-03-12',
-                      end: '2021-03-12'
-                    },
-                    {
-                      title: '이름 시작시간: 퇴근시가',
-                      start: '2021-03-12',
-                      end: '2021-03-12'
-                    },
-                    {
-                      title: '이름 시작시간: 퇴근시가',
-                      start: '2021-03-12',
-                      end: '2021-03-12'
-                    },
-                    {
-                      title: 'Event Title2',
-                      start: '2021-03-17T13:13:55-0400',
-                      end: '2021-03-19T13:13:55-0400'
-                    },
-                    {
-                      title: '개같은거',
-                      start: '2021-03-13',
-                      end: '2021-03-16'
-                    }
-                ]
-        });
+function getEventByUser(user_id, year, month){
+$.ajax({
+			type: 'GET',
+			url: '/schedule/list/user/' + user_id + "/" + year + "/" + month,
+			dataType: 'json',
 
-        calendar.render();
-        };
-    </script>
-</head>
-<body>
+			success: function(data){
 
+			var color_list = ['#0096c6', '#ff6939', '#fa3d00', '#6937a1',  '#003458'];
+
+			var titles = Array();
+			for (var i = 0 ; i < data.length; i++){
+                var title = ""
+                var start = data[i].date
+                var end = data[i].date
+                var color = ""
+			    if (data[i].work_type == 1){
+			        title = data[i].name + " | " +  data[i].start + " : " + data[i].end;
+			        color = color_list[data[i].color];
+                }
+                else if(data[i].work_type == 2){
+                    title = data[i].name + " | " + "휴가";
+                    color = '#008000';
+                }
+                titles.push({'title' : title, 'start': start, 'end' : end, "color": color });
+			}
+
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            events : titles
+            });
+
+            calendar.render();
+	}
+})
+}
+
+function getEventByTeam(Team_id, year, month){
+$.ajax({
+			type: 'GET',
+			url: '/schedule/list/team/' + Team_id + "/" + year + "/" + month,
+			dataType: 'json',
+
+			success: function(data){
+
+			var color_list = ['#0096c6', '#ff6939', '#fa3d00', '#6937a1',  '#003458'];
+
+			var titles = Array();
+			for (var i = 0 ; i < data.length; i++){
+                var title = ""
+                var start = data[i].date
+                var end = data[i].date
+                var color = ""
+			    if (data[i].work_type == 1){
+			        title = data[i].name + " | " +  data[i].start + " : " + data[i].end;
+			        color = color_list[data[i].color];
+                }
+                else if(data[i].work_type == 2){
+                    title = data[i].name + " | " + "휴가";
+                    color = '#008000';
+                }
+                titles.push({'title' : title, 'start': start, 'end' : end, "color": color });
+			}
+
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            events : titles
+            });
+
+            calendar.render();
+	}
+})
+}
+
+</script>
 <br>
 
-<button id="test" onclick="testF()">test</button>
 <div class="columns is-centered">
     <div class="column is-10">
         <div class="box">
             <b>이번 주 근무</b>
         </div>
 
+        <button id="user" onclick="getEventByUser('3', '2021', '03')">getEventByUser</button>
+        <button id="team" onclick="getEventByTeam('1', '2021', '03')">getEventByTeam</button>
+
         <div id='calendar'></div>
 
 
     </div>
 </div>
-</body>
-</html>
+
+{% endblock %}
