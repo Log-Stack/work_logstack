@@ -2,6 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 
 from django.utils import timezone
+import datetime
 
 from django.contrib.auth.models import User
 
@@ -77,6 +78,7 @@ def work_log_detail(request, pk):
 def work_log_list(request):
     teams = Team.objects.all()
     work_logs = WorkLog.objects.order_by('-create_time')
+    search = ""
     start_date = ""
     end_date = ""
 
@@ -85,27 +87,25 @@ def work_log_list(request):
         start_date = request.POST.get('start_date')
         end_date = request.POST.get('end_date')
 
-        result_start_date = start_date
-        result_end_date = end_date
-
-        if result_start_date == "":
-            result_start_date = "2021-03-01"
-        if result_end_date == "":
-            result_end_date = "2999-01-01"
-
+        # 검색어 처리
         user_ids = []
         profiles = Profile.objects.filter(name__icontains=search)
-
         for profile in profiles:
             user_ids.append(profile.user.pk)
+        work_logs = WorkLog.objects.filter(user_id__in=user_ids)
 
-        work_logs = WorkLog.objects.filter(user_id__in=user_ids).filter(create_time__gte=result_start_date).filter(create_time__lte=result_end_date).order_by('-create_time')
+        # 날짜 처리
+        if start_date:
+            work_logs = work_logs.filter(create_time__date__gte=start_date)
+        if end_date:
+            work_logs = work_logs.filter(create_time__date__lte=end_date)
 
         context = {
             'teams': teams,
-            'work_logs': work_logs,
+            'work_logs': work_logs.order_by('-create_time'),
             'start_date': start_date,
             'end_date': end_date,
+            'search': search,
         }
     else:
         context = {
@@ -113,6 +113,7 @@ def work_log_list(request):
             'work_logs': work_logs,
             'start_date': start_date,
             'end_date': end_date,
+            'search': search,
         }
     return render(request, 'work_log_list.html', context)
 

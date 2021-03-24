@@ -61,7 +61,7 @@
                     <label class="label">Name </label>
                     <div class="field has-addons">
                         <div class="control">
-                            <input class="input" type="text" name="search" placeholder="직원 이름">
+                            <input class="input" type="text" name="search" placeholder="직원 이름" value="{{ search }}">
                         </div>
                         <div class="control">
                             <button class="button is-primary" type="submit">
@@ -78,6 +78,7 @@
     <div class="columns is-multiline">
         {% for work_log in work_logs %}
         <div class="column is-one-quarter">
+            <a href="{% url 'work_log_detail' work_log.pk %}">
             <div class="box">
                 <article class="media">
                     <div class="media-content">
@@ -92,6 +93,7 @@
                     </div>
                 </article>
             </div>
+            </a>
         </div>
         {% endfor %}
     </div>
