@@ -1,14 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'base.html' %}
 
-<head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <title>Title</title>
-</head>
 
-<body>
+{% block content %}
 <div class="container">
     <br>
     <div class="hero is-primary is-small">
@@ -22,22 +15,40 @@
         <div class="card-content">
             <div class="media">
                 <div class="media-content">
-                    <p class="title is-4">이름: 윤명훈</p>
-                    <p>이메일: dev1@logstack.com</p>
-                    <p>나이: 19</p>
-                    <p>전화번호: 010-1234-4321</p>
-                    <p>특이사항:
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                        Phasellus nec iaculis mauris.
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                        Phasellus nec iaculis mauris. <a>@bulmaio</a>.
-                        <a href="#">#css</a> <a href="#">#responsive</a>
+                    <p class="title is-4">
+                        이름: {{ member.name }}
+                        {% if member.currently_employed == False %}
+                            - 퇴사
+                        {% endif %}
                     </p>
+                    <p>팀: {{ member.team }}</p>
+                    <p>매니저 권한: {% if is_manager %}있음{% else %}없음{% endif %}</p>
+                    <p>직급: {{ member.position }}</p>
+                    <p>이메일: {{ member.email_address }}</p>
+                    <p>생년월일: {{ member.birth_day }}</p>
+                    <p>전화번호: {{ member.phone_number }}</p>
                 </div>
                 <div class="field">
-                    <div class="control">
-                        <button class="button is-primary is-light">Delete</button>
-                    </div>
+                    {% if is_manager %}
+                        <div class="control">
+                            <a href="{% url 'manage_permit' member.pk %}" class="button is-primary">매나저 권한 없애기</a>
+                        </div>
+                    {% else %}
+                        <div class="control">
+                            <a href="{% url 'manage_permit' member.pk %}" class="button is-primary">매니저 권한 주기</a>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="field">
+                    {% if member.currently_employed %}
+                        <div class="control">
+                            <a href="{% url 'manage_delete' member.pk %}" class="button is-primary is-light">퇴사 처리</a>
+                        </div>
+                    {% else %}
+                        <div class="control">
+                            <a href="{% url 'manage_delete' member.pk %}" class="button is-primary is-light">복귀 처리</a>
+                        </div>
+                    {% endif %}
                 </div>
                 <div class="media-right">
                     <figure class="image is-128x128">
@@ -47,42 +58,85 @@
             </div>
             <div class="media">
                 <div class="media-content">
-                    <div class="columns is-gapless is-multiline">
-                        <div class="column is-1">
-                            <div class="select is-primary">
-                                <select>
-                                    <option>개발팀</option>
-                                    <option>기획팀</option>
-                                    <option>마케팅팀</option>
-                                </select>
+
+                    <form method="POST" role="form" action="{% url 'manage_team' member.pk %}">
+                        {% csrf_token %}
+                        <div class="columns is-multiline">
+                            <div class="column is-2">
+                                <label class="label">Team</label>
+                                <div class="select is-primary">
+                                    <select name="team">
+                                        {% for team in teams %}
+                                        <option {% if member.team == team %} selected="selected" {% endif %}>{{ team.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        <div class="column">
-                            <div class="field">
-                                <div class="control">
-                                    <button class="button is-primary">Edit</button>
+                            <div class="column is-1">
+                                <div class="field">
+                                    <label class="label">수정</label>
+                                    <div class="control">
+                                        <button type="submit" class="button is-primary">Edit</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="columns">
-                        <div class="column is-2">
-                            <div class="field">
-                                <label class="label">Start date </label>
-                                <div class="control">
-                                    <input class="input is-primary" type="date">
+                    </form>
+
+                    <form method="POST" role="form" action="{% url 'manage_position' member.pk %}">
+                        {% csrf_token %}
+                        <div class="columns is-multiline">
+                            <div class="column is-2">
+                                <label class="label">Position</label>
+                                <div class="select is-primary">
+                                    <select name="position">
+                                        {% for position in positions %}
+                                        <option {% if member.position == position %} selected="selected" {% endif %}>{{ position.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="column is-1">
+                                <div class="field">
+                                    <label class="label">수정</label>
+                                    <div class="control">
+                                        <button type="submit" class="button is-primary">Edit</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="column is-2">
-                            <div class="field">
-                                <label class="label">End date </label>
-                                <div class="control">
-                                    <input class="input is-primary" type="date">
+                    </form>
+
+                    <form method="POST" role="form">
+                        {% csrf_token %}
+                        <div class="columns">
+                            <div class="column is-2">
+                                <div class="field">
+                                    <label class="label">Start date</label>
+                                    <div class="control">
+                                        <input class="input is-primary" type="date" name="start_date" value="{{ start_date }}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="column is-2">
+                                <div class="field">
+                                    <label class="label">End date</label>
+                                    <div class="control">
+                                        <input class="input is-primary" type="date" name="end_date" value="{{ end_date }}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="column is-3">
+                                <div class="field">
+                                    <label class="label">출퇴근 시간 검색</label>
+                                    <div class="control">
+                                        <button class="button is-primary" type="submit">Search</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </form>
+
                 </div>
             </div>
         </div>
@@ -90,13 +144,7 @@
 
     <div class="box">
         <div class="columns is-mobile">
-            <div class="column is-1">
-                <b>Year</b>
-            </div>
-            <div class="column is-1">
-                <b>Month</b>
-            </div>
-            <div class="column is-1">
+            <div class="column is-3">
                 <b>Date</b>
             </div>
             <div class="column">
@@ -109,117 +157,24 @@
             </div>
         </div>
     </div>
-    <div class="box">
-        <div class="columns is-mobile">
-            <div class="column is-1">
-                <p>2021년</p>
-            </div>
-            <div class="column is-1">
-                <p>3월</p>
-            </div>
-            <div class="column is-1">
-                <p>22일</p>
-            </div>
-            <div class="column">
-                <input class="input" type="time" value="09:50:00">
-            </div>
-            <div class="column">
-                <input class="input" type="time" value="18:10:00">
-            </div>
-            <div class="column is-1">
-                <button class="button is-primary">Edit</button>
-            </div>
-        </div>
-    </div>
-    <div class="box">
-        <div class="columns is-mobile">
-            <div class="column is-1">
-                <p>2021년</p>
-            </div>
-            <div class="column is-1">
-                <p>3월</p>
-            </div>
-            <div class="column is-1">
-                <p>23일</p>
-            </div>
-            <div class="column">
-                <input class="input" type="time" value="09:50:00">
-            </div>
-            <div class="column">
-                <input class="input" type="time" value="18:10:00">
-            </div>
-            <div class="column is-1">
-                <button class="button is-primary">Edit</button>
-            </div>
-        </div>
-    </div>
-    <div class="box">
-        <div class="columns is-mobile">
-            <div class="column is-1">
-                <p>2021년</p>
-            </div>
-            <div class="column is-1">
-                <p>3월</p>
-            </div>
-            <div class="column is-1">
-                <p>24일</p>
-            </div>
-            <div class="column">
-                <input class="input" type="time" value="09:50:00">
-            </div>
-            <div class="column">
-                <input class="input" type="time" value="18:10:00">
-            </div>
-            <div class="column is-1">
-                <button class="button is-primary">Edit</button>
-            </div>
-        </div>
-    </div>
-    <div class="box">
-        <div class="columns is-mobile">
-            <div class="column is-1">
-                <p>2021년</p>
-            </div>
-            <div class="column is-1">
-                <p>3월</p>
-            </div>
-            <div class="column is-1">
-                <p>25일</p>
-            </div>
-            <div class="column">
-                <input class="input" type="time" value="09:50:00">
-            </div>
-            <div class="column">
-                <input class="input" type="time" value="18:10:00">
-            </div>
-            <div class="column is-1">
-                <button class="button is-primary">Edit</button>
-            </div>
-        </div>
-    </div>
-    <div class="box">
-        <div class="columns is-mobile">
-            <div class="column is-1">
-                <p>2021년</p>
-            </div>
-            <div class="column is-1">
-                <p>3월</p>
-            </div>
-            <div class="column is-1">
-                <p>26일</p>
-            </div>
-            <div class="column">
-                <input class="input" type="time" value="09:50:00">
-            </div>
-            <div class="column">
-                <input class="input" type="time" value="18:10:00">
-            </div>
-            <div class="column is-1">
-                <button class="button is-primary">Edit</button>
-            </div>
-        </div>
-    </div>
-</div>
-</body>
 
-</html>
+    {% for work_hour in work_hours %}
+    <div class="box">
+        <div class="columns is-mobile">
+            <div class="column is-3">
+                <p>{{ work_hour.date }}</p>
+            </div>
+            <div class="column">
+                <input class="input" type="time" value="{{ work_hour.start_time|date:'H:i' }}">
+            </div>
+            <div class="column">
+                <input class="input" type="time" value="{{ work_hour.end_time|date:'H:i' }}">
+            </div>
+            <div class="column is-1">
+                <button class="button is-primary">Edit</button>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

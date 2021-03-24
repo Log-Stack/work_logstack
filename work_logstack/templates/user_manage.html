@@ -1,61 +1,71 @@
-<!doctype html>
-<html lang="en"><head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'base.html' %}
 
+
+{% block content %}
 <div class="container">
     <br>
     <div class="hero is-primary is-small">
         <div class="hero-body">
             <p class="title">
-                User Manage
+                User Manage - {{ team }} 팀
             </p>
         </div>
     </div>
     <div class="box">
-        <div class="columns is-gapless is-multiline">
-            <div class="column">
-                <div class="select is-primary">
-                    <select>
-                        <option>직원 선택</option>
-                        <option>직원1</option>
-                        <option>직원2</option>
-                        <option>직원3</option>
-                    </select>
-                </div>
-            </div>
-            <div class="column is-3">
-                <div class="field has-addons">
-                    <div class="control">
-                        <input class="input" type="text" placeholder="직원 이름">
-                    </div>
-                    <div class="control">
-                        <a class="button is-primary">
-                            Search
-                        </a>
+        <form method="POST" role="form">
+            {% csrf_token %}
+
+            <div class="columns is-gapless is-multiline">
+                <div class="column">
+                    <div class="select is-primary">
+                        <select name="member">
+                            <option>all</option>
+                            {% for team_member in team_members %}
+                            <option {% if team_member.name == member %}selected="selected" {% endif %}>
+                                {{ team_member.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
                     </div>
                 </div>
+                <div class="column is-3">
+                    <div class="field has-addons">
+                        <div class="control">
+                            <input class="input" type="text" placeholder="직원 이름" name="search" value="{{ search }}">
+                        </div>
+                        <div class="control">
+                            <button class="button is-primary" type="submit">
+                                Search
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
+
+        </form>
     </div>
 
     <div class="columns is-multiline">
+        {% for team_member in result %}
         <div class="column is-one-quarter">
             <div class="box">
                 <article class="media">
                     <div class="media-content">
                         <div class="content">
                             <p>
-                                <strong>윤명훈</strong> - <small>개발팀</small>
+                                <strong>{{ team_member.name }}</strong> -
+                                <small>
+                                    {% if team_member.currently_employed %}
+                                        {{ team_member.position }}
+                                    {% else %}
+                                        퇴사
+                                    {% endif %}
+                                </small>
                             </p>
-                            <p><i class="material-icons">email</i>: dev1@logstack.com</p>
-                            <p><i class="material-icons">phone</i>: 010-1234-4321</p>
+                            <p><i class="material-icons">email</i>: {{ team_member.email_address }}</p>
+                            <p><i class="material-icons">phone</i>: {{ team_member.phone_number }}</p>
                         </div>
-                        <button class="button is-primary is-light">Manage</button>
+                        <a href="{% url 'manage_detail' team_member.pk %}" class="button is-primary is-light">Manage</a>
                     </div>
                     <figure class="media-right">
                         <p class="image is-64x64">
@@ -65,53 +75,7 @@
                 </article>
             </div>
         </div>
-
-        <div class="column is-one-quarter">
-            <div class="box">
-                <article class="media">
-                    <div class="media-content">
-                        <div class="content">
-                            <p>
-                                <strong>황유진</strong> - <small>개발팀</small>
-                            </p>
-                            <p><i class="material-icons">email</i>: dev1@logstack.com</p>
-                            <p><i class="material-icons">phone</i>: 010-1234-4321</p>
-                        </div>
-                        <button class="button is-primary is-light">Manage</button>
-                    </div>
-                    <figure class="media-right">
-                        <p class="image is-64x64">
-                            <img src="https://bulma.io/images/placeholders/128x128.png">
-                        </p>
-                    </figure>
-                </article>
-            </div>
-        </div>
-
-        <div class="column is-one-quarter">
-            <div class="box">
-                <article class="media">
-                    <div class="media-content">
-                        <div class="content">
-                            <p>
-                                <strong>권진호</strong> - <small>개발팀</small>
-                            </p>
-                            <p><i class="material-icons">email</i>: dev1@logstack.com</p>
-                            <p><i class="material-icons">phone</i>: 010-1234-4321</p>
-                        </div>
-                        <button class="button is-primary is-light">Manage</button>
-                    </div>
-                    <figure class="media-right">
-                        <p class="image is-64x64">
-                            <img src="https://bulma.io/images/placeholders/128x128.png">
-                        </p>
-                    </figure>
-                </article>
-            </div>
-        </div>
-
+        {% endfor %}
     </div>
 </div>
-
-
-</body></html>
+{% endblock %}

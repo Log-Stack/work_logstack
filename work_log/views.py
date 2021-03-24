@@ -77,7 +77,7 @@ def work_log_detail(request, pk):
 @login_required
 def work_log_list(request):
     teams = Team.objects.all()
-    work_logs = WorkLog.objects.order_by('-create_time')
+    work_logs = WorkLog.objects.all()
     search = ""
     start_date = ""
     end_date = ""
@@ -110,7 +110,7 @@ def work_log_list(request):
     else:
         context = {
             'teams': teams,
-            'work_logs': work_logs,
+            'work_logs': work_logs.order_by('-create_time'),
             'start_date': start_date,
             'end_date': end_date,
             'search': search,
