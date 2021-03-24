@@ -1,58 +1,61 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
-    <style>
-    body{
-          padding-top:120px;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-    }
-    .search{
-      width:500px;
-    }
-    </style>
-</head>
-<body>
+{% extends 'base.html' %}
+{% block content %}
+<style>
+.search_body{
+      padding-top:120px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+}
+.search{
+  width:500px;
+}
+</style>
+
+<div class="search_body">
 
 
-<article class="panel is-primary search">
-    <p class="panel-heading">
-      직원 검색
-    </p>
+    <article class="panel is-primary search">
 
-    <!-- 직원 검색 input-->
-    <div class="panel-block">
-      <p class="control has-icons-left">
-        <input class="input is-info" type="text" placeholder="Search">
-        <span class="icon is-left">
-          <i class="fas fa-search" aria-hidden="true"></i>
-        </span>
-      </p>
-    </div>
 
-  <!--  직원 검색 결과 프로필-->
-  <div class="card">
-    <div class="card-content">
-      <div class="media">
-        <div class="media-left">
-          <figure class="image is-96x96">
-            <img src="https://bulma.io/images/placeholders/96x96.png" alt="Placeholder image">
-          </figure>
-        </div>
-        <div class="media-content">
-          <p class="title is-4">John Smith</p>
-          <p class="subtitle is-6">@johnsmith</p>
-        </div>
-      </div>
+        <!-- 직원 검색 input, 엔터로 검색 가능-->
+        <form>
+        <p class="panel-heading">
+          직원 검색
+        </p>
 
-    </div>
-  </div>
+          <div class="control">
+            <input class="input is-large" name="q" type="text" placeholder="Search users" value="{{ request.GET.q }}">
 
-</article>
+          </div>
 
-</body>
-</html>
+
+
+        </form>
+
+      <!--  직원 검색 결과 프로필-->
+        {% for user in users %}
+           <div class="box">
+              <article class="media">
+                <div class="media-left">
+                  <figure class="image is-96x96">
+                    <img src="https://bulma.io/images/placeholders/96x96.png" alt="Placeholder image">
+                  </figure>
+                </div>
+                <div class="media-content">
+                  <div class="content">
+                    <p>
+                      <strong>{{ user.name }}</strong><br> <small>@{{ user.team }}</small>
+                    </p>
+                  </div>
+
+                </div>
+              </article>
+          </div>
+        {% endfor %}
+
+
+    </article>
+
+</div>
+{% endblock %}

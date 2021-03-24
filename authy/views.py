@@ -2,6 +2,8 @@ from django.contrib.auth import authenticate, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.core.paginator import Paginator
+from django.db.models import Q
 from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
@@ -140,8 +142,29 @@ def ChangePWDoneView(request):
     return render(request, 'change_password_done.html')
 
 
-def SearchView(request):
-    return render(request,'user_search.html')
+
+@login_required
+def UserSearchView(request):
+    #직원 이름으로 검
+    query = request.GET.get('q')
+    context = {}
+
+    if query:
+        users = Profile.objects.filter(Q(name__icontains=query))
+
+        #Pagination
+        paginator = Paginator(users, 6)
+        page_number = request.GET.get('page')
+        users_paginator = paginator.get_page(page_number)
+
+        context = {
+            'users': users_paginator
+        }
+    template = loader.get_template('user_search.html')
+
+
+    return HttpResponse(template.render(context, request))
+
 
 # api view
 class TeamViewSet(viewsets.ModelViewSet):

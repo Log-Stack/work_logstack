@@ -4,7 +4,7 @@ from rest_framework import routers
 from django.contrib.auth import views as authViews
 
 from authy import views
-from authy.views import index, CreateUserView, CreateTeamView, EditProfileView, ChangePWView, ChangePWDoneView,SearchView
+from authy.views import index, CreateUserView, CreateTeamView, EditProfileView, ChangePWView, ChangePWDoneView,UserSearchView
 
 router = routers.DefaultRouter()
 router.register(r'teams', views.TeamViewSet)
@@ -23,7 +23,7 @@ urlpatterns = [
     path('profile/edit', EditProfileView, name='editprofile'),
     path('profile/changepw', ChangePWView, name='changepw'),
     path('profile/changepw/done',ChangePWDoneView, name='changepwdone'),
-    path('search',SearchView,name='search'),
+    path('search',UserSearchView,name='search'),
 
 
     # api
