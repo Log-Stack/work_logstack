@@ -10,58 +10,32 @@
 var selected_date = {{selected_date}}
 
 
-function setDateTest(){
+function setDateInit(){
 var d = new Date(Date.now());
 d.setDate(d.getDate() - d.getDay());
-result_str = d.getFullYear() + " " + (d.getMonth() + 1) + " " + d.getDate();
-document.getElementById("dateTest").innerHTML = result_str;
+result_str = d.getFullYear() + "-" +("0" +  (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+document.getElementById('week_start_date').value = result_str;
 }
 
+function setDateBefore(){
+var d = new Date(document.getElementById('week_start_date').value);
+d.setDate(d.getDate() - 7);
+result_str = d.getFullYear() + "-" +("0" +  (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+document.getElementById('week_start_date').value = result_str;
+}
+
+function setDateAfter(){
+var d = new Date(document.getElementById('week_start_date').value);
+d.setDate(d.getDate() + 7);
+result_str = d.getFullYear() + "-" +("0" +  (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+document.getElementById('week_start_date').value = result_str;
+}
+
+window.addEventListener('DOMContentLoaded', setDateInit);
 
 
 </script>
 
-<div class="columns is-centered">
-    <div class="column is-10">
-        <div class="box">
-            <div class="columns is-centered">
-                <div class="column is-2">
-                    <h3 class="title">2021년 </h3>
-                </div>
-                <div class="column is-1">
-                    <h3 class="title">
-                        3월
-                    </h3>
-                </div>
-                <div class="column is-4">
-                    <div class="buttons has-addons">
-                        <button class="button">
-                            <span class="material-icons">
-                                arrow_back
-                            </span>
-                        </button>
-                        <button class="button"><h3 class="title">3.21 ~ 3.27 </h3></button>
-                        <button class="button">
-                            <span class="material-icons">
-                                arrow_forward
-                            </span>
-                        </button>
-                    </div>
-                    <h3 class="title" id="dateTest">3.21 ~ 3.27 </h3>
-                    <button onclick="setDateTest()">test</button>
-                </div>
-
-                <div class="column is-3">
-
-                </div>
-                <div class="column is-2">
-                </div>
-            </div>
-
-        </div>
-    </div>
-</div>
-</div>
 <div class="columns is-centered">
     <div class="column is-10">
         <div class="columns is-centered">
@@ -85,7 +59,21 @@ document.getElementById("dateTest").innerHTML = result_str;
     <div class="column is-10">
         <form method="post" action="" role="form">
             {% csrf_token %}
-
+            <div class="buttons has-addons">
+                <p class="button" onclick="setDateBefore()">
+                            <span class="material-icons">
+                                arrow_back
+                            </span>
+                </p>
+                <p class="button">
+                    {{ forms.week_start_date }}
+                </p>
+                <p class="button" onclick="setDateAfter()">
+                            <span class="material-icons">
+                                arrow_forward
+                            </span>
+                </p>
+            </div>
             <div class="box">
 
                 <div class="columns is-centered">
