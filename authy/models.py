@@ -29,14 +29,14 @@ class Profile(models.Model):
     team = models.ForeignKey(Team, on_delete=models.SET_NULL, blank=True, null=True)
     # blank = True 추가
     position = models.ForeignKey(Position, on_delete=models.SET_NULL, blank=True, null=True)
-
-    name = models.CharField(max_length=25)
-    birth_day = models.DateField()
-    # null=True
-    phone_number = models.CharField(max_length=50,null=True)
-    email_address = models.CharField(max_length=100,default="")
+    # blank,null=True (name, birth_day)
+    name = models.CharField(max_length=25, blank=True, null=True)
+    birth_day = models.DateField(blank=True, null=True)
+    # blank,null=True (phone_number, email_address)
+    phone_number = models.CharField(max_length=50, blank=True, null=True)
+    email_address = models.CharField(max_length=100, blank=True, default="")
     currently_employed = models.BooleanField(default=True)
 
     def __str__(self):
-        return f"{self.team} - {self.name}"
+        return f"{self.team} - {self.user}"
 

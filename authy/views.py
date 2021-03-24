@@ -35,11 +35,20 @@ def index(request):
 def CreateUserView(request):
     if request.method == 'POST':
         form = SignupForm(request.POST)
+        # team_form = TeamForm(request.POST)
         if form.is_valid():
-            username = form.cleaned_data.get('username')
 
+            username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
-            User.objects.create_user(username=username, password=password)
+            user = User.objects.create_user(username=username, password=password)
+
+            #user = form.save()
+
+            team_name = form.cleaned_data.get('name')
+            team = Team.objects.get(name=team_name)
+            profile = Profile(user=user, team=team)
+            profile.save()
+            print(profile)
             return redirect('index')
     else:
         form = SignupForm()
@@ -49,43 +58,6 @@ def CreateUserView(request):
     }
 
     return render(request, 'user_create.html', context)
-
-#Leader of team creates staff's account
-# @login_required
-# def CreateUserView(request):
-#     if request.method == 'POST':
-#         form = UserCreateForm(request.POST)
-#         if form.is_valid():
-#             form.save()
-#
-#
-#             print("ok")
-#             return redirect('index')
-#         else:
-#             print("not ok")
-#     else:
-#         form = TeamCreateForm()
-#
-#     context = {
-#         'form': form,
-#     }
-#
-#     return render(request, 'user_create.html')
-
-# @login_required
-# def CreateUserView(request):
-#     if request.method == 'POST':
-#         form = CustomUserCreationForm(request.POST)
-#         if form.is_valid():
-#             form.save()
-#             # username = form.cleaned_data.get('username')
-#             # raw_password = form.cleaned_data.get('password1')
-#             # User.objects.create_user(username=username, password=raw_password)
-#             #login(request, user)
-#             return redirect('index')
-#     else:
-#         form = CustomUserCreationForm()
-#     return render(request, 'user_create.html', {'form': form})
 
 
 # Leader of team creates team
@@ -112,17 +84,18 @@ def CreateTeamView(request):
 
 
 #Staff edits profile
+#   fields = ['name', 'birth_day', 'phone_number', 'email_address']
 def EditProfileView(request):
+    user = request.user
+    profile = Profile.objects.filter(user=user)[0]
+
+
     if request.method == 'POST':
-        form = ProfileForm(request.POST)
+        form = ProfileForm(request.POST, instance=profile)
         if form.is_valid():
             obj = form.save(commit=False)
             obj.user = request.user
-            # obj.name = form.cleaned_data.get('name')
-            # obj.birth_day = form.cleaned_data.get('birth_day')
-            # obj.phone_number = form.cleaned_data.get('phone_number')
-            # obj.user.email = form.cleaned_data.get('email_address')
-            # print(request.user)
+
             user = User.objects.get(username=request.user)
             user.email = form.cleaned_data.get('email_address')
             user.save()
@@ -132,8 +105,8 @@ def EditProfileView(request):
             print("not ok")
             print(form.errors)
     else:
-        print("not POST")
         form = ProfileForm()
+        print("not POST")
 
     context = {
         'id' : request.user.username,
@@ -165,6 +138,10 @@ def ChangePWView(request):
 
 def ChangePWDoneView(request):
     return render(request, 'change_password_done.html')
+
+
+def SearchView(request):
+    return render(request,'user_search.html')
 
 # api view
 class TeamViewSet(viewsets.ModelViewSet):

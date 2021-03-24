@@ -38,15 +38,19 @@ class UniqueUser(object):
 
 class SignupForm(forms.ModelForm):
     # django form widget
+    teams = Team.objects.all().values_list('name', flat=True)
+    TEAM_CHOICES = list(map(lambda x: (x, x), teams))
+
     username = forms.CharField(widget=forms.TextInput(attrs={'class': 'input is-medium'}), max_length=30,
                                required=True, )
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'input is-medium'}))
     confirm_password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'input is-medium'}), required=True,
                                        label="Confirm your password.")
+    name = forms.ChoiceField(choices=TEAM_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
 
     class Meta:
         model = User
-        fields = ('username', 'password')
+        fields = ('username', 'password', 'name')
 
     def __init__(self, *args, **kwargs):
         super(SignupForm, self).__init__(*args, **kwargs)
@@ -63,6 +67,7 @@ class SignupForm(forms.ModelForm):
         if password != confirm_password:
             self._errors['password'] = self.error_class(['Passwords do not match. Try again'])
         return self.cleaned_data
+
 
 
 class ChangePasswordForm(forms.ModelForm):
