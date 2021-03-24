@@ -1,4 +1,6 @@
+from django.contrib.auth import authenticate, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.urls import reverse_lazy
@@ -11,7 +13,7 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from authy.forms import TeamCreateForm, UserCreateForm, ProfileForm
+from authy.forms import TeamCreateForm, UserCreateForm, ProfileForm, SignupForm, ChangePasswordForm
 from authy.models import Team, Profile
 from authy.serializers import TeamSerializer, ProfileSerializer
 
@@ -29,27 +31,61 @@ def index(request):
     return HttpResponse(template.render(context, request))
 
 
-
-# Leader of team creates staff's account
 @login_required
 def CreateUserView(request):
     if request.method == 'POST':
-        form = UserCreateForm(request.POST)
+        form = SignupForm(request.POST)
         if form.is_valid():
-            form.save()
+            username = form.cleaned_data.get('username')
 
-            print("ok")
+            password = form.cleaned_data.get('password')
+            User.objects.create_user(username=username, password=password)
             return redirect('index')
-        else:
-            print("not ok")
     else:
-        form = TeamCreateForm()
+        form = SignupForm()
 
     context = {
         'form': form,
     }
 
-    return render(request, 'user_create.html')
+    return render(request, 'user_create.html', context)
+
+#Leader of team creates staff's account
+# @login_required
+# def CreateUserView(request):
+#     if request.method == 'POST':
+#         form = UserCreateForm(request.POST)
+#         if form.is_valid():
+#             form.save()
+#
+#
+#             print("ok")
+#             return redirect('index')
+#         else:
+#             print("not ok")
+#     else:
+#         form = TeamCreateForm()
+#
+#     context = {
+#         'form': form,
+#     }
+#
+#     return render(request, 'user_create.html')
+
+# @login_required
+# def CreateUserView(request):
+#     if request.method == 'POST':
+#         form = CustomUserCreationForm(request.POST)
+#         if form.is_valid():
+#             form.save()
+#             # username = form.cleaned_data.get('username')
+#             # raw_password = form.cleaned_data.get('password1')
+#             # User.objects.create_user(username=username, password=raw_password)
+#             #login(request, user)
+#             return redirect('index')
+#     else:
+#         form = CustomUserCreationForm()
+#     return render(request, 'user_create.html', {'form': form})
 
 
 # Leader of team creates team
@@ -106,8 +142,29 @@ def EditProfileView(request):
     return render(request, 'user_info_edit.html', context)
 
 
+#User Change Password
+def ChangePWView(request):
+    user = request.user
+    if request.method == 'POST':
+        form = ChangePasswordForm(request.POST)
+        if form.is_valid():
+            new_password = form.cleaned_data.get('new_password')
+            user.set_password(new_password)
+            user.save()
+            update_session_auth_hash(request, user)
+            return redirect('changepwdone')
+    else:
+        form = ChangePasswordForm(instance=user)
+
+    context = {
+        'form': form,
+    }
+
+    return render(request, 'user_password.html', context)
 
 
+def ChangePWDoneView(request):
+    return render(request, 'change_password_done.html')
 
 # api view
 class TeamViewSet(viewsets.ModelViewSet):
