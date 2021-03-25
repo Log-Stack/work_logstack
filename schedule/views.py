@@ -48,7 +48,7 @@ def register_index(request):
         if form.is_valid():
             week_start_date = form.cleaned_data.get('week_start_date')
             approved, is_approved = ScheduleApproved.objects.get_or_create(user=user, week_start_date=week_start_date)
-            # schedule = Schedule.objects.get_or_create()
+
             work_types.append(form.cleaned_data.get('sun_work_type'))
             start_times.append(form.cleaned_data.get('sun_start'))
             end_times.append(form.cleaned_data.get('sun_end'))
@@ -120,72 +120,24 @@ def register_index(request):
     return HttpResponse(template.render(context, request))
 
 
-@login_required
-def register_select_date(request, year, month, date):
-    print('post pass')
-    if request.method == 'POST':
-        print('post pass')
-        form = NewScheduleForm(request.POST)
-        if form.is_valid():
-            week_start_date = form.cleaned_data.get('week_start_date')
-
-            sun_work_type = form.cleaned_data.get('sun_work_type')
-            sun_start = form.cleaned_data.get('sun_start')
-            sun_end = form.cleaned_data.get('sun_end')
-
-            mon_work_type = form.cleaned_data.get('mon_work_type')
-            mon_start = form.cleaned_data.get('mon_start')
-            mon_end = form.cleaned_data.get('mon_end')
-
-            tue_work_type = form.cleaned_data.get('tue_work_type')
-            tue_start = form.cleaned_data.get('tue_start')
-            tue_end = form.cleaned_data.get('tue_end')
-
-            wed_work_type = form.cleaned_data.get('wed_work_type')
-            wed_start = form.cleaned_data.get('wed_start')
-            wed_end = form.cleaned_data.get('wed_end')
-
-            thu_work_type = form.cleaned_data.get('thu_work_type')
-            thu_start = form.cleaned_data.get('thu_start')
-            thu_end = form.cleaned_data.get('thu_end')
-
-            fri_work_type = form.cleaned_data.get('fri_work_type')
-            fri_start = form.cleaned_data.get('fri_start')
-            fri_end = form.cleaned_data.get('fri_end')
-
-            sat_work_type = form.cleaned_data.get('sat_work_type')
-            sat_start = form.cleaned_data.get('sat_start')
-            sat_end = form.cleaned_data.get('sat_end')
-
-            print(sat_work_type)
-
-            return redirect('schedule-register')
-    else:
-        user = request.user
-        selected_date = year + "-" + month + "-" + date
-        template = loader.get_template('schedule_register.html')
-        form = NewScheduleForm()
-        context = {
-            'user': user,
-            'selected_date': selected_date,
-            'forms': form
-        }
-
-        return HttpResponse(template.render(context, request))
-
 
 @login_required
 def schedule_list_user(request, user_id, year, month):
     user = User.objects.get(id=user_id)
     schedule = Schedule.objects.filter(user=user, date__year=year, date__month=month).order_by('user')
-    user_profile = Profile.objects.get(user=user_id)
+    schedule = schedule | Schedule.objects.filter(user=user, date__year=year, date__month=str(int(month)+1)).order_by('user')
+    user_profile = Profile.objects.get(user=user)
     schedule_list = list(schedule)
     result = []
     for item in schedule_list:
         name = str(user_profile.name)
         date = str(item.date)
-        start = str(item.start.strftime("%H:%M"))
-        end = str(item.end.strftime("%H:%M"))
+        if item.start is not None and item.end is not None:
+            start = str(item.start.strftime("%H:%M"))
+            end = str(item.end.strftime("%H:%M"))
+        else:
+            start = "00:00"
+            end = "00:00"
         work_type = item.work_type
         result.append(
             {'name': name, 'date': date, 'start': start, 'end': end, 'work_type': work_type, 'color': user.id % 5})
@@ -199,14 +151,19 @@ def schedule_list_team(request, team_id, year, month):
 
     users = Profile.objects.filter(team=team_id)
     for user in users:
+        print(user.name)
         schedule = Schedule.objects.filter(user=user.user_id, date__year=year, date__month=month).order_by('user_id')
+        schedule = schedule | Schedule.objects.filter(user=user.user_id, date__year=year, date__month=str(int(month)+1)).order_by('user_id')
         for item in list(schedule):
             name = str(user.name)
             date = str(item.date)
-            start = str(item.start.strftime("%H:%M"))
-            end = str(item.end.strftime("%H:%M"))
+            if item.start is not None and item.end is not None:
+                start = str(item.start.strftime("%H:%M"))
+                end = str(item.end.strftime("%H:%M"))
+            else:
+                start = "00:00"
+                end = "00:00"
             work_type = item.work_type
             result.append(
                 {'name': name, 'date': date, 'start': start, 'end': end, 'work_type': work_type, 'color': user.id % 5})
-
     return JsonResponse(result, safe=False)

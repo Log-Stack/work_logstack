@@ -9,22 +9,28 @@
 <script src='http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery.min.js'></script>
 
 <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        var calendarEl = document.getElementById('calendar');
-        var calendar = new FullCalendar.Calendar(calendarEl, {
+var calendarEl = null;
+var calendar = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    calendarEl = document.getElementById('calendar');
+    calendar = new FullCalendar.Calendar(calendarEl, {
           initialView: 'dayGridMonth',
 
-        });
+    });
 
-        calendar.render();
+    calendar.render();
 
 
 });
 
-function getEventByUser(user_id, year, month){
+function getEventByUser(){
+var user_select = document.getElementById('user_select');
+
+var user_id = user_select.options[user_select.selectedIndex].value;
 $.ajax({
 			type: 'GET',
-			url: '/schedule/list/user/' + user_id + "/" + year + "/" + month,
+			url: '/schedule/list/user/' + user_id + "/" + (calendar.getDate().getYear() + 1900) + "/" + (calendar.getDate().getMonth()+1),
 			dataType: 'json',
 
 			success: function(data){
@@ -45,6 +51,9 @@ $.ajax({
                     title = data[i].name + " | " + "휴가";
                     color = '#008000';
                 }
+                else if(data[i].work_type == 0){
+                    continue;
+                }
                 titles.push({'title' : title, 'start': start, 'end' : end, "color": color });
 			}
 
@@ -59,10 +68,13 @@ $.ajax({
 })
 }
 
-function getEventByTeam(Team_id, year, month){
+function getEventByTeam(){
+var team_select = document.getElementById('team_select');
+
+var team_id = team_select.options[team_select.selectedIndex].value;
 $.ajax({
 			type: 'GET',
-			url: '/schedule/list/team/' + Team_id + "/" + year + "/" + month,
+			url: '/schedule/list/team/' + team_id + "/"+(calendar.getDate().getYear() + 1900) + "/" + (calendar.getDate().getMonth()+1),
 			dataType: 'json',
 
 			success: function(data){
@@ -83,6 +95,9 @@ $.ajax({
                     title = data[i].name + " | " + "휴가";
                     color = '#008000';
                 }
+                else if(data[i].work_type == 0){
+                    continue;
+                }
                 titles.push({'title' : title, 'start': start, 'end' : end, "color": color });
 			}
 
@@ -96,19 +111,83 @@ $.ajax({
 	}
 })
 }
+
+function setTeamSelect(){
+var team_select = document.getElementById('team_select');
+
+team_select.addEventListener('change', setUserSelect);
+team_select.addEventListener('change', getEventByTeam);
+$.ajax({
+			type: 'GET',
+			url: '/authy/api/teams/',
+			dataType: 'json',
+
+			success: function(data){
+			    for(let i = 1;i<=team_select.options.length;i++){
+                    team_select.remove(1);
+			    }
+                for(let i = 0;i<data.length;i++){
+                var temp = document.createElement("option");
+                temp.value = data[i].id
+                temp.text = data[i].name
+                team_select.add(temp);
+                }
+	        }
+        })
+}
+
+function setUserSelect(){
+var user_select = document.getElementById('user_select');
+var team_select = document.getElementById('team_select');
+
+var team_id = team_select.options[team_select.selectedIndex].value;
+
+user_select.addEventListener('change', getEventByUser);
+
+
+$.ajax({
+			type: 'GET',
+			url: '/authy/byteam/' + team_id,
+			dataType: 'json',
+
+			success: function(data){
+			    for(let i = 1;i<=user_select.options.length;i++){
+                    user_select.remove(1);
+			    }
+                for(let i = 0;i<data.length;i++){
+                var temp = document.createElement("option");
+                temp.value = data[i].user_id
+                temp.text = data[i].name
+                user_select.add(temp);
+                }
+	        }
+        })
+}
+
+
+function init(){
+    setTeamSelect();
+}
+
+window.addEventListener('DOMContentLoaded', init);
+
+
 
 </script>
 <br>
 
 <div class="columns is-centered">
     <div class="column is-10">
-        <div class="box">
-            <b>이번 주 근무</b>
+        <div class="select is-primary">
+            <select id="team_select">
+                <option>team</option>
+            </select>
         </div>
-
-        <button id="user" onclick="getEventByUser('3', '2021', '03')">getEventByUser</button>
-        <button id="team" onclick="getEventByTeam('1', '2021', '03')">getEventByTeam</button>
-
+        <div class="select is-primary">
+            <select id="user_select">
+                <option>user</option>
+            </select>
+        </div>
         <div id='calendar'></div>
 
 
