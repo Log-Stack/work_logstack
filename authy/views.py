@@ -110,7 +110,7 @@ def ProfileView(request):
 def EditProfileView(request):
     user = request.user
     profile = Profile.objects.filter(user=user)[0]
-
+    #print(profile.birth_day)2021-03-12
 
     if request.method == 'POST':
         form = ProfileForm(request.POST, instance=profile)
