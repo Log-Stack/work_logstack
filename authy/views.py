@@ -4,7 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.db.models import Q
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
 from django.shortcuts import render, redirect, get_object_or_404
@@ -36,8 +36,37 @@ def index(request):
     return HttpResponse(template.render(context, request))
 
 
+# @login_required
+# def CreateUserView(request):
+#     if request.method == 'POST':
+#
+#         signup_form = SignupForm(request.POST)
+#         team_form = TeamForm(request.POST)
+#
+#         if signup_form.is_valid() and team_form.is_valid():
+#
+#             signup_form.save()
+#             team_form.save()
+#             return redirect('index')
+#
+#         else:
+#             context = {
+#                 'signup_form': signup_form,
+#                 'team_form': team_form,
+#             }
+#
+#     else:
+#         context = {
+#             'signup_form': SignupForm(),
+#             'team_form': TeamForm(),
+#         }
+#
+#     return render(request, 'user_create.html', context)
+
 @login_required
 def CreateUserView(request):
+    teams = list(Team.objects.all().values_list('name', flat=True))
+    print(teams)
     if request.method == 'POST':
         form = SignupForm(request.POST)
         # team_form = TeamForm(request.POST)
@@ -48,18 +77,19 @@ def CreateUserView(request):
             user = User.objects.create_user(username=username, password=password)
 
             #user = form.save()
-
-            team_name = form.cleaned_data.get('name')
+            team_name = request.POST.get('team')
+            # team_name = form.cleaned_data.get('name')
             team = Team.objects.get(name=team_name)
             profile = Profile(user=user, team=team)
             profile.save()
             print(profile)
-            return redirect('index')
+            return redirect('schedule-index')
     else:
         form = SignupForm()
 
     context = {
         'form': form,
+        'teams': teams,
     }
 
     return render(request, 'user_create.html', context)

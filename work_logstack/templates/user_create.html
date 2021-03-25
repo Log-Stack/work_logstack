@@ -16,9 +16,20 @@
     <div class="profile">
 
 
-        <div class="card">
-          <div class="card-content">
-            <div class="content">
+<!--        <div class="card">-->
+<!--          <div class="card-content">-->
+<!--            <div class="content">-->
+<!--                <form method="post">-->
+<!--                    {% csrf_token %}-->
+<!--                    {{ signup_form.as_p }}-->
+<!--                    {{ team_form.as_p }}-->
+
+<!--                    <button class="button is-primary" type="submit">Submit</button>-->
+<!--                </form>-->
+
+
+
+
                     <form method="post" action="" role="form">
                         {% csrf_token %}
                         <h3 class="title is-3">Create Staff Account</h3>
@@ -55,15 +66,23 @@
                               </div>
 
 
-                                <div class="field">
-                                  <p class="control has-icons-left">
-                                  <label class="label is-medium">Choose Team</label>
-                                    {{ form.name }}
-                                    <span class="icon is-small is-left">
-                                <i class="fas fa-lock"></i>
-                              </span>
-                            </p>
-                              </div>
+                                            <div class="select is-primary">
+                        <select name="team">
+                            <option>all</option>
+                            {% for team in teams %}
+                            <option>{{ team }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+<!--                                <div class="field">-->
+<!--                                  <p class="control has-icons-left">-->
+<!--                                  <label class="label is-medium">Choose Team</label>-->
+<!--                                    {{ form.name }}-->
+<!--                                    <span class="icon is-small is-left">-->
+<!--                                <i class="fas fa-lock"></i>-->
+<!--                              </span>-->
+<!--                            </p>-->
+<!--                              </div>-->
 
 
                           <div class="row">
@@ -86,7 +105,7 @@
 
 
                         </div>
-                        </section>
+
 
                     </form>
 
