@@ -58,15 +58,15 @@
                     </a>
 
                     <div class="navbar-dropdown">
-                        <a class="navbar-item">
+                        <a class="navbar-item" href="{% url 'search' %}">
                             Search Staff
                         </a>
                         <!-- 팀장 -->
                         <hr class="navbar-divider">
-                        <a class="navbar-item">
+                        <a class="navbar-item" href="{% url 'createteam' %}">
                             Create Team
                         </a>
-                        <a class="navbar-item">
+                        <a class="navbar-item" href="{% url 'createuser' %}">
                             Create Staff Account
                         </a>
                         <a class="navbar-item">
@@ -87,15 +87,22 @@
                         <!-- end -->
 
                         <!-- log in 했을 시-->
-                        <a class="button is-light">
+                        {% if user.is_authenticated %}
+
+                        <div style="margin-right:20px;">
+                            <strong>{{ request.user }}님 안녕하세요</strong>
+                        </div>
+                        <a class="button is-primary" href="{% url 'profile' %}">
+                            <strong>My Profile</strong>
+                        </a>
+                        <a class="button is-light" href="{% url 'logout' %}">
                             Log out
                         </a>
-                        <a class="button is-light">
-                            <strong>{{ request.user }}</strong>
+                        {% else %}
+                        <a class="button is-light" href="{% url 'login' %}">
+                            Log In
                         </a>
-                        <a class="button is-primary">
-                            <strong>Edit Profile</strong>
-                        </a>
+                        {% endif %}
                         <!-- end -->
                     </div>
                 </div>
