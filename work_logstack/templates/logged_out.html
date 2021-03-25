@@ -1,30 +1,25 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
 
-{% block content %}
-    <style>
-        .profile_body{
-            padding-top:220px;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
+</head>
+<body>
 
-        .profile{
-            width:500px;
-			text-align: center;
-        }
-    </style>
-
-<div class="profile_body">
-		<div class="notification is-primary profile">
-		  오늘 하루도 수고 많으셨습니다.
-		</div>
+    <div class="hero is-primary is-small">
+        <div class="hero-body">
+            <p class="title">
+                오늘 하루도 수고 많으셨어요.
+            </p>
+        </div>
+    </div>
+	<a style="margin:50px;" class="button is-primary" href="{% url 'login' %}">
+                            다시 로그인 하기
+                        </a>
 
 
-</div>
 
-</div>
-
-<br>
-<br>
-{% endblock %}
+</body>
+</html>
