@@ -222,7 +222,11 @@ def UserSearchView(request):
 
 @login_required
 def SearchSelectView(request):
-    return render(request,'user_search_result.html')
+    teams = list(Team.objects.all().values_list('name', flat=True))
+    context={
+        'teams':teams,
+    }
+    return render(request,'user_search_result.html',context)
 
 
 @login_required

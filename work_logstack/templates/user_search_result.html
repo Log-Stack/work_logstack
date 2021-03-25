@@ -43,11 +43,12 @@
 
         <!-- 팀 선택 -->
         <div style="margin-right:20px;" class="select">
-          <select>
-            <option>개발 1팀</option>
-            <option>개발 2팀</option>
-            <option>기획팀</option>
-          </select>
+            <select name="team">
+                <option>all</option>
+                {% for team in teams %}
+                <option>{{ team }}</option>
+                {% endfor %}
+            </select>
         </div>
 
         <!-- 팀 선택 이후에 생성 되는 직원 선택 창, 여기서 user_id 를 보내면 url 'userdetail'로 이동 -->
