@@ -295,6 +295,7 @@ def manage_detail(request, pk):
                 work_hours = work_hours.filter(date__gte=start_date)
             if end_date:
                 work_hours = work_hours.filter(date__lte=end_date)
+
             context = {
                 'member': member,
                 'is_manager': is_manager,
@@ -312,7 +313,7 @@ def manage_detail(request, pk):
                 'positions': positions,
                 'start_date': start_date,
                 'end_date': end_date,
-                'work_hours': work_hours.order_by('-date'),
+                'work_hours': work_hours.order_by('-date')[:10],
             }
         return render(request, 'user_manage_detail.html', context)
     else:

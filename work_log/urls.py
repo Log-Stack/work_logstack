@@ -6,7 +6,8 @@ from .views import (
     work_log_write,
     work_log_detail,
     work_log_edit,
-    work_hour_edit
+    work_hour_edit,
+    work_hour_check
 )
 
 urlpatterns = [
@@ -16,5 +17,6 @@ urlpatterns = [
     path('write/', work_log_write, name='work_log_write'),
     path('edit/<int:pk>/', work_log_edit, name='work_log_edit'),
     path('detail/<int:pk>/', work_log_detail, name='work_log_detail'),
+    path('work_hour_check/', work_hour_check, name='work_hour_check'),
     path('work_hour_edit/<int:pk>/', work_hour_edit, name='work_hour_edit'),
 ]
