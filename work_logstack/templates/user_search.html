@@ -48,6 +48,7 @@
 
       <!--  직원 검색 결과 프로필-->
         {% for user in users %}
+        <a href="{% url 'userdetail' user.user_id %}">
            <div class="box">
               <article class="media">
                 <div class="media-left">
@@ -69,6 +70,7 @@
                 </div>
               </article>
           </div>
+</a>
         {% endfor %}
 
 

@@ -205,6 +205,8 @@ def UserSearchView(request):
 
     if query:
         users = Profile.objects.filter(Q(name__icontains=query))
+        # profiles = list(users)
+        # print(list(users)[0].user_id)
 
         #Pagination
         paginator = Paginator(users, 6)
@@ -213,6 +215,7 @@ def UserSearchView(request):
 
         context = {
             'users': users_paginator,
+            # 'profiles':profiles,
         }
     template = loader.get_template('user_search.html')
 
