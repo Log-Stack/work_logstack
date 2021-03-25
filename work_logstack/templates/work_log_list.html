@@ -61,7 +61,7 @@
                     <label class="label">Name </label>
                     <div class="field has-addons">
                         <div class="control">
-                            <input class="input" type="text" name="search" placeholder="직원 이름">
+                            <input class="input" type="text" name="search" placeholder="직원 이름" value="{{ search }}">
                         </div>
                         <div class="control">
                             <button class="button is-primary" type="submit">
@@ -78,6 +78,7 @@
     <div class="columns is-multiline">
         {% for work_log in work_logs %}
         <div class="column is-one-quarter">
+            <a href="{% url 'work_log_detail' work_log.pk %}">
             <div class="box">
                 <article class="media">
                     <div class="media-content">
@@ -92,9 +93,28 @@
                     </div>
                 </article>
             </div>
+            </a>
         </div>
         {% endfor %}
     </div>
+
+
+    <div class="buttons is-centered">
+        {% if work_logs.has_previous %}
+            <a href="?page=1" class="button is-primary is-light">&laquo; first</a>
+            <a href="?page={{ work_logs.previous_page_number }}" class="button is-primary">previous</a>
+        {% endif %}
+
+        <span class="button">
+            Page {{ work_logs.number }} of {{ work_logs.paginator.num_pages }}.
+        </span>
+
+        {% if work_logs.has_next %}
+            <a href="?page={{ work_logs.next_page_number }}" class="button is-primary">next</a>
+            <a href="?page={{ work_logs.paginator.num_pages }}" class="button is-primary is-light">last &raquo;</a>
+        {% endif %}
+    </div>
+
 </div>
 
 
