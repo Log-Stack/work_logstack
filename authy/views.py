@@ -270,6 +270,23 @@ class ProfileViewSet(viewsets.ModelViewSet):
 
 
 # 팀원 관리
+
+def check_manager(request):
+    if request.user.is_authenticated:
+        return {
+            'team_manager': TeamManager.objects.filter(user=request.user).exists()
+        }
+    else:
+        return {
+            'team_manager': False
+        }
+        #user = request.user
+
+        #team_manager = TeamManager.objects.filter(user=user).exists()
+        #print(type(team_manager))
+    # return {'team_manager': team_manager}
+
+
 @login_required
 def manage_list(request):
     user = request.user
