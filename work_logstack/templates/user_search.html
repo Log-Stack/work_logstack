@@ -11,7 +11,20 @@
   width:500px;
 }
 </style>
+<div class="hero is-primary is-small">
+        <div class="hero-body">
+            <p class="title">
+                Search Staff
+            </p>
+        </div>
+    </div>
+<div class="tabs">
+  <ul>
+    <li class="is-active"><a href="{% url 'search' %}">by Name</a></li>
+    <li><a href="{% url 'searchselect' %}">by Team</a></li>
 
+  </ul>
+</div>
 <div class="search_body">
 
 
@@ -62,4 +75,6 @@
     </article>
 
 </div>
+
+
 {% endblock %}
