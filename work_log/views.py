@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from .models import WorkHour, WorkLog
 from .forms import WorkLogForm, WorkHourForm
 from authy.models import Team, TeamManager, Profile, Position
+from django.core.paginator import Paginator
 
 
 @login_required
@@ -125,21 +126,20 @@ def work_log_list(request):
         if end_date:
             work_logs = work_logs.filter(create_time__date__lte=end_date)
 
-        context = {
-            'teams': teams,
-            'work_logs': work_logs.order_by('-create_time'),
-            'start_date': start_date,
-            'end_date': end_date,
-            'search': search,
-        }
-    else:
-        context = {
-            'teams': teams,
-            'work_logs': work_logs.order_by('-create_time'),
-            'start_date': start_date,
-            'end_date': end_date,
-            'search': search,
-        }
+    work_logs = work_logs.order_by('-create_time')
+
+    # Pagination
+    paginator = Paginator(work_logs, 12)
+    page_number = request.GET.get('page')
+    work_logs_paginator = paginator.get_page(page_number)
+
+    context = {
+        'teams': teams,
+        'work_logs': work_logs_paginator,
+        'start_date': start_date,
+        'end_date': end_date,
+        'search': search,
+    }
     return render(request, 'work_log_list.html', context)
 
 
