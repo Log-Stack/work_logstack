@@ -14,9 +14,9 @@ router.register(r'profiles', views.ProfileViewSet)
 
 
 urlpatterns = [
-    path('login/', authViews.LoginView.as_view(template_name='login.html'), name='login'),
+    path('', authViews.LoginView.as_view(template_name='login.html'), name='login'),
     path('logout/', authViews.LogoutView.as_view(template_name='logged_out.html'), name='logout'),
-   	path('', index, name='index'),
+   	path('index/', index, name='index'),
 
     # 팀장
     path('create/team',CreateTeamView, name='createteam'),
