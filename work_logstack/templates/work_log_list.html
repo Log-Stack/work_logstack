@@ -3,6 +3,65 @@
 
 {% block content %}
 
+<script src='http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery.min.js'></script>
+<script>
+
+
+
+function setUserSelect(){
+var user_select = document.getElementById('user_select');
+var team_select = document.getElementById('team_select');
+
+var team_id = team_select.options[team_select.selectedIndex].value;
+
+
+$.ajax({
+			type: 'GET',
+			url: '/authy/byteam/' + team_id,
+			dataType: 'json',
+
+			success: function(data){
+			    for(let i = 1;i<=user_select.options.length;i++){
+                    user_select.remove(1);
+			    }
+                for(let i = 0;i<data.length;i++){
+                var temp = document.createElement("option");
+                temp.value = data[i].user_id
+                temp.text = data[i].name
+                user_select.add(temp);
+                }
+	        }
+        })
+}
+function setTeamSelect(){
+var team_select = document.getElementById('team_select');
+
+team_select.addEventListener('change', setUserSelect);
+$.ajax({
+			type: 'GET',
+			url: '/authy/api/teams/',
+			dataType: 'json',
+
+			success: function(data){
+			    for(let i = 1;i<=team_select.options.length;i++){
+                    team_select.remove(1);
+			    }
+                for(let i = 0;i<data.length;i++){
+                var temp = document.createElement("option");
+                temp.value = data[i].id
+                temp.text = data[i].name
+                team_select.add(temp);
+                }
+	        }
+        })
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+setTeamSelect()
+
+});
+
+</script>
 <div class="container">
     <br>
     <div class="hero is-primary is-small">
@@ -21,22 +80,16 @@
                 <div class="column is-1">
                     <label class="label">Team </label>
                     <div class="select is-primary">
-                        <select>
+                        <select name="team" id="team_select">
                             <option>all</option>
-                            {% for team in teams %}
-                            <option>{{ team.name }}</option>
-                            {% endfor %}
                         </select>
                     </div>
                 </div>
                 <div class="column">
                     <label class="label">Staff </label>
                     <div class="select is-primary">
-                        <select>
+                        <select name="member" id="user_select">
                             <option>직원 선택</option>
-                            <option>직원1</option>
-                            <option>직원2</option>
-                            <option>직원3</option>
                         </select>
                     </div>
                 </div>
@@ -79,20 +132,20 @@
         {% for work_log in work_logs %}
         <div class="column is-one-quarter">
             <a href="{% url 'work_log_detail' work_log.pk %}">
-            <div class="box">
-                <article class="media">
-                    <div class="media-content">
-                        <div class="content">
-                            <p>
-                                <strong>{{ work_log.user }}</strong> - <small>{{ work_log.create_time|date }}</small>
-                                <br>
-                                <br>
-                                {{ work_log.content }}
-                            </p>
+                <div class="box">
+                    <article class="media">
+                        <div class="media-content">
+                            <div class="content">
+                                <p>
+                                    <strong>{{ work_log.user }}</strong> - <small>{{ work_log.create_time|date}}</small>
+                                    <br>
+                                    <br>
+                                    {{ work_log.content }}
+                                </p>
+                            </div>
                         </div>
-                    </div>
-                </article>
-            </div>
+                    </article>
+                </div>
             </a>
         </div>
         {% endfor %}
@@ -105,13 +158,13 @@
     <div class="buttons is-centered">
 
         {% if work_logs.has_previous %}
-            <a href="?page=1" class="button is-primary is-light">&laquo; first</a>
-            <a href="?page={{ work_logs.previous_page_number }}" class="button is-primary">previous</a>
+        <a href="?page=1" class="button is-primary is-light">&laquo; first</a>
+        <a href="?page={{ work_logs.previous_page_number }}" class="button is-primary">previous</a>
         {% endif %}
 
         {% if work_logs.has_next %}
-            <a href="?page={{ work_logs.next_page_number }}" class="button is-primary">next</a>
-            <a href="?page={{ work_logs.paginator.num_pages }}" class="button is-primary is-light">last &raquo;</a>
+        <a href="?page={{ work_logs.next_page_number }}" class="button is-primary">next</a>
+        <a href="?page={{ work_logs.paginator.num_pages }}" class="button is-primary is-light">last &raquo;</a>
         {% endif %}
     </div>
 </div>
