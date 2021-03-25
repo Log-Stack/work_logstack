@@ -6,7 +6,7 @@ from django.shortcuts import redirect
 from django.template import loader
 
 from django.contrib.auth.models import User
-from authy.models import Profile
+from authy.models import Profile, TeamManager
 from .forms import NewScheduleForm
 from .models import Schedule, ScheduleApproved
 
@@ -27,14 +27,18 @@ def index(request):
 @login_required
 def approved(request):
     user = request.user
+    selected_date = datetime.today().strftime("%Y-%m-%d")
+    if TeamManager.objects.filter(user=user).exists():
+        template = loader.get_template('schedule_approved.html')
+        team = TeamManager.objects.get(user=user)
+        context = {
+            'user': user,
+            'team': team.team,
+            'team_id': team.team.id,
+            'selected_date': selected_date,
+        }
 
-    template = loader.get_template('schedule_approved.html')
-
-    context = {
-        'user': user,
-    }
-
-    return HttpResponse(template.render(context, request))
+        return HttpResponse(template.render(context, request))
 
 
 @login_required
@@ -120,12 +124,12 @@ def register_index(request):
     return HttpResponse(template.render(context, request))
 
 
-
 @login_required
 def schedule_list_user(request, user_id, year, month):
     user = User.objects.get(id=user_id)
     schedule = Schedule.objects.filter(user=user, date__year=year, date__month=month).order_by('user')
-    schedule = schedule | Schedule.objects.filter(user=user, date__year=year, date__month=str(int(month)+1)).order_by('user')
+    schedule = schedule | Schedule.objects.filter(user=user, date__year=year, date__month=str(int(month) + 1)).order_by(
+        'user')
     user_profile = Profile.objects.get(user=user)
     schedule_list = list(schedule)
     result = []
@@ -153,7 +157,8 @@ def schedule_list_team(request, team_id, year, month):
     for user in users:
         print(user.name)
         schedule = Schedule.objects.filter(user=user.user_id, date__year=year, date__month=month).order_by('user_id')
-        schedule = schedule | Schedule.objects.filter(user=user.user_id, date__year=year, date__month=str(int(month)+1)).order_by('user_id')
+        schedule = schedule | Schedule.objects.filter(user=user.user_id, date__year=year,
+                                                      date__month=str(int(month) + 1)).order_by('user_id')
         for item in list(schedule):
             name = str(user.name)
             date = str(item.date)
