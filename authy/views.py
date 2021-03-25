@@ -7,7 +7,7 @@ from django.db.models import Q
 from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 
 # Create your views here.
 from django.template import loader
@@ -85,7 +85,27 @@ def CreateTeamView(request):
     return render(request, 'team_create.html', context)
 
 
-#Staff edits profile
+# @login_required
+# def UserDetailView(request, user_id):
+#     profile = get_object_or_404(Profile, user_id=user_id)
+#     context = {
+#         'profile': profile
+#     }
+#
+#     return render(request,'user_search_result.html',context)
+
+@login_required
+def ProfileView(request):
+    user_id = request.user.id
+    profile = get_object_or_404(Profile, user_id=user_id)
+    context = {
+        'profile': profile
+    }
+
+    return render(request,'user_info.html', context)
+
+
+# Staff edits profile
 #   fields = ['name', 'birth_day', 'phone_number', 'email_address']
 def EditProfileView(request):
     user = request.user
@@ -111,8 +131,9 @@ def EditProfileView(request):
         print("not POST")
 
     context = {
-        'id' : request.user.username,
+        'id': request.user.username,
         'form': form,
+        'profile': profile,
     }
     return render(request, 'user_info_edit.html', context)
 
@@ -164,6 +185,21 @@ def UserSearchView(request):
 
 
     return HttpResponse(template.render(context, request))
+
+
+@login_required
+def SearchSelectView(request):
+    return render(request,'user_search_result.html')
+
+
+@login_required
+def UserDetailView(request, user_id):
+    profile = get_object_or_404(Profile, user_id=user_id)
+    context = {
+        'profile': profile
+    }
+
+    return render(request,'user_search_result.html',context)
 
 
 # api view

@@ -1,12 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+{% extends 'base.html' %}
+{% block content %}
+
+
+
     <style>
-    body{
-          padding-top:120px;
+    .info_body{
+          padding-top:40px;
           display: flex;
           justify-content: center;
           align-items: center;
@@ -21,8 +20,15 @@
         width:500px;
     }
     </style>
-</head>
-<body>
+    <div class="hero is-primary is-small">
+        <div class="hero-body">
+            <p class="title">
+                Search Staff
+            </p>
+        </div>
+    </div>
+<div class="info_body">
+
 <!-- 팀이 볼 수 있는 회원 정보 -->
 <div class="info">
     <div class="category">
@@ -36,7 +42,7 @@
           </select>
         </div>
 
-        <!-- 팀 선택 이후에 생성 되는 직원 선택 창 -->
+        <!-- 팀 선택 이후에 생성 되는 직원 선택 창, 여기서 user_id 를 보내면 url 'userdetail'로 이동 -->
         <div class="select">
           <select>
             <option>직원 선택</option>
@@ -47,51 +53,54 @@
 
     </div>
     <!-- 직원 선택 후에 나타나는 직원 프로필 -->
-    <div class="card">
-      <div class="card-content">
-        <div class="media">
-          <div class="media-left">
-            <figure class="image is-96x96">
-              <img src="https://bulma.io/images/placeholders/96x96.png" alt="Placeholder image">
-            </figure>
-          </div>
-          <div class="media-content">
-            <p class="title is-4">Name</p>
-            <p class="subtitle is-6">@팀 미정</p>
-          </div>
-        </div>
+        {% if profile %}
+            <div class="card">
+              <div class="card-content">
+                <div class="media">
+                  <div class="media-left">
+                    <figure class="image is-96x96">
+                      <img src="https://bulma.io/images/placeholders/96x96.png" alt="Placeholder image">
+                    </figure>
+                  </div>
+                  <div class="media-content">
+                    <p class="title is-4">{{ profile.user }}</p>
+                    <p class="subtitle is-6">@{{ profile.team }}</p>
+                  </div>
+                </div>
 
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-content">
-        <div class="content">
-            <strong><p>Birth Date</p></strong>
-            <br>
-            <p>age</p>
-            <br><br>
-            <strong><p>Mobile</p></strong>
-             <br>
-            <p>age</p>
-            <br><br>
-            <strong><p>Email Address</p></strong>
-             <br>
-            <p>age</p>
-            <br><br>
-            <strong><p>Current Employee</p></strong>
-             <br>
-            <p>O</p>
-            <br><br>
-        </div>
-      </div>
-    </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-content">
+                <div class="content">
+                    <strong><p>Birth Date</p></strong>
+                    <br>
+                    <p>{{ profile.birth_day }}</p>
+                    <br><br>
+                    <strong><p>Mobile</p></strong>
+                     <br>
+                    <p>{{ profile.phone_number }}</p>
+                    <br><br>
+                    <strong><p>Email Address</p></strong>
+                     <br>
+                    <p>{{ profile.email_address }}</p>
+                    <br><br>
+                    <strong><p>Current Employee</p></strong>
+                     <br>
+                    <p>{{ profile.current_employed }}</p>
+                    <br><br>
+                </div>
+              </div>
+            </div>
 
     <!--스케줄 조회 버튼-->
-    <div style="padding-top: 30px;" class="buttons">
+    <div style="padding-top: 40px;" class="buttons">
       <button class="button is-primary">Schedule</button>
       <button class="button is-link">Work Logs</button>
     </div>
+    {% endif %}
 
 </div>
-</body>
-</html>
+</div>
+
+{% endblock %}

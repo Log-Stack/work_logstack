@@ -1,12 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+{% extends 'base.html' %}
+{% block content %}
+
     <style>
-       body{
-          padding-top:220px;
+       .profile_body{
+          padding-top:140px;
           display: flex;
           justify-content: center;
           align-items: center;
@@ -16,11 +13,18 @@
 
         }
     </style>
-</head>
-<body>
+    <div class="hero is-primary is-small">
+        <div class="hero-body">
+            <p class="title">
+                My Profile
+            </p>
+        </div>
+    </div>
+<div class="profile_body">
 
 
-<!-- 일반 회원이 볼 수 있는 회원 정보 -->
+<!-- 일반 회원이 볼 수 있는 본인 회원 정보 -->
+{% if profile %}
 <div class="profile">
 
     <div class="card">
@@ -32,9 +36,11 @@
             </figure>
           </div>
             <div class="media-content">
-            <p class="title is-4">Name</p>
-            <p class="subtitle is-6">@Team</p>
-            <button style="margin-top:12px;" class="button is-primary">Edit Profile</button>
+
+            <p class="title is-4">{{ profile.user }}</p>
+            <p class="subtitle is-6">@{{ profile.team }}</p>
+
+            <a style="margin-top:12px;" class="button is-primary" href="{% url 'editprofile' %}">Edit Profile</a>
           </div>
         </div>
 
@@ -46,21 +52,21 @@
 
             <strong><p>Birth Date</p></strong>
             <br>
-            <p>1996년 5월 10일</p>
+            <p>{{ profile.birth_day }}</p>
             <br><br>
             <strong><p>Email Address</p></strong>
              <br>
-            <p>aaaa@aa.com</p>
+            <p>{{ profile.email_address }}</p>
             <br><br>
             <strong><p>Mobile</p></strong>
              <br>
-            <p>010-0000-0000</p>
+            <p>{{ profile.phone_number }}</p>
             <br>
         </div>
       </div>
     </div>
 
 </div>
-
-</body>
-</html>
+{% endif %}
+</div>
+{% endblock %}
