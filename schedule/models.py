@@ -19,7 +19,7 @@ class Schedule(models.Model):
         if self.start is not None and self.end is not None:
             result += (" | " + self.start.strftime("%H:%M") + " : " + self.end.strftime("%H:%M"))
         else:
-            result += " | "  + self.WORK_TYPES[self.work_type][1]
+            result += " | " + self.WORK_TYPES[self.work_type][1]
         return result
 
 
