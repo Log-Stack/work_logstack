@@ -3,38 +3,212 @@
 {% load static %}
 
 {% block content %}
+<script src='http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery.min.js'></script>
+
+<script>
+var date = document.getElementsByClassName('date')
+var week = ['일', '월', '화', '수', '목', '금', '토'];
+
+var selected_date = '{{selected_date}}'
+var team_name = '{{ team }}'
+var team_id = {{ team_id }}
 
 
+function setFormDate(){
+var d = new Date(document.getElementById('week_start_date').value);
+    for(let i = 0; i<7;i++){
+        date[i].innerText = (d.getMonth() + 1) + "." + d.getDate() + " (" + week[d.getDay()] + ")";
+        d.setDate(d.getDate() + 1);
+    }
+}
+
+function setDateInit(){
+var d = new Date(selected_date);
+d.setDate(d.getDate() - d.getDay() + 7);
+result_str = d.getFullYear() + "-" +("0" +  (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+document.getElementById('week_start_date').value = result_str;
+for(let i=0;i<7;i++){
+    date[i].innerText = ("0" + d.getDate()).slice(-2) + "(" + week[d.getDay()] + ")";
+    d.setDate(d.getDate() + 1);
+}
+}
+
+function setDateBefore(){
+var d = new Date(document.getElementById('week_start_date').value);
+d.setDate(d.getDate() - 7);
+if (d <= Date.now()){
+alert("이번주 이전 날자는 신청이 불가능 합니다.");
+return;
+}
+result_str = d.getFullYear() + "-" +("0" +  (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+document.getElementById('week_start_date').value = result_str;
+
+setFormDate()
+}
+
+function setDateAfter(){
+var d = new Date(document.getElementById('week_start_date').value);
+d.setDate(d.getDate() + 7);
+result_str = d.getFullYear() + "-" +("0" +  (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+document.getElementById('week_start_date').value = result_str;
+
+setFormDate()
+}
+
+
+function setUserInit(){
+var date_list = []
+var d = new Date(document.getElementById('week_start_date').value);
+d.setDate(d.getDate() + 7);
+result_str = d.getFullYear() + "-" +("0" +  (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+$.ajax({
+			type: 'GET',
+			url: '/authy/byteam/' + team_id,
+			dataType: 'json',
+
+			success: function(data){
+
+                for(let i = 0;i<data.length;i++){
+                var temp = document.createElement("option");
+
+
+                temp.value = data[i].user_id
+                temp.text = data[i].name
+                }
+	        }
+        })
+}
+
+function test(){
+ var test = document.getElementsByClassName('test')[0];
+ test.innerHTML = '<div class="box">\
+            <div class="columns is-centered  is-vcentered ">\
+                <div class="column is-2">\
+                    <h3 class="title">권진호 </h3>\
+                </div>\
+                <div class="column is-1">\
+                    <p>-</p>\
+                    <p></p>\
+                    <p></p>\
+                </div>\
+                <div class="column is-1">\
+                    <p>휴가</p>\
+                    <p></p>\
+                    <p></p>\
+                </div>\
+                <div class="column is-1">\
+                    <p>근무</p>\
+                    <p>10:00</p>\
+                    <p>20:00</p>\
+                </div>\
+                <div class="column is-1">\
+                    <p>근무</p>\
+                    <p>10:00</p>\
+                    <p>20:00</p>\
+                </div>\
+                <div class="column is-1">\
+                    <p>근무</p>\
+                    <p>10:00</p>\
+                    <p>20:00</p>\
+                </div>\
+                <div class="column is-1">\
+                    <p>근무</p>\
+                    <p>10:00</p>\
+                    <p>20:00</p>\
+                </div>\
+                <div class="column is-1">\
+                    <p>-</p>\
+                    <p></p>\
+                    <p></p>\
+                </div>\
+                <div class="column is-3">\
+                            <button class="button is-info is-fullwidth">대기중</button>\
+                    <div class="columns is-centered">\
+                        <div class="column">\
+                            <button class="button is-success is-fullwidth">승인</button>\
+                        </div>\
+                        <div class="column">\
+                            <button class="button is-danger is-fullwidth">반려</button>\
+                        </div>\
+                    </div>\
+                </div>\
+            </div>\
+        </div>'.trim();
+}
+
+function getUserList(){
+
+}
+
+function setBoxHtml(name, work_list, approved){
+ var result_html = ""
+ result_html += '<div class="box">\
+            <div class="columns is-centered  is-vcentered ">\
+                <div class="column is-2">\
+                    <h3 class="title">' + name +  '</h3>\
+                </div>'.trim();
+   for(let i=0;i<7;i++){
+                result_html += '<div class="column is-1">\
+                    <p>' + work_list[i].work_type + '</p>\
+                    <p>' + work_list[i].start + '</p>\
+                    <p>' + work_list[i].end + '</p>\
+                </div>'.trim();
+    }
+               result_html +=  '<div class="column is-3">\
+                            <button class="button is-info is-fullwidth">' + 대기중 + '</button>\
+                    <div class="columns is-centered">\
+                        <div class="column">\
+                            <button class="button is-success is-fullwidth">승인</button>\
+                        </div>\
+                        <div class="column">\
+                            <button class="button is-danger is-fullwidth">반려</button>\
+                        </div>\
+                    </div>\
+                </div>\
+            </div>\
+        </div>'.trim();
+}
+function init(){
+    setUserInit();
+    setDateInit();
+    addAllEvents();
+
+    setFormDate()
+}
+
+
+window.addEventListener('DOMContentLoaded', init);
+
+
+</script>
 <div class="columns is-centered">
     <div class="column is-10">
         <div class="box">
             <div class="columns is-centered">
+
                 <div class="column is-2">
-                    <h3 class="title">2021년 </h3>
+                    <div>
+                        <p class="title is-3"></p>
+                    </div>
                 </div>
-                <div class="column is-1">
-                    <h3 class="title">
-                        3월
-                    </h3>
-                </div>
-                <div class="column is-4">
+                <div class="column is-8">
                     <div class="buttons has-addons">
-                        <button class="button">
+                        <p class="button" onclick="setDateBefore()">
                             <span class="material-icons">
                                 arrow_back
                             </span>
-                        </button>
-                        <button class="button"><h3 class="title">3.21 ~ 3.27 </h3></button>
-                        <button class="button">
+                        </p>
+                        <p class="button">
+                            <input class='input' type="date" id='week_start_date'>
+                        </p>
+                        <p class="button" onclick="setDateAfter()">
                             <span class="material-icons">
                                 arrow_forward
                             </span>
-                        </button>
+                        </p>
                     </div>
                 </div>
 
-                <div class="column is-3">
-                </div>
                 <div class="column is-2">
                 </div>
             </div>
@@ -44,7 +218,7 @@
 </div>
 </div>
 <div class="columns is-centered">
-    <div class="column is-10">
+    <div class="column is-10 test">
         <div class="box">
 
             <div class="columns is-centered">
@@ -52,25 +226,25 @@
                     <b>이번 주 예정 근무</b>
                 </div>
                 <div class="column is-1">
-                    <b>3.21 (일)</b>
+                    <p class="date"></p>
                 </div>
                 <div class="column is-1">
-                    <b>3.22 (일)</b>
+                    <p class="date"></p>
                 </div>
                 <div class="column is-1">
-                    <b>3.23 (일)</b>
+                    <p class="date"></p>
                 </div>
                 <div class="column is-1">
-                    <b>3.24 (일)</b>
+                    <p class="date"></p>
                 </div>
                 <div class="column is-1">
-                    <b>3.25 (일)</b>
+                    <p class="date"></p>
                 </div>
                 <div class="column is-1">
-                    <b>3.26 (일)</b>
+                    <p class="date"></p>
                 </div>
                 <div class="column is-1">
-                    <b>3.27 (일)</b>
+                    <p class="date"></p>
                 </div>
                 <div class="column is-1">
                 </div>
@@ -122,6 +296,7 @@
                 </div>
                 <div class="column is-3">
 
+                    <button class="button is-info is-fullwidth">대기중</button>
                     <div class="columns is-centered">
                         <div class="column">
                             <button class="button is-success is-fullwidth">승인</button>

@@ -9,90 +9,192 @@
 
 var selected_date = {{selected_date}}
 
+var total_time = null;
 
-function setDateTest(){
-var d = new Date(Date.now());
-d.setDate(d.getDate() - d.getDay());
-result_str = d.getFullYear() + " " + (d.getMonth() + 1) + " " + d.getDate();
-document.getElementById("dateTest").innerHTML = result_str;
+var date = null;
+
+var working_time = null;
+var start_time = null;
+var end_time = null;
+
+
+
+function setFormDate(){
+var week = ['일', '월', '화', '수', '목', '금', '토'];
+var d = new Date(document.getElementById('week_start_date').value);
+    for(let i = 0; i<7;i++){
+        date[i].innerText = (d.getMonth() + 1) + "." + d.getDate() + " (" + week[d.getDay()] + ")";
+        d.setDate(d.getDate() + 1);
+    }
 }
+
+function setDateInit(){
+var d = new Date(Date.now());
+d.setDate(d.getDate() - d.getDay() + 7);
+result_str = d.getFullYear() + "-" +("0" +  (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+document.getElementById('week_start_date').value = result_str;
+
+}
+
+function setDateBefore(){
+var d = new Date(document.getElementById('week_start_date').value);
+d.setDate(d.getDate() - 7);
+if (d <= Date.now()){
+alert("이번주 이전 날자는 신청이 불가능 합니다.");
+return;
+}
+result_str = d.getFullYear() + "-" +("0" +  (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+document.getElementById('week_start_date').value = result_str;
+
+setFormDate()
+}
+
+function setDateAfter(){
+var d = new Date(document.getElementById('week_start_date').value);
+d.setDate(d.getDate() + 7);
+result_str = d.getFullYear() + "-" +("0" +  (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+document.getElementById('week_start_date').value = result_str;
+
+setFormDate()
+}
+
+
+function getAllWorkTimes(){
+
+total_time = document.getElementsByClassName("sum_time")[0];
+
+date = document.getElementsByClassName("date");
+
+working_time = document.getElementsByClassName("work_time");
+start_time = document.getElementsByClassName("start_time");
+end_time = document.getElementsByClassName("end_time");
+}
+
+function diff(start, end) {
+    start = start.split(":");
+    end = end.split(":");
+    var startDate = new Date(0, 0, 0, start[0], start[1], 0);
+    var endDate = new Date(0, 0, 0, end[0], end[1], 0);
+    var diff = endDate.getTime() - startDate.getTime();
+    var hours = Math.floor(diff / 1000 / 60 / 60);
+    diff -= hours * 1000 * 60 * 60;
+    var minutes = Math.floor(diff / 1000 / 60);
+
+    // If using time pickers with 24 hours format, add the below line get exact hours
+    if (hours < 0)
+       hours = hours + 24;
+
+    return (hours <= 9 ? "0" : "") + hours + ":" + (minutes <= 9 ? "0" : "") + minutes;
+}
+
+function sumAll(){
+    var result = "";
+    var sum_hour = 0;
+    var sum_minute = 0;
+
+    for (let i = 0; i < start_time.length; i++) {
+        var time = working_time[i].innerText;
+        sum_hour += time.split(":")[0] *  1;
+        sum_minute += time.split(":")[1] * 1;
+
+    }
+    sum_hour += Math.floor(sum_minute / 60);
+    sum_minute = sum_minute % 60;
+
+    result =  ("0" +  sum_hour).slice(-2) + ":" + ("0" + sum_minute).slice(-2);
+
+
+    total_time.innerText = result;
+}
+
+function CalculateAllWorkTime(){
+    for (let i = 0; i < start_time.length; i++) {
+        if(start_time[i].value == "" ||  end_time[i].value == ""){
+            working_time[i].innerText = '00:00';
+        }
+        else{
+        working_time[i].innerText = diff(start_time[i].value, end_time[i].value);
+        }
+    }
+    sumAll();
+}
+
+function addAllEvents(){
+    for (let i = 0; i < start_time.length; i++) {
+        start_time[i].addEventListener('change', CalculateAllWorkTime);
+        end_time[i].addEventListener('change', CalculateAllWorkTime);
+    }
+}
+function init(){
+    setDateInit();
+    getAllWorkTimes();
+    addAllEvents();
+
+    setFormDate()
+}
+
+
+window.addEventListener('DOMContentLoaded', init);
+
+
+
+
+
+
 
 
 
 </script>
 
-<div class="columns is-centered">
-    <div class="column is-10">
-        <div class="box">
+<form method="post" action="" role="form">
+    {% csrf_token %}
+
+    <div class="columns is-centered">
+        <div class="column is-10">
             <div class="columns is-centered">
-                <div class="column is-2">
-                    <h3 class="title">2021년 </h3>
+                <div class="column is-6">
+                    <div class="box">
+                        <h3 class="title is-3">총 예정 근무 </h3>
+                        <h1 class="title is-1"><p class="sum_time">00:00</p></h1>
+                    </div>
                 </div>
-                <div class="column is-1">
-                    <h3 class="title">
-                        3월
-                    </h3>
-                </div>
-                <div class="column is-4">
-                    <div class="buttons has-addons">
-                        <button class="button">
+
+            </div>
+        </div>
+    </div>
+
+    <div class="columns is-centered">
+        <div class="column is-10">
+
+            <div class="columns is-centered">
+                <div class="column is-6">
+                    <div class="box">
+                        <div class="buttons has-addons">
+                            <p class="button" onclick="setDateBefore()">
                             <span class="material-icons">
                                 arrow_back
                             </span>
-                        </button>
-                        <button class="button"><h3 class="title">3.21 ~ 3.27 </h3></button>
-                        <button class="button">
+                            </p>
+                            <p class="button">
+                                {{ forms.week_start_date }}
+                            </p>
+                            <p class="button" onclick="setDateAfter()">
                             <span class="material-icons">
                                 arrow_forward
                             </span>
-                        </button>
+                            </p>
+                        </div>
                     </div>
-                    <h3 class="title" id="dateTest">3.21 ~ 3.27 </h3>
-                    <button onclick="setDateTest()">test</button>
                 </div>
 
-                <div class="column is-3">
-
-                </div>
-                <div class="column is-2">
-                </div>
             </div>
-
-        </div>
-    </div>
-</div>
-</div>
-<div class="columns is-centered">
-    <div class="column is-10">
-        <div class="columns is-centered">
-            <div class="column is-6">
-                <div class="box">
-                    <h3 class="title is-3">총 예정 근무 </h3>
-                    <h1 class="title is-1">300 시간</h1>
-                </div>
-            </div>
-            <div class="column is-6">
-                <div class="box">
-                    <h3 class="title is-3">유급 휴가 </h3>
-                    <h1 class="title is-1">300 개</h1>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="columns is-centered">
-    <div class="column is-10">
-        <form method="post" action="" role="form">
-            {% csrf_token %}
-
             <div class="box">
 
                 <div class="columns is-centered">
-                    <div class="column is-4">
-                        <b>이번 주 근무 form TEST</b>
+                    <div class="column is-3 title is-3">
+                        <b>이번 주 근무</b>
                     </div>
-                    <div class="column is-8">
+                    <div class="column is-9">
                         <button type="submit" class="button is-info is-fullwidth">신청</button>
                     </div>
                 </div>
@@ -100,7 +202,7 @@ document.getElementById("dateTest").innerHTML = result_str;
             <div class="box">
                 <div class="columns is-centered">
                     <div class="column is-2">
-                        <p class='title is-5' class="date">3.21(일)</p>
+                        <p class='title is-5 date'>3.21(일)</p>
                     </div>
                     <div class="column is-7">
                         <div class="columns is-centered">
@@ -125,11 +227,10 @@ document.getElementById("dateTest").innerHTML = result_str;
 
                         <div class="columns is-centered">
                             <div class="column">
-                                <span class="tag is-primary is-medium">근무<p class="work_time">1</p>H</span>
+                                <span class="tag is-primary is-medium"><p>예정 근무 시간</p><p
+                                        class="work_time">00:00</p></span>
                             </div>
-                            <div class="column">
-                                <span class="tag is-light is-medium">식사<p class="meal_time">1</p>H</span>
-                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -137,7 +238,7 @@ document.getElementById("dateTest").innerHTML = result_str;
             <div class="box">
                 <div class="columns is-centered">
                     <div class="column is-2">
-                        <p class='title is-5' class="date">3.21(일)</p>
+                        <p class='title is-5 date'>3.21(일)</p>
                     </div>
                     <div class="column is-7">
                         <div class="columns is-centered">
@@ -162,11 +263,10 @@ document.getElementById("dateTest").innerHTML = result_str;
 
                         <div class="columns is-centered">
                             <div class="column">
-                                <span class="tag is-primary is-medium">근무<p class="work_time">1</p>H</span>
+                                <span class="tag is-primary is-medium"><p>예정 근무 시간</p><p
+                                        class="work_time">00:00</p></span>
                             </div>
-                            <div class="column">
-                                <span class="tag is-light is-medium">식사<p class="meal_time">1</p>H</span>
-                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -174,7 +274,7 @@ document.getElementById("dateTest").innerHTML = result_str;
             <div class="box">
                 <div class="columns is-centered">
                     <div class="column is-2">
-                        <p class='title is-5' class="date">3.21(일)</p>
+                        <p class='title is-5 date'>3.21(일)</p>
                     </div>
                     <div class="column is-7">
                         <div class="columns is-centered">
@@ -199,11 +299,10 @@ document.getElementById("dateTest").innerHTML = result_str;
 
                         <div class="columns is-centered">
                             <div class="column">
-                                <span class="tag is-primary is-medium">근무<p class="work_time">1</p>H</span>
+                                <span class="tag is-primary is-medium"><p>예정 근무 시간</p><p
+                                        class="work_time">00:00</p></span>
                             </div>
-                            <div class="column">
-                                <span class="tag is-light is-medium">식사<p class="meal_time">1</p>H</span>
-                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -211,7 +310,7 @@ document.getElementById("dateTest").innerHTML = result_str;
             <div class="box">
                 <div class="columns is-centered">
                     <div class="column is-2">
-                        <p class='title is-5' class="date">3.21(일)</p>
+                        <p class='title is-5 date'>3.21(일)</p>
                     </div>
                     <div class="column is-7">
                         <div class="columns is-centered">
@@ -236,11 +335,10 @@ document.getElementById("dateTest").innerHTML = result_str;
 
                         <div class="columns is-centered">
                             <div class="column">
-                                <span class="tag is-primary is-medium">근무<p class="work_time">1</p>H</span>
+                                <span class="tag is-primary is-medium"><p>예정 근무 시간</p><p
+                                        class="work_time">00:00</p></span>
                             </div>
-                            <div class="column">
-                                <span class="tag is-light is-medium">식사<p class="meal_time">1</p>H</span>
-                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -248,7 +346,7 @@ document.getElementById("dateTest").innerHTML = result_str;
             <div class="box">
                 <div class="columns is-centered">
                     <div class="column is-2">
-                        <p class='title is-5' class="date">3.21(일)</p>
+                        <p class='title is-5 date'>3.21(일)</p>
                     </div>
                     <div class="column is-7">
                         <div class="columns is-centered">
@@ -273,11 +371,10 @@ document.getElementById("dateTest").innerHTML = result_str;
 
                         <div class="columns is-centered">
                             <div class="column">
-                                <span class="tag is-primary is-medium">근무<p class="work_time">1</p>H</span>
+                                <span class="tag is-primary is-medium"><p>예정 근무 시간</p><p
+                                        class="work_time">00:00</p></span>
                             </div>
-                            <div class="column">
-                                <span class="tag is-light is-medium">식사<p class="meal_time">1</p>H</span>
-                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -285,7 +382,7 @@ document.getElementById("dateTest").innerHTML = result_str;
             <div class="box">
                 <div class="columns is-centered">
                     <div class="column is-2">
-                        <p class='title is-5' class="date">3.21(일)</p>
+                        <p class='title is-5 date'>3.21(일)</p>
                     </div>
                     <div class="column is-7">
                         <div class="columns is-centered">
@@ -310,11 +407,10 @@ document.getElementById("dateTest").innerHTML = result_str;
 
                         <div class="columns is-centered">
                             <div class="column">
-                                <span class="tag is-primary is-medium">근무<p class="work_time">1</p>H</span>
+                                <span class="tag is-primary is-medium"><p>예정 근무 시간</p><p
+                                        class="work_time">00:00</p></span>
                             </div>
-                            <div class="column">
-                                <span class="tag is-light is-medium">식사<p class="meal_time">1</p>H</span>
-                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -322,7 +418,7 @@ document.getElementById("dateTest").innerHTML = result_str;
             <div class="box">
                 <div class="columns is-centered">
                     <div class="column is-2">
-                        <p class='title is-5' class="date">3.21(일)</p>
+                        <p class='title is-5 date'>3.21(일)</p>
                     </div>
                     <div class="column is-7">
                         <div class="columns is-centered">
@@ -347,19 +443,20 @@ document.getElementById("dateTest").innerHTML = result_str;
 
                         <div class="columns is-centered">
                             <div class="column">
-                                <span class="tag is-primary is-medium">근무<p class="work_time">1</p>H</span>
+                                <span class="tag is-primary is-medium"><p>예정 근무 시간</p><p
+                                        class="work_time">00:00</p></span>
                             </div>
-                            <div class="column">
-                                <span class="tag is-light is-medium">식사<p class="meal_time">1</p>H</span>
-                            </div>
+
                         </div>
                     </div>
                 </div>
             </div>
-
-        </form>
-
+        </div>
     </div>
+
+</form>
+
+</div>
 </div>
 
 {% endblock %}

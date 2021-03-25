@@ -9,14 +9,18 @@ class Schedule(models.Model):
     # 근무, 휴가 ,(추가사항) 외근, ...
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     date = models.DateField()
-    start = models.TimeField()
-    end = models.TimeField()
+    start = models.TimeField(null=True)
+    end = models.TimeField(null=True)
     work_type = models.IntegerField(choices=WORK_TYPES)
 
     def __str__(self):
         user_profile = Profile.objects.get(user=self.user)
-        return user_profile.team.name + " - " + user_profile.name + " | " + self.start.strftime(
-            "%H:%M") + " : " + self.end.strftime("%H:%M")
+        result = user_profile.name + " | " + self.date.strftime("%Y-%m-%d")
+        if self.start is not None and self.end is not None:
+            result += (" | " + self.start.strftime("%H:%M") + " : " + self.end.strftime("%H:%M"))
+        else:
+            result += " | "  + self.WORK_TYPES[self.work_type][1]
+        return result
 
 
 class ScheduleApproved(models.Model):
@@ -24,4 +28,4 @@ class ScheduleApproved(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     week_start_date = models.DateField()
-    approved_type = models.IntegerField(choices=APPROVED_TYPES)
+    approved_type = models.IntegerField(choices=APPROVED_TYPES, default=1)
