@@ -68,9 +68,16 @@
                         <a href="{% url 'manage_detail' team_member.pk %}" class="button is-primary is-light">Manage</a>
                     </div>
                     <figure class="media-right">
-                        <p class="image is-64x64">
-                            <img src="https://bulma.io/images/placeholders/128x128.png">
-                        </p>
+
+                        <figure class="image is-64x64">
+                            <img src="
+                            {% if team_member.picture %}
+                            {{ team_member.picture.url }}
+                            {% else %}
+                            https://bulma.io/images/placeholders/64x64.png
+                            {% endif %}">
+                        </figure>
+
                     </figure>
                 </article>
             </div>

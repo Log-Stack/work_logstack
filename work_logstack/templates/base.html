@@ -51,9 +51,39 @@
                     </div>
                 </div>
 
-                <a class="navbar-item">
-                    Work Log
-                </a>
+                <div class="navbar-item has-dropdown is-hoverable">
+                    <a class="navbar-link">
+                        Work Log
+                    </a>
+
+                    <div class="navbar-dropdown">
+                        <a class="navbar-item" href="{% url 'work_log_write' %}">
+                            Work Log Write
+                        </a>
+                        <a class="navbar-item" href="{% url 'work_log_list' %}">
+                            Work Log List
+                        </a>
+                    </div>
+                </div>
+
+                <div class="navbar-item has-dropdown is-hoverable">
+                    <a class="navbar-link">
+                        Work Hour
+                    </a>
+
+                    <div class="navbar-dropdown">
+                        <a class="navbar-item" href="{% url 'work_hour_check' %}">
+                            Work Hour Check
+                        </a>
+                        <hr class="navbar-divider">
+                        <a class="navbar-item" href="{% url 'start_working' %}">
+                            Start Working
+                        </a>
+                        <a class="navbar-item" href="{% url 'end_working' %}">
+                            End Working
+                        </a>
+                    </div>
+                </div>
 
                 <div class="navbar-item has-dropdown is-hoverable">
                     <a class="navbar-link">
@@ -75,7 +105,7 @@
                         <a class="navbar-item" href="{% url 'createuser' %}">
                             Create Staff Account
                         </a>
-                        <a class="navbar-item">
+                        <a class="navbar-item" href="{% url 'manage_list' %}">
                             Manage Staff
                         </a>
                         {% endif %}
@@ -99,6 +129,7 @@
                         <div style="margin-right:20px;">
                             <strong>{{ request.user }}님 안녕하세요</strong>
                         </div>
+
                         <a class="button is-primary" href="{% url 'profile' %}">
                             <strong>My Profile</strong>
                         </a>

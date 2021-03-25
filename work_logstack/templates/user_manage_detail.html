@@ -52,7 +52,12 @@
                 </div>
                 <div class="media-right">
                     <figure class="image is-128x128">
-                        <img src="https://bulma.io/images/placeholders/96x96.png" alt="Placeholder image">
+                        <img src="
+                        {% if member.picture %}
+                        {{ member.picture.url }}
+                        {% else %}
+                        https://bulma.io/images/placeholders/128x128.png
+                        {% endif %}">
                     </figure>
                 </div>
             </div>
@@ -185,5 +190,6 @@
             </div>
         </div>
     {% endfor %}
+
 </div>
 {% endblock %}

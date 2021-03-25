@@ -15,18 +15,31 @@ from django.core.paginator import Paginator
 @login_required
 def start_working(request):
     user = request.user
-    work_hour = WorkHour(user=user)
-    work_hour.save()
-    return redirect('index')
+    already_work_hour = WorkHour.objects.filter(user=user).filter(date=timezone.now().date()).exists()
+    if not already_work_hour:
+        work_hour = WorkHour(user=user)
+        work_hour.save()
+    return redirect('work_hour_check')
 
 
 @login_required
 def end_working(request):
     user = request.user
     work_hour = WorkHour.objects.filter(user=user).filter(date=timezone.now().date()).first()
-    work_hour.end_time = timezone.now()
-    work_hour.save()
-    return redirect('work_log_write')
+    if work_hour:
+        work_hour.end_time = timezone.now()
+        work_hour.save()
+    return redirect('work_hour_check')
+
+
+@login_required
+def work_hour_check(request):
+    user = request.user
+    work_hour = WorkHour.objects.filter(user=user).filter(date=timezone.now().date()).first()
+    context = {
+        'work_hour': work_hour
+    }
+    return render(request, 'work_hour_check.html', context)
 
 
 @login_required
@@ -64,6 +77,9 @@ def work_log_write(request):
             work_log.save()
             return redirect('work_log_detail', pk=work_log.pk)
     else:
+        work_log = WorkLog.objects.filter(user=request.user).filter(create_time__date=timezone.now().date()).first()
+        if work_log:
+            return redirect('work_log_detail', pk=work_log.pk)
         form = WorkLogForm()
     return render(request, 'work_log_write.html', {'form': form})
 
