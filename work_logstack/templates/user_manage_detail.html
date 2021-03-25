@@ -72,13 +72,16 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="column is-1">
+                            <div class="column">
                                 <div class="field">
                                     <label class="label">수정</label>
                                     <div class="control">
                                         <button type="submit" class="button is-primary">Edit</button>
                                     </div>
                                 </div>
+                            </div>
+                            <div class="column is-2">
+                                <a href="{% url 'manage_list' %}" class="button is-primary is-light">Go To Manage List</a>
                             </div>
                         </div>
                     </form>
@@ -142,39 +145,45 @@
         </div>
     </div>
 
-    <div class="box">
-        <div class="columns is-mobile">
-            <div class="column is-3">
-                <b>Date</b>
-            </div>
-            <div class="column">
-                <b>Start Time</b>
-            </div>
-            <div class="column">
-                <b>End Time</b>
-            </div>
-            <div class="column is-1">
+    {% if work_hours %}
+        <div class="box">
+            <div class="columns is-mobile">
+                <div class="column is-3">
+                    <b>Date</b>
+                </div>
+                <div class="column">
+                    <b>Start Time</b>
+                </div>
+                <div class="column">
+                    <b>End Time</b>
+                </div>
+                <div class="column is-1">
+                </div>
             </div>
         </div>
-    </div>
+    {% else %}
+        <div class="box">
+            <p class="has-text-centered"><strong>출퇴근 기록이 없습니다.</strong></p>
+        </div>
+    {% endif %}
 
     {% for work_hour in work_hours %}
-    <div class="box">
-        <div class="columns is-mobile">
-            <div class="column is-3">
-                <p>{{ work_hour.date }}</p>
-            </div>
-            <div class="column">
-                <input class="input" type="time" value="{{ work_hour.start_time|date:'H:i' }}">
-            </div>
-            <div class="column">
-                <input class="input" type="time" value="{{ work_hour.end_time|date:'H:i' }}">
-            </div>
-            <div class="column is-1">
-                <button class="button is-primary">Edit</button>
+        <div class="box">
+            <div class="columns is-mobile">
+                <div class="column is-3">
+                    <p>{{ work_hour.date }}</p>
+                </div>
+                <div class="column">
+                    <p>{{ work_hour.start_time|date:'A h:i' }}</p>
+                </div>
+                <div class="column">
+                    <p>{{ work_hour.end_time|date:'A h:i' }}</p>
+                </div>
+                <div class="column is-1">
+                    <a href="{% url 'work_hour_edit' work_hour.pk %}" class="button is-primary">Edit</a>
+                </div>
             </div>
         </div>
-    </div>
     {% endfor %}
 </div>
 {% endblock %}

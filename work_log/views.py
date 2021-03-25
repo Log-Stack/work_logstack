@@ -7,7 +7,7 @@ import datetime
 from django.contrib.auth.models import User
 
 from .models import WorkHour, WorkLog
-from .forms import WorkLogForm
+from .forms import WorkLogForm, WorkHourForm
 from authy.models import Team, TeamManager, Profile, Position
 
 
@@ -26,6 +26,31 @@ def end_working(request):
     work_hour.end_time = timezone.now()
     work_hour.save()
     return redirect('work_log_write')
+
+
+@login_required
+def work_hour_edit(request, pk):
+    user = request.user
+    profile = Profile.objects.get(user=user)
+    team_manager = TeamManager.objects.filter(team=profile.team).filter(user=user).exists()
+    if team_manager:
+        work_hour = get_object_or_404(WorkHour, pk=pk)
+        member = Profile.objects.get(user=work_hour.user)
+        if request.method == "POST":
+            form = WorkHourForm(request.POST, instance=work_hour)
+            if form.is_valid():
+                form.save()
+                return redirect('work_hour_edit', pk)
+        else:
+            form = WorkHourForm(instance=work_hour)
+
+        context = {
+            'form': form,
+            'work_hour': work_hour,
+            'member': member,
+        }
+        return render(request, 'work_hour_edit.html', context)
+    return redirect('index')
 
 
 @login_required

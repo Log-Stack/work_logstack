@@ -35,15 +35,18 @@
                         <time datetime="{{ work_log.update_time }}">Update Time: {{ work_log.update_time }}</time>
                     {% endif %}
                 </div>
-                {% if work_log.user == request.user %}
-                    <div class="content">
-                        <div class="field is-grouped">
-                            <div class="control">
-                                <a href="{% url 'work_log_edit' work_log.pk %}" class="button is-primary">Edit</a>
-                            </div>
+                <div class="content">
+                    <div class="field is-grouped">
+                    {% if work_log.user == request.user %}
+                        <div class="control">
+                            <a href="{% url 'work_log_edit' work_log.pk %}" class="button is-primary">Edit</a>
+                        </div>
+                    {% endif %}
+                        <div class="control">
+                            <a href="{% url 'work_log_list' %}" class="button is-primary is-light">Go To Work Log List</a>
                         </div>
                     </div>
-                {% endif %}
+                </div>
             </div>
         </div>
     </div>
