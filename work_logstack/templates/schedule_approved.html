@@ -9,10 +9,55 @@
 var date = document.getElementsByClassName('date')
 var week = ['일', '월', '화', '수', '목', '금', '토'];
 
+var work_types = ['휴일', '근무', '휴가'];
+var approved_types = ['','대기중', '승인', '반려'];
+
 var selected_date = '{{selected_date}}'
 var team_name = '{{ team }}'
 var team_id = {{ team_id }}
 
+
+
+
+
+function setUserInit(){
+var date_list = []
+var d = new Date(document.getElementById('week_start_date').value);
+d.setDate(d.getDate());
+result_str = d.getFullYear() + "-" +("0" +  (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+$.ajax({
+			type: 'GET',
+			url: 'list/' + team_id + '/' + d.getFullYear() + '/' + (d.getMonth() + 1) + '/' + ('0' + d.getDate()).slice(-2),
+			dataType: 'json',
+
+			success: function(data){
+			var result = "";
+                document.getElementsByClassName("user_list")[0].innerHTML = "";
+                for(let i = 0;i<data.length;i++){
+                result = setBoxHtml(data[i].name, data[i].date, data[i].approved);
+
+                var temp = document.createElement("div");
+                temp.innerHTML = result;
+
+                document.getElementsByClassName("user_list")[0].appendChild(temp);
+                }
+	        }
+        })
+}
+
+
+function setUserApproved(type, user){
+var d = new Date(document.getElementById('week_start_date').value);
+$.ajax({
+			type: 'GET',
+			url: user + '/' + d.getFullYear() + '/' + (d.getMonth() + 1) + '/' + ('0' + d.getDate()).slice(-2) + '/' + type,
+			dataType: 'json',
+
+			success: function(data){
+			setUserInit();
+        }
+        });
+}
 
 function setFormDate(){
 var d = new Date(document.getElementById('week_start_date').value);
@@ -20,6 +65,7 @@ var d = new Date(document.getElementById('week_start_date').value);
         date[i].innerText = (d.getMonth() + 1) + "." + d.getDate() + " (" + week[d.getDay()] + ")";
         d.setDate(d.getDate() + 1);
     }
+    setUserInit()
 }
 
 function setDateInit(){
@@ -56,128 +102,63 @@ setFormDate()
 }
 
 
-function setUserInit(){
-var date_list = []
-var d = new Date(document.getElementById('week_start_date').value);
-d.setDate(d.getDate() + 7);
-result_str = d.getFullYear() + "-" +("0" +  (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
-$.ajax({
-			type: 'GET',
-			url: '/authy/byteam/' + team_id,
-			dataType: 'json',
-
-			success: function(data){
-
-                for(let i = 0;i<data.length;i++){
-                var temp = document.createElement("option");
 
 
-                temp.value = data[i].user_id
-                temp.text = data[i].name
-                }
-	        }
-        })
-}
-
-function test(){
- var test = document.getElementsByClassName('test')[0];
- test.innerHTML = '<div class="box">\
-            <div class="columns is-centered  is-vcentered ">\
-                <div class="column is-2">\
-                    <h3 class="title">권진호 </h3>\
-                </div>\
-                <div class="column is-1">\
-                    <p>-</p>\
-                    <p></p>\
-                    <p></p>\
-                </div>\
-                <div class="column is-1">\
-                    <p>휴가</p>\
-                    <p></p>\
-                    <p></p>\
-                </div>\
-                <div class="column is-1">\
-                    <p>근무</p>\
-                    <p>10:00</p>\
-                    <p>20:00</p>\
-                </div>\
-                <div class="column is-1">\
-                    <p>근무</p>\
-                    <p>10:00</p>\
-                    <p>20:00</p>\
-                </div>\
-                <div class="column is-1">\
-                    <p>근무</p>\
-                    <p>10:00</p>\
-                    <p>20:00</p>\
-                </div>\
-                <div class="column is-1">\
-                    <p>근무</p>\
-                    <p>10:00</p>\
-                    <p>20:00</p>\
-                </div>\
-                <div class="column is-1">\
-                    <p>-</p>\
-                    <p></p>\
-                    <p></p>\
-                </div>\
-                <div class="column is-3">\
-                            <button class="button is-info is-fullwidth">대기중</button>\
-                    <div class="columns is-centered">\
-                        <div class="column">\
-                            <button class="button is-success is-fullwidth">승인</button>\
-                        </div>\
-                        <div class="column">\
-                            <button class="button is-danger is-fullwidth">반려</button>\
-                        </div>\
-                    </div>\
-                </div>\
-            </div>\
-        </div>'.trim();
-}
 
 function getUserList(){
 
 }
 
 function setBoxHtml(name, work_list, approved){
- var result_html = ""
- result_html += '<div class="box">\
-            <div class="columns is-centered  is-vcentered ">\
-                <div class="column is-2">\
+    var result_html = ""
+    result_html += '<div class="box">\
+                    <div class="columns is-centered  is-vcentered ">\
+                    <div class="column is-2">\
                     <h3 class="title">' + name +  '</h3>\
-                </div>'.trim();
-   for(let i=0;i<7;i++){
-                result_html += '<div class="column is-1">\
-                    <p>' + work_list[i].work_type + '</p>\
-                    <p>' + work_list[i].start + '</p>\
-                    <p>' + work_list[i].end + '</p>\
-                </div>'.trim();
+                    </div>'.trim();
+    if(work_list.length == 0){
+        result_html += '<div class="column is-10 title">\
+                        <p>' + "근무 일정이 없습니다" + '</p>\
+                        </div>'.trim();
     }
-               result_html +=  '<div class="column is-3">\
-                            <button class="button is-info is-fullwidth">' + 대기중 + '</button>\
-                    <div class="columns is-centered">\
+    else{
+        for(let i=0;i<7;i++){
+            result_html += '<div class="column is-1">\
+                            <p>' + work_types[work_list[i].work_type] + '</p>\
+                            <p>' + work_list[i].start + '</p>\
+                            <p>' + work_list[i].end + '</p>\
+                            </div>'.trim();
+        }
+        result_html +=  '<div class="column is-3">\
+                        <button class="button is-info is-fullwidth">' + approved_types[approved] + '</button>\
+                        <div class="columns is-centered">\
                         <div class="column">\
-                            <button class="button is-success is-fullwidth">승인</button>\
+                        <button class="button is-success is-fullwidth" onclick="setUserApproved(2, \'' + name + '\')">승인</button>\
                         </div>\
                         <div class="column">\
-                            <button class="button is-danger is-fullwidth">반려</button>\
+                        <button class="button is-danger is-fullwidth" onclick="setUserApproved(3, \'' + name + '\')">반려</button>\
                         </div>\
-                    </div>\
-                </div>\
-            </div>\
-        </div>'.trim();
+                        </div>\
+                        </div>\
+                        </div>\
+                        </div>'.trim();
+
+    }
+    return result_html;
 }
 function init(){
-    setUserInit();
     setDateInit();
-    addAllEvents();
+
+    setUserInit();
 
     setFormDate()
+
 }
 
 
 window.addEventListener('DOMContentLoaded', init);
+
+
 
 
 </script>
@@ -218,7 +199,7 @@ window.addEventListener('DOMContentLoaded', init);
 </div>
 </div>
 <div class="columns is-centered">
-    <div class="column is-10 test">
+    <div class="column is-10">
         <div class="box">
 
             <div class="columns is-centered">
@@ -254,179 +235,7 @@ window.addEventListener('DOMContentLoaded', init);
                 </div>
             </div>
         </div>
-        <div class="box">
-            <div class="columns is-centered  is-vcentered ">
-                <div class="column is-2">
-                    <h3 class="title">권진호 </h3>
-                </div>
-                <div class="column is-1">
-                    <p>-</p>
-                    <p></p>
-                    <p></p>
-                </div>
-                <div class="column is-1">
-                    <p>휴가</p>
-                    <p></p>
-                    <p></p>
-                </div>
-                <div class="column is-1">
-                    <p>근무</p>
-                    <p>10:00</p>
-                    <p>20:00</p>
-                </div>
-                <div class="column is-1">
-                    <p>근무</p>
-                    <p>10:00</p>
-                    <p>20:00</p>
-                </div>
-                <div class="column is-1">
-                    <p>근무</p>
-                    <p>10:00</p>
-                    <p>20:00</p>
-                </div>
-                <div class="column is-1">
-                    <p>근무</p>
-                    <p>10:00</p>
-                    <p>20:00</p>
-                </div>
-                <div class="column is-1">
-                    <p>-</p>
-                    <p></p>
-                    <p></p>
-                </div>
-                <div class="column is-3">
-
-                    <button class="button is-info is-fullwidth">대기중</button>
-                    <div class="columns is-centered">
-                        <div class="column">
-                            <button class="button is-success is-fullwidth">승인</button>
-                        </div>
-                        <div class="column">
-                            <button class="button is-danger is-fullwidth">반려</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="box">
-            <div class="columns is-centered  is-vcentered ">
-                <div class="column is-2">
-                    <h3 class="title">황유진 </h3>
-                </div>
-                <div class="column is-1">
-                    <p>-</p>
-                    <p></p>
-                    <p></p>
-                </div>
-                <div class="column is-1">
-                    <p>휴가</p>
-                    <p></p>
-                    <p></p>
-                </div>
-                <div class="column is-1">
-                    <p>근무</p>
-                    <p>10:00</p>
-                    <p>20:00</p>
-                </div>
-                <div class="column is-1">
-                    <p>근무</p>
-                    <p>10:00</p>
-                    <p>20:00</p>
-                </div>
-                <div class="column is-1">
-                    <p>근무</p>
-                    <p>10:00</p>
-                    <p>20:00</p>
-                </div>
-                <div class="column is-1">
-                    <p>근무</p>
-                    <p>10:00</p>
-                    <p>20:00</p>
-                </div>
-                <div class="column is-1">
-                    <p>-</p>
-                    <p></p>
-                    <p></p>
-                </div>
-                <div class="column is-3">
-
-                    <div class="columns is-centered">
-                        <div class="column">
-                            <button class="button is-success is-fullwidth">승인</button>
-                        </div>
-                        <div class="column">
-                            <button class="button is-danger is-fullwidth">반려</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="box">
-            <div class="columns is-centered  is-vcentered ">
-                <div class="column is-2">
-                    <h3 class="title">윤명훈 </h3>
-                </div>
-                <div class="column is-1">
-                    <p>-</p>
-                    <p></p>
-                    <p></p>
-                </div>
-                <div class="column is-1">
-                    <p>휴가</p>
-                    <p></p>
-                    <p></p>
-                </div>
-                <div class="column is-1">
-                    <p>근무</p>
-                    <p>10:00</p>
-                    <p>20:00</p>
-                </div>
-                <div class="column is-1">
-                    <p>근무</p>
-                    <p>10:00</p>
-                    <p>20:00</p>
-                </div>
-                <div class="column is-1">
-                    <p>근무</p>
-                    <p>10:00</p>
-                    <p>20:00</p>
-                </div>
-                <div class="column is-1">
-                    <p>근무</p>
-                    <p>10:00</p>
-                    <p>20:00</p>
-                </div>
-                <div class="column is-1">
-                    <p>-</p>
-                    <p></p>
-                    <p></p>
-                </div>
-                <div class="column is-3">
-
-                    <div class="columns is-centered">
-                        <div class="column">
-                            <button class="button is-success is-fullwidth">승인</button>
-                        </div>
-                        <div class="column">
-                            <button class="button is-danger is-fullwidth">반려</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="box">
-            <div class="columns is-centered  is-vcentered ">
-                <div class="column is-2">
-                    <h3 class="title">권진호_2 </h3>
-                </div>
-                <div class="column is-10">
-                    <h3 class="subtitle">예정 근무를 작성하지 않았습니다 </h3>
-                </div>
-
-            </div>
-        </div>
+        <div class="user_list"></div>
     </div>
 </div>
 

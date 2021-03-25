@@ -6,7 +6,7 @@ from django.shortcuts import redirect
 from django.template import loader
 
 from django.contrib.auth.models import User
-from authy.models import Profile, TeamManager
+from authy.models import Profile, TeamManager, Team
 from .forms import NewScheduleForm
 from .models import Schedule, ScheduleApproved
 
@@ -42,6 +42,60 @@ def approved(request):
 
 
 @login_required
+def approved_list(request, team_id, year, month, day):
+    result = []
+
+    team = Team.objects.get(id=team_id)
+
+    profiles = Profile.objects.filter(team=team)
+    approved_type = ""
+    for profile in list(profiles):
+        exist = False
+        result_user = []
+        user = profile.user
+        approved = ScheduleApproved.objects.filter(user=user, week_start_date__year=year, week_start_date__month=month,
+                                                   week_start_date__day=day)
+        if approved.exists():
+            approved_type = ScheduleApproved.objects.get(user=user, week_start_date__year=year,
+                                                         week_start_date__month=month,
+                                                         week_start_date__day=day).approved_type
+            exist = True
+            for index in range(7):
+                schedule = Schedule.objects.get(user=user, date__year=year, date__month=month, date__day=day)
+                start = schedule.start
+                end = schedule.end
+                if start is not None and end is not None:
+                    start = str(start.strftime("%H:%M"))
+                    end = str(end.strftime("%H:%M"))
+                else:
+                    start = "00:00"
+                    end = "00:00"
+                work_type = schedule.work_type
+                result_user.append(
+                    {'start': start, 'end': end, 'work_type': work_type})
+        else:
+            approved_type = -1
+        result.append({'name': str(user.username), 'exist': exist, 'approved': approved_type,
+                       "date": result_user})
+    return JsonResponse(result, safe=False)
+
+
+@login_required
+def approved_user(request, user, year, month, day, type):
+    user = User.objects.get(username=user)
+    approved = ScheduleApproved.objects.filter(user=user, week_start_date__year=year, week_start_date__month=month,
+                                               week_start_date__day=day)
+    if approved.exists():
+        approved = ScheduleApproved.objects.get(user=user, week_start_date__year=year,
+                                                week_start_date__month=month,
+                                                week_start_date__day=day)
+        approved.approved_type = type
+        approved.save()
+
+    return JsonResponse("complete", safe=False)
+
+
+@login_required
 def register_index(request):
     user = User.objects.get(username=request.user)
     work_types = []
@@ -51,7 +105,8 @@ def register_index(request):
         form = NewScheduleForm(request.POST)
         if form.is_valid():
             week_start_date = form.cleaned_data.get('week_start_date')
-            approved, is_approved = ScheduleApproved.objects.get_or_create(user=user, week_start_date=week_start_date)
+            approved, is_approved = ScheduleApproved.objects.get_or_create(user=user,
+                                                                           week_start_date=week_start_date)
 
             work_types.append(form.cleaned_data.get('sun_work_type'))
             start_times.append(form.cleaned_data.get('sun_start'))
@@ -128,7 +183,8 @@ def register_index(request):
 def schedule_list_user(request, user_id, year, month):
     user = User.objects.get(id=user_id)
     schedule = Schedule.objects.filter(user=user, date__year=year, date__month=month).order_by('user')
-    schedule = schedule | Schedule.objects.filter(user=user, date__year=year, date__month=str(int(month) + 1)).order_by(
+    schedule = schedule | Schedule.objects.filter(user=user, date__year=year,
+                                                  date__month=str(int(month) + 1)).order_by(
         'user')
     user_profile = Profile.objects.get(user=user)
     schedule_list = list(schedule)
@@ -156,7 +212,8 @@ def schedule_list_team(request, team_id, year, month):
     users = Profile.objects.filter(team=team_id)
     for user in users:
         print(user.name)
-        schedule = Schedule.objects.filter(user=user.user_id, date__year=year, date__month=month).order_by('user_id')
+        schedule = Schedule.objects.filter(user=user.user_id, date__year=year, date__month=month).order_by(
+            'user_id')
         schedule = schedule | Schedule.objects.filter(user=user.user_id, date__year=year,
                                                       date__month=str(int(month) + 1)).order_by('user_id')
         for item in list(schedule):
@@ -170,5 +227,6 @@ def schedule_list_team(request, team_id, year, month):
                 end = "00:00"
             work_type = item.work_type
             result.append(
-                {'name': name, 'date': date, 'start': start, 'end': end, 'work_type': work_type, 'color': user.id % 5})
+                {'name': name, 'date': date, 'start': start, 'end': end, 'work_type': work_type,
+                 'color': user.id % 5})
     return JsonResponse(result, safe=False)
