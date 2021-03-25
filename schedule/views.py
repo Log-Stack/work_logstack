@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, JsonResponse
@@ -8,7 +8,7 @@ from django.template import loader
 from django.contrib.auth.models import User
 from authy.models import Profile
 from .forms import NewScheduleForm
-from .models import Schedule
+from .models import Schedule, ScheduleApproved
 
 
 @login_required
@@ -39,51 +39,65 @@ def approved(request):
 
 @login_required
 def register_index(request):
+    user = User.objects.get(username=request.user)
+    work_types = []
+    start_times = []
+    end_times = []
     if request.method == 'POST':
         form = NewScheduleForm(request.POST)
-        print(request.POST)
-        print(form.errors)
         if form.is_valid():
-            print('form valid pass')
-
             week_start_date = form.cleaned_data.get('week_start_date')
+            approved, is_approved = ScheduleApproved.objects.get_or_create(user=user, week_start_date=week_start_date)
+            # schedule = Schedule.objects.get_or_create()
+            work_types.append(form.cleaned_data.get('sun_work_type'))
+            start_times.append(form.cleaned_data.get('sun_start'))
+            end_times.append(form.cleaned_data.get('sun_end'))
 
-            sun_work_type = form.cleaned_data.get('sun_work_type')
-            sun_start = form.cleaned_data.get('sun_start')
-            sun_end = form.cleaned_data.get('sun_end')
+            work_types.append(form.cleaned_data.get('mon_work_type'))
+            start_times.append(form.cleaned_data.get('mon_start'))
+            end_times.append(form.cleaned_data.get('mon_end'))
 
-            mon_work_type = form.cleaned_data.get('mon_work_type')
-            mon_start = form.cleaned_data.get('mon_start')
-            mon_end = form.cleaned_data.get('mon_end')
+            work_types.append(form.cleaned_data.get('tue_work_type'))
+            start_times.append(form.cleaned_data.get('tue_start'))
+            end_times.append(form.cleaned_data.get('tue_end'))
 
-            tue_work_type = form.cleaned_data.get('tue_work_type')
-            tue_start = form.cleaned_data.get('tue_start')
-            tue_end = form.cleaned_data.get('tue_end')
+            work_types.append(form.cleaned_data.get('wed_work_type'))
+            start_times.append(form.cleaned_data.get('wed_start'))
+            end_times.append(form.cleaned_data.get('wed_end'))
 
-            wed_work_type = form.cleaned_data.get('wed_work_type')
-            wed_start = form.cleaned_data.get('wed_start')
-            wed_end = form.cleaned_data.get('wed_end')
+            work_types.append(form.cleaned_data.get('thu_work_type'))
+            start_times.append(form.cleaned_data.get('thu_start'))
+            end_times.append(form.cleaned_data.get('thu_end'))
 
-            thu_work_type = form.cleaned_data.get('thu_work_type')
-            thu_start = form.cleaned_data.get('thu_start')
-            thu_end = form.cleaned_data.get('thu_end')
+            work_types.append(form.cleaned_data.get('fri_work_type'))
+            start_times.append(form.cleaned_data.get('fri_start'))
+            end_times.append(form.cleaned_data.get('fri_end'))
 
-            fri_work_type = form.cleaned_data.get('fri_work_type')
-            fri_start = form.cleaned_data.get('fri_start')
-            fri_end = form.cleaned_data.get('fri_end')
+            work_types.append(form.cleaned_data.get('sat_work_type'))
+            start_times.append(form.cleaned_data.get('sat_start'))
+            end_times.append(form.cleaned_data.get('sat_end'))
 
-            sat_work_type = form.cleaned_data.get('sat_work_type')
-            sat_start = form.cleaned_data.get('sat_start')
-            sat_end = form.cleaned_data.get('sat_end')
+            if is_approved:  # do create
+                for type_local, start_local, end_local in zip(work_types, start_times, end_times):
+                    schedule = Schedule.objects.create(user=user, date=week_start_date, start=start_local,
+                                                       end=end_local, work_type=type_local)
+                    week_start_date += timedelta(days=1)
+            else:  # do update
+                approved.approved_type = ScheduleApproved.APPROVED_TYPES[0][0]
+                approved.save()
+                for type_local, start_local, end_local in zip(work_types, start_times, end_times):
+                    schedule = Schedule.objects.get(user=user, date=week_start_date)
+                    schedule.work_type = type_local
+                    schedule.start = start_local
+                    schedule.end = end_local
+                    schedule.save()
+                    week_start_date += timedelta(days=1)
 
-            print(week_start_date)
-
-            return redirect('schedule-register')
+            return redirect('schedule-index')
     else:
         user = request.user
 
         selected_date = datetime.today().strftime("%Y-%m-%d")
-
 
         template = loader.get_template('schedule_register.html')
         form = NewScheduleForm()
