@@ -19,9 +19,10 @@ class UserCreateForm(forms.ModelForm):
 
 
 class ProfileForm(forms.ModelForm):
+    picture = forms.ImageField(required=False)
     class Meta:
         model = Profile
-        fields = ['name', 'birth_day', 'phone_number', 'email_address']
+        fields = ['picture', 'name', 'birth_day', 'phone_number', 'email_address']
 
 
 class ForbiddenUsers(object):

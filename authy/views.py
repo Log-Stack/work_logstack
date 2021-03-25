@@ -113,7 +113,7 @@ def EditProfileView(request):
     #print(profile.birth_day)2021-03-12
 
     if request.method == 'POST':
-        form = ProfileForm(request.POST, instance=profile)
+        form = ProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
             obj = form.save(commit=False)
             obj.user = request.user
@@ -179,7 +179,7 @@ def UserSearchView(request):
         users_paginator = paginator.get_page(page_number)
 
         context = {
-            'users': users_paginator
+            'users': users_paginator,
         }
     template = loader.get_template('user_search.html')
 

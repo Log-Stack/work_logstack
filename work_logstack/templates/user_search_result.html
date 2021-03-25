@@ -58,9 +58,10 @@
               <div class="card-content">
                 <div class="media">
                   <div class="media-left">
-                    <figure class="image is-96x96">
-                      <img src="https://bulma.io/images/placeholders/96x96.png" alt="Placeholder image">
-                    </figure>
+                <figure class="image is-128x128">
+                  <img src="{% if profile.picture %}
+          {{ profile.picture.url }} {% else %} https://bulma.io/images/placeholders/128x128.png {% endif %}">
+                 </figure>
                   </div>
                   <div class="media-content">
                     <p class="title is-4">{{ profile.user }}</p>

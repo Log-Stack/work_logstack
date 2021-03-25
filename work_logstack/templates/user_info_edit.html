@@ -22,9 +22,12 @@
           <div class="card-content">
             <div class="media">
               <div class="media-left">
+
                 <figure class="image is-128x128">
-                  <img src="https://bulma.io/images/placeholders/96x96.png" alt="Placeholder image">
-                </figure>
+                  <img src="{% if profile.picture %}
+          {{ profile.picture.url }} {% else %} https://bulma.io/images/placeholders/128x128.png {% endif %}">
+    </figure>
+
               </div>
               <div class="media-content">
                 <p class="title is-4">{{ id }}</p>
@@ -39,8 +42,14 @@
         <div class="card">
           <div class="card-content">
             <div class="content">
-                <form action="{% url 'editprofile' %}" method="POST">
+                <form action="{% url 'editprofile' %}" enctype="multipart/form-data" method="POST">
                     {% csrf_token %}
+                     <div class="field">
+                         프로필 사진 등록<br><br>
+                         <div class="file is-boxed">
+                            {{ form.picture }}<br><br>
+                             </div>
+                      </div>
                     <label for="name">Name</label><br>
                     <input class="input" type="text" id="name" name="name" value="{{ profile.name }}"><br><br>
 
