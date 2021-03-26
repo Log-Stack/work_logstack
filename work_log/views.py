@@ -118,20 +118,33 @@ def work_log_detail(request, pk):
 
 @login_required
 def work_log_list(request):
-    teams = Team.objects.all()
     work_logs = WorkLog.objects.all()
     search = ""
     start_date = ""
     end_date = ""
+    team = "all"
+    member = "직원 선택"
 
     if request.method == "POST":
         search = request.POST.get('search')
         start_date = request.POST.get('start_date')
         end_date = request.POST.get('end_date')
 
+        team_id = request.POST.get('team')
+        member_id = request.POST.get('member')
+
+        # selector 처리
+        profiles = Profile.objects.all()
+        if team_id != 'all':
+            profiles = profiles.filter(team=team_id)
+            team = team_id
+        if member_id != '직원 선택':
+            profiles = profiles.filter(user=member_id)
+            member = member_id
+
         # 검색어 처리
         user_ids = []
-        profiles = Profile.objects.filter(name__icontains=search)
+        profiles = profiles.filter(name__icontains=search)
         for profile in profiles:
             user_ids.append(profile.user.pk)
         work_logs = WorkLog.objects.filter(user_id__in=user_ids)
@@ -150,7 +163,8 @@ def work_log_list(request):
     work_logs_paginator = paginator.get_page(page_number)
 
     context = {
-        'teams': teams,
+        'team': team,
+        'member': member,
         'work_logs': work_logs_paginator,
         'start_date': start_date,
         'end_date': end_date,

@@ -6,7 +6,8 @@
 <script src='http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery.min.js'></script>
 <script>
 
-
+var selected_team = '{{ team }}';
+var selected_member = '{{ member }}';
 
 function setUserSelect(){
 var user_select = document.getElementById('user_select');
@@ -21,14 +22,20 @@ $.ajax({
 			dataType: 'json',
 
 			success: function(data){
-			    for(let i = 1;i<=user_select.options.length;i++){
+			    var length_list = user_select.options.length;
+			    for(let i = 1;i<length_list;i++){
                     user_select.remove(1);
 			    }
                 for(let i = 0;i<data.length;i++){
                 var temp = document.createElement("option");
                 temp.value = data[i].user_id
                 temp.text = data[i].name
+                if(temp.value == selected_member || temp.text == selected_member){
+                temp.selected = true;
+                }
                 user_select.add(temp);
+
+
                 }
 	        }
         })
@@ -43,14 +50,21 @@ $.ajax({
 			dataType: 'json',
 
 			success: function(data){
-			    for(let i = 1;i<=team_select.options.length;i++){
+			    var length_list = team_select.options.length;
+			    for(let i = 1;i<length_list;i++){
                     team_select.remove(1);
 			    }
                 for(let i = 0;i<data.length;i++){
                 var temp = document.createElement("option");
                 temp.value = data[i].id
                 temp.text = data[i].name
+                if(temp.value == selected_team || temp.text == selected_team){
+                temp.selected = true;
+
+                }
+
                 team_select.add(temp);
+                setUserSelect();
                 }
 	        }
         })
