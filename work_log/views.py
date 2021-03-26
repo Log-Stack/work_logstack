@@ -64,7 +64,7 @@ def work_hour_edit(request, pk):
             'member': member,
         }
         return render(request, 'work_hour_edit.html', context)
-    return redirect('index')
+    return redirect('schedule-index')
 
 
 @login_required

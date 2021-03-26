@@ -322,7 +322,7 @@ def manage_list(request):
             }
         return render(request, 'user_manage.html', context)
     else:
-        return redirect('index')
+        return redirect('schedule-index')
 
 
 @login_required
@@ -371,7 +371,7 @@ def manage_detail(request, pk):
             }
         return render(request, 'user_manage_detail.html', context)
     else:
-        return redirect('index')
+        return redirect('schedule-index')
 
 
 @login_required
@@ -388,7 +388,7 @@ def manage_delete(request, pk):
         member.save()
         return redirect('manage_detail', pk)
     else:
-        return redirect('index')
+        return redirect('schedule-index')
 
 
 @login_required
@@ -408,7 +408,7 @@ def manage_permit(request, pk):
             permit.save()
         return redirect('manage_detail', pk)
     else:
-        return redirect('index')
+        return redirect('schedule-index')
 
 
 @login_required
@@ -424,7 +424,7 @@ def manage_position(request, pk):
             member.position = position
             member.save()
             return redirect('manage_detail', pk)
-    return redirect('index')
+    return redirect('schedule-index')
 
 
 @login_required
@@ -444,4 +444,4 @@ def manage_team(request, pk):
             member.team = team
             member.save()
             return redirect('manage_detail', pk)
-    return redirect('index')
+    return redirect('schedule-index')
