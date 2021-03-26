@@ -5,12 +5,19 @@
 <script src='http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery.min.js'></script>
 <script>
 
+
 function moveUserProfile(){
 var user_select = document.getElementById('user_select');
 
 var user_id = user_select.options[user_select.selectedIndex].value;
-window.location.href = window.location.href.slice(0, -6) + user_select.options[user_select.selectedIndex].value;
-
+var url = window.location.href;
+var length_id = url.split('/')[window.location.href.split('/').length - 1]
+if(length_id == "select"){
+window.location.href = window.location.href.slice(0, (-1) * length_id.length) +"select/" + user_select.options[user_select.selectedIndex].value;
+}
+else{
+window.location.href = window.location.href.slice(0, (-1) * length_id.length) + user_select.options[user_select.selectedIndex].value;
+}
 }
 
 function setUserSelect(){
@@ -166,10 +173,10 @@ setTeamSelect()
             </div>
 
     <!--스케줄 조회 버튼-->
-    <div style="padding-top: 40px;" class="buttons">
-      <button class="button is-primary">Schedule</button>
-      <button class="button is-link">Work Logs</button>
-    </div>
+<!--    <div style="padding-top: 40px;" class="buttons">-->
+<!--      <button class="button is-primary">Schedule</button>-->
+<!--      <a class="button is-link" href="{% url 'work_log_detail' user.id %}">Work Logs</a>-->
+<!--    </div>-->
     {% endif %}
 
 </div>
