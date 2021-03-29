@@ -11,6 +11,6 @@ class TeamSerializer(serializers.ModelSerializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = ['user_id','team','position','name','birth_day','phone_number','currently_employed']
+        fields = ['user_id','team','position','name','birth_day','phone_number','currently_employed','picture']
 
 
