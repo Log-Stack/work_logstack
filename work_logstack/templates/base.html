@@ -14,7 +14,7 @@
 <div class="container">
     <nav class="navbar" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
-            <strong><p style="font-family: 'Montserrat', sans-serif;margin-top:15px; margin-right:20px;">LOGSTACK</p></strong>
+            <strong><p style="font-family: 'Montserrat', sans-serif;margin-top:15px; margin-right:20px;"><a href="{% url 'schedule-index' %}" style="text-decorations:none; color:inherit;">LOGSTACK</a></p></strong>
 <!--            <img src="{% static 'img/logstack.png' %}" width="122" height="104">-->
 
             <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false"
@@ -27,9 +27,6 @@
 
         <div id="navbarBasicExample" class="navbar-menu">
             <div class="navbar-start">
-                <a class="navbar-item">
-                    Home
-                </a>
                 <div class="navbar-item has-dropdown is-hoverable">
                     <a class="navbar-link">
                         Schedule
