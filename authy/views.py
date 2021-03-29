@@ -226,6 +226,15 @@ def UserSearchView(request):
 
 
 @login_required
+def SearchAllView(request):
+    profile = Profile.objects.all().order_by('name')
+    context = {
+        'users': profile
+    }
+    return render(request,'user_search_all.html', context)
+
+
+@login_required
 def SearchSelectView(request):
     teams = list(Team.objects.all().values_list('name', flat=True))
     context={
