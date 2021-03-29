@@ -18,9 +18,29 @@ from rest_framework.response import Response
 from authy.forms import TeamCreateForm, UserCreateForm, ProfileForm, SignupForm, ChangePasswordForm
 from authy.models import Team, Profile
 from authy.serializers import TeamSerializer, ProfileSerializer
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import login as auth_login
 
 from authy.models import TeamManager, Position
 from work_log.models import WorkHour
+
+
+def login(request):
+    if request.user.is_authenticated:
+        return redirect('schedule-index')
+    if request.method == "POST":
+        form = AuthenticationForm(request, request.POST)
+        if form.is_valid():
+            auth_login(request, form.get_user())
+            is_manager = TeamManager.objects.filter(user=form.get_user()).exists()
+            if is_manager:
+                return redirect('schedule-index')
+            else:
+                return redirect('work_hour_check')
+    else:
+        form = AuthenticationForm()
+    context = {"form": form}
+    return render(request, "login.html", context)
 
 
 @login_required
