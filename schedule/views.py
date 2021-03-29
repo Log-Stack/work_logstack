@@ -180,6 +180,33 @@ def register_index(request):
 
 
 @login_required
+def register_schedule_list_week(request, year, month, day):
+    user = User.objects.get(id=request.user.id)
+
+    week_start = datetime(year, month, day).strftime('%Y-%m-%d')
+    week_end = (datetime(2021, 4, 4) + timedelta(days=6)).strftime('%Y-%m-%d')
+    schedule = Schedule.objects.filter(user=user, date__range=[week_start, week_end]).order_by('date')
+
+    user_profile = Profile.objects.get(user=user)
+    schedule_list = list(schedule)
+    result = []
+    for item in schedule_list:
+        name = str(user_profile.name)
+        date = str(item.date)
+        if item.start is not None and item.end is not None:
+            start = str(item.start.strftime("%H:%M"))
+            end = str(item.end.strftime("%H:%M"))
+        else:
+            start = "00:00"
+            end = "00:00"
+        work_type = item.work_type
+        result.append(
+            {'date': date, 'start': start, 'end': end, 'work_type': work_type})
+
+    return JsonResponse(result, safe=False)
+
+
+@login_required
 def schedule_list_user(request, user_id, year, month):
     user = User.objects.get(id=user_id)
     schedule = Schedule.objects.filter(user=user, date__year=year, date__month=month).order_by('user')
