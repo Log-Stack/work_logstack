@@ -1,5 +1,40 @@
 {% extends 'base.html' %}
 {% block content %}
+
+<!--<script src='http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery.min.js'></script>-->
+<!--<script>-->
+<!--function SearchUser(){-->
+<!--&lt;!&ndash;    string&ndash;&gt;-->
+<!--    var input = document.getElementById('search_key').value;-->
+<!--    alert(input);-->
+
+<!--    $.ajax({-->
+<!--			type: 'GET',-->
+<!--			url: '/authy/api/profiles/',-->
+<!--			dataType: 'json',-->
+
+<!--			success: function(data){-->
+
+<!--                for(let i = 0;i<data.length;i++){-->
+<!--                    alert( data[i].name);-->
+<!--                }-->
+<!--	        },-->
+
+<!--	        error: function(XMLHttpRequest, textStatus, errorThrown){-->
+<!--&lt;!&ndash;	        비동기 통신이 실패할경우 error 콜백으로 들어옵니다.&ndash;&gt;-->
+<!--                    alert("통신 실패.")-->
+<!--        })-->
+
+<!--}-->
+
+
+
+
+
+
+
+<!--</script>-->
+
 <style>
 .search_body{
       padding-top:120px;
@@ -12,6 +47,7 @@
 }
 
 </style>
+<div class="container">
 <div class="hero is-primary is-small">
         <div class="hero-body">
             <p class="title">
@@ -40,7 +76,7 @@
         </p>
 
           <div class="control">
-            <input class="input is-large" name="q" type="text" placeholder="Name + Enter" value="{{ request.GET.q }}">
+            <input class="input is-large" id="search_key" name="q" type="text" onkeyup="SearchUser()" placeholder="Name + Enter" value="{{ request.GET.q }}">
 
           </div>
 
@@ -76,6 +112,7 @@
     </article>
 
 </div>
+    </div>
 
 
 {% endblock %}
