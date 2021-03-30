@@ -3,8 +3,78 @@
 
 {% block content %}
 
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.1/main.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.1/main.css">
+<script src='http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery.min.js'></script>
+
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script>
+
+function getWorkCalendar(){
+var start_date = document.getElementsByName('start_date');
+var end_date = document.getElementsByName('end_date');
+alert(start_date[0].value + " : " + end_date[0].value);
+$.ajax({
+                type: 'GET',
+                url: '',
+                dataType: 'json',
+                data : {
+                    start : start_date.value,
+                    start : end_date.value,
+                },
+                success: function(data){
+
+                var color_list = ['#0096c6', '#ff6939', '#fa3d00', '#6937a1',  '#003458'];
+
+                var titles = Array();
+			    for (var i = 0 ; i < data.length; i++){
+                    if(data[i].worker_count + data[i].vacation_count == 0){
+                        continue;
+                    }
+                    var work_count = "근무 인원 : " + data[i].worker_count + "명";
+                    var work_time ="";
+                    if(data[i].worker_count == 0){
+                        work_time = "근무 인원이 없습니다";
+                    }
+                    else{
+                        work_time = data[i].start + " ~ " + data[i].end;
+                    }
+                    var vacation_count = "휴가 인원 : " + data[i].vacation_count + "명";
+
+                    titles.push({'title' : work_count, 'start': data[i].date, 'end' : data[i].date, "color": color_list[0] });
+                    titles.push({'title' : work_time, 'start': data[i].date, 'end' : data[i].date, "color": color_list[4] });
+                    titles.push({'title' : vacation_count, 'start': data[i].date, 'end' : data[i].date, "color": color_list[2] });
+			    }
+
+                var calendarEl = document.getElementById('calendar');
+                var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                events : titles,
+                      dateClick: function(info) {
+                            location.href="/schedule/register/day/" + info.dateStr.split('-')[0] + "/" + info.dateStr.split('-')[1] + "/" + info.dateStr.split('-')[2];
+                      },
+                });
+
+                calendar.render();
+        }
+    })
+}
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    calendarEl = document.getElementById('calendar');
+    calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: 'dayGridMonth',
+          dateClick: function(info) {
+                location.href="/schedule/register/day/" + info.dateStr.split('-')[0] + "/" + info.dateStr.split('-')[1] + "/" + info.dateStr.split('-')[2];
+          },
+    });
+
+    calendar.render();
+
+
+});
+
 $(document).ready(function(){
 
     var current_team = document.getElementById('current_team');
@@ -195,7 +265,6 @@ $(document).ready(function(){
             <p class="has-text-centered"><strong>출퇴근 기록이 없습니다.</strong></p>
         </div>
     {% endif %}
-
     {% for work_hour in work_hours %}
         <div class="box">
             <div class="columns is-mobile">
@@ -215,5 +284,8 @@ $(document).ready(function(){
         </div>
     {% endfor %}
 
+    <div class="box">
+        <div id='calendar'></div>
+    </div>
 </div>
 {% endblock %}
