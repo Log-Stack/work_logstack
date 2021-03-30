@@ -22,7 +22,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login as auth_login
 
 from authy.models import TeamManager, Position
-from work_log.models import WorkHour
+from work_log.models import WorkHour, WorkLog
 from django.utils import timezone
 import datetime
 
@@ -506,5 +506,27 @@ def calc_work_hours(request, member_pk, start_date, end_date):
         result['total_working_time'] = round(total_working_time/3600, 1)
         result['work_hours_list'] = work_hours_list
 
+        return JsonResponse(result, safe=False)
+    return JsonResponse("fail", safe=False)
+
+
+@login_required
+def send_work_log(request, member_pk, date):
+    user = request.user
+    profile = Profile.objects.get(user=user)
+    team_manager = TeamManager.objects.filter(team=profile.team).filter(user=user).first()
+    if team_manager:
+        member = Profile.objects.get(pk=member_pk)
+        work_log = WorkLog.objects.filter(user=member.user).filter(create_time__date=date).first()
+        if work_log:
+            result = {
+                'content': work_log.content,
+                'create_time': work_log.create_time.strftime("%H:%M"),
+            }
+        else:
+            result = {
+                'content': '',
+                'create_time': '',
+            }
         return JsonResponse(result, safe=False)
     return JsonResponse("fail", safe=False)
