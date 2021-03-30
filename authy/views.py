@@ -23,6 +23,9 @@ from django.contrib.auth import login as auth_login
 
 from authy.models import TeamManager, Position
 from work_log.models import WorkHour
+from django.utils import timezone
+import datetime
+
 
 
 def login(request):
@@ -460,4 +463,48 @@ def manage_team(request, pk, team_name):
         member.team = team
         member.save()
         return JsonResponse("success", safe=False)
+    return JsonResponse("fail", safe=False)
+
+
+# 일자 선택시 실 출퇴근 시간, 총 근무 시간 가져오는 api(시간은 반올림 된 형태로 출력 및 합산)
+@login_required
+def calc_work_hours(request, member_pk, start_date, end_date):
+    user = request.user
+    profile = Profile.objects.get(user=user)
+    team_manager = TeamManager.objects.filter(team=profile.team).filter(user=user).first()
+    if team_manager:
+        result = {}
+        total_working_time = 0
+        work_hours_list = []
+        member = Profile.objects.get(pk=member_pk)
+        work_hours = WorkHour.objects.filter(user=member.user)
+
+        if start_date:
+            work_hours = work_hours.filter(date__gte=start_date)
+        if end_date:
+            work_hours = work_hours.filter(date__lte=end_date)
+
+        for work_hour in work_hours.values():
+            work_hour_dict = {}
+            work_hour_dict['date'] = work_hour['date']
+            s_t = work_hour['start_time']
+            arranged_start_time = datetime.datetime(s_t.year, s_t.month, s_t.day, s_t.hour, 10*(s_t.minute // 10))
+            start_time = arranged_start_time.strftime("%H:%M")
+            e_t = work_hour['end_time']
+            if e_t:
+                arranged_end_time = datetime.datetime(e_t.year, e_t.month, e_t.day, e_t.hour, 10 * (e_t.minute // 10))
+                end_time = arranged_end_time.strftime("%H:%M")
+                total_working_time += (arranged_end_time - arranged_start_time).seconds
+            else:
+                arranged_end_time = e_t
+                end_time = ''
+
+            work_hour_dict['start_time'] = start_time
+            work_hour_dict['end_time'] = end_time
+            work_hours_list.append(work_hour_dict)
+
+        result['total_working_time'] = round(total_working_time/3600, 1)
+        result['work_hours_list'] = work_hours_list
+
+        return JsonResponse(result, safe=False)
     return JsonResponse("fail", safe=False)
