@@ -43,8 +43,8 @@ urlpatterns = [
     path('manage_detail/<int:pk>/', manage_detail, name='manage_detail'),
     path('manage_delete/<int:pk>/', manage_delete, name='manage_delete'),
     path('manage_permit/<int:pk>/', manage_permit, name='manage_permit'),
-    path('manage_position/<int:pk>/', manage_position, name='manage_position'),
-    path('manage_team/<int:pk>/', manage_team, name='manage_team'),
+    path('manage_position/<int:pk>/<str:position_name>', manage_position, name='manage_position'),
+    path('manage_team/<int:pk>/<str:team_name>', manage_team, name='manage_team'),
 
 ]
 
