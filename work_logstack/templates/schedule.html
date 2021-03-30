@@ -16,6 +16,9 @@ document.addEventListener('DOMContentLoaded', function() {
     calendarEl = document.getElementById('calendar');
     calendar = new FullCalendar.Calendar(calendarEl, {
           initialView: 'dayGridMonth',
+          dateClick: function(info) {
+                location.href="/schedule/register/day/" + info.dateStr.split('-')[0] + "/" + info.dateStr.split('-')[1] + "/" + info.dateStr.split('-')[2];
+          },
     });
 
     calendar.render();
