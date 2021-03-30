@@ -17,13 +17,8 @@ document.addEventListener('DOMContentLoaded', function() {
     calendar = new FullCalendar.Calendar(calendarEl, {
           initialView: 'dayGridMonth',
           dateClick: function(info) {
-                alert('Date: ' + info.dateStr.split('-'));
+                location.href="/schedule/register/day/" + info.dateStr.split('-')[0] + "/" + info.dateStr.split('-')[1] + "/" + info.dateStr.split('-')[2];
           },
-          selectable : false,
-          select: function(info) {
-                alert('select: ' + info.startStr);
-          },
-
     });
 
     calendar.render();
@@ -72,7 +67,10 @@ else if(user_id != '-1'){
                 var calendarEl = document.getElementById('calendar');
                 var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
-                events : titles
+                events : titles,
+          dateClick: function(info) {
+                location.href="/schedule/register/day/" + info.dateStr.split('-')[0] + "/" + info.dateStr.split('-')[1] + "/" + info.dateStr.split('-')[2];
+          },
                 });
 
                 calendar.render();
@@ -120,7 +118,10 @@ $.ajax({
             var calendarEl = document.getElementById('calendar');
             var calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
-            events : titles
+            events : titles,
+          dateClick: function(info) {
+                location.href="/schedule/register/day/" + info.dateStr.split('-')[0] + "/" + info.dateStr.split('-')[1] + "/" + info.dateStr.split('-')[2];
+          },
             });
 
             calendar.render();
@@ -170,6 +171,9 @@ $.ajax({
             initialView: 'dayGridMonth',
             events : titles,
             eventOrder: 'color',
+          dateClick: function(info) {
+                location.href="/schedule/register/day/" + info.dateStr.split('-')[0] + "/" + info.dateStr.split('-')[1] + "/" + info.dateStr.split('-')[2];
+          },
             });
 
             calendar.render();
@@ -235,6 +239,7 @@ function init(){
 }
 
 window.addEventListener('DOMContentLoaded', init);
+
 
 
 

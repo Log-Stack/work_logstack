@@ -51,6 +51,7 @@ class Profile(models.Model):
     email_address = models.CharField(max_length=100, blank=True, default="")
     currently_employed = models.BooleanField(default=True)
     picture = models.ImageField(upload_to=user_directory_path, blank=True, null=True, verbose_name='Picture')
+    start_date = models.DateField(blank=True, null=True)
 
     def __str__(self):
         return f"{self.team} - {self.user}"

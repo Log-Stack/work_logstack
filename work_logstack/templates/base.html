@@ -14,7 +14,7 @@
 <div class="container">
     <nav class="navbar" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
-            <strong><p style="font-family: 'Montserrat', sans-serif;margin-top:15px; margin-right:20px;">LOGSTACK</p></strong>
+            <strong><p style="font-family: 'Montserrat', sans-serif;margin-top:15px; margin-right:20px;"><a href="{% url 'schedule-index' %}" style="text-decorations:none; color:inherit;">LOGSTACK</a></p></strong>
 <!--            <img src="{% static 'img/logstack.png' %}" width="122" height="104">-->
 
             <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false"
@@ -27,9 +27,6 @@
 
         <div id="navbarBasicExample" class="navbar-menu">
             <div class="navbar-start">
-                <a class="navbar-item">
-                    Home
-                </a>
                 <div class="navbar-item has-dropdown is-hoverable">
                     <a class="navbar-link">
                         Schedule
@@ -53,39 +50,13 @@
                     </div>
                 </div>
 
-                <div class="navbar-item has-dropdown is-hoverable">
-                    <a class="navbar-link">
-                        Work Log
-                    </a>
+                <a href="{% url 'work_log_list' %}" class="navbar-item">
+                    Work Log
+                </a>
 
-                    <div class="navbar-dropdown">
-                        <a class="navbar-item" href="{% url 'work_log_write' %}">
-                            Work Log Write
-                        </a>
-                        <a class="navbar-item" href="{% url 'work_log_list' %}">
-                            Work Log List
-                        </a>
-                    </div>
-                </div>
-
-                <div class="navbar-item has-dropdown is-hoverable">
-                    <a class="navbar-link">
-                        Work Hour
-                    </a>
-
-                    <div class="navbar-dropdown">
-                        <a class="navbar-item" href="{% url 'work_hour_check' %}">
-                            Work Hour Check
-                        </a>
-                        <hr class="navbar-divider">
-                        <a class="navbar-item" href="{% url 'start_working' %}">
-                            Start Working
-                        </a>
-                        <a class="navbar-item" href="{% url 'end_working' %}">
-                            End Working
-                        </a>
-                    </div>
-                </div>
+                <a href="{% url 'work_hour_check' %}" class="navbar-item">
+                    Work Hour
+                </a>
 
                 <div class="navbar-item has-dropdown is-hoverable">
                     <a class="navbar-link">
@@ -135,8 +106,8 @@
                         <a class="button is-primary" href="{% url 'profile' %}">
                             <strong>My Profile</strong>
                         </a>
-                        <a class="button is-light" href="{% url 'logout' %}">
-                            Log out
+                        <a class="button is-light" href="{% url 'work_log_write' %}">
+                            퇴근하기
                         </a>
 
                         {% endif %}

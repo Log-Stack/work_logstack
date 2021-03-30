@@ -48,39 +48,40 @@
     <div class="columns is-multiline">
         {% for team_member in result %}
         <div class="column is-one-quarter">
-            <div class="box">
-                <article class="media">
-                    <div class="media-content">
-                        <div class="content">
-                            <p>
-                                <strong>{{ team_member.name }}</strong> -
-                                <small>
-                                    {% if team_member.currently_employed %}
-                                        {{ team_member.position }}
-                                    {% else %}
-                                        퇴사
-                                    {% endif %}
-                                </small>
-                            </p>
-                            <p><i class="material-icons">email</i>: {{ team_member.email_address }}</p>
-                            <p><i class="material-icons">phone</i>: {{ team_member.phone_number }}</p>
+            <a href="{% url 'manage_detail' team_member.pk %}">
+                <div class="box">
+                    <article class="media">
+                        <div class="media-content">
+                            <div class="content">
+                                <p>
+                                    <strong>{{ team_member.name }}</strong> -
+                                    <small>
+                                        {% if team_member.currently_employed %}
+                                            {{ team_member.position }}
+                                        {% else %}
+                                            퇴사
+                                        {% endif %}
+                                    </small>
+                                </p>
+                                <p><i class="material-icons" style="vertical-align: middle;">email</i>: {{ team_member.email_address }}</p>
+                                <p><i class="material-icons" style="vertical-align: middle;">phone</i>: {{ team_member.phone_number }}</p>
+                            </div>
                         </div>
-                        <a href="{% url 'manage_detail' team_member.pk %}" class="button is-primary is-light">Manage</a>
-                    </div>
-                    <figure class="media-right">
+                        <figure class="media-right">
 
-                        <figure class="image is-64x64">
-                            <img src="
-                            {% if team_member.picture %}
-                            {{ team_member.picture.url }}
-                            {% else %}
-                            https://bulma.io/images/placeholders/64x64.png
-                            {% endif %}">
+                            <figure class="image is-64x64">
+                                <img src="
+                                {% if team_member.picture %}
+                                {{ team_member.picture.url }}
+                                {% else %}
+                                https://bulma.io/images/placeholders/64x64.png
+                                {% endif %}">
+                            </figure>
+
                         </figure>
-
-                    </figure>
-                </article>
-            </div>
+                    </article>
+                </div>
+            </a>
         </div>
         {% endfor %}
     </div>

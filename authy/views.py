@@ -4,7 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.db.models import Q
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
 from django.shortcuts import render, redirect, get_object_or_404
@@ -18,9 +18,29 @@ from rest_framework.response import Response
 from authy.forms import TeamCreateForm, UserCreateForm, ProfileForm, SignupForm, ChangePasswordForm
 from authy.models import Team, Profile
 from authy.serializers import TeamSerializer, ProfileSerializer
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import login as auth_login
 
 from authy.models import TeamManager, Position
 from work_log.models import WorkHour
+
+
+def login(request):
+    if request.user.is_authenticated:
+        return redirect('schedule-index')
+    if request.method == "POST":
+        form = AuthenticationForm(request, request.POST)
+        if form.is_valid():
+            auth_login(request, form.get_user())
+            is_manager = TeamManager.objects.filter(user=form.get_user()).exists()
+            if is_manager:
+                return redirect('schedule-index')
+            else:
+                return redirect('work_hour_check')
+    else:
+        form = AuthenticationForm()
+    context = {"form": form}
+    return render(request, "login.html", context)
 
 
 @login_required
@@ -333,7 +353,7 @@ def manage_list(request):
             }
         return render(request, 'user_manage.html', context)
     else:
-        return redirect('index')
+        return redirect('schedule-index')
 
 
 @login_required
@@ -382,7 +402,7 @@ def manage_detail(request, pk):
             }
         return render(request, 'user_manage_detail.html', context)
     else:
-        return redirect('index')
+        return redirect('schedule-index')
 
 
 @login_required
@@ -399,7 +419,7 @@ def manage_delete(request, pk):
         member.save()
         return redirect('manage_detail', pk)
     else:
-        return redirect('index')
+        return redirect('schedule-index')
 
 
 @login_required
@@ -419,40 +439,36 @@ def manage_permit(request, pk):
             permit.save()
         return redirect('manage_detail', pk)
     else:
-        return redirect('index')
+        return redirect('schedule-index')
 
 
 @login_required
-def manage_position(request, pk):
+def manage_position(request, pk, position_name):
     user = request.user
     profile = Profile.objects.get(user=user)
     team_manager = TeamManager.objects.filter(team=profile.team).filter(user=user).first()
     if team_manager:
-        if request.method == "POST":
-            member = Profile.objects.get(pk=pk)
-            position = request.POST.get('position')
-            position = Position.objects.get(name=position)
-            member.position = position
-            member.save()
-            return redirect('manage_detail', pk)
-    return redirect('index')
+        member = Profile.objects.get(pk=pk)
+        position = Position.objects.get(name=position_name)
+        member.position = position
+        member.save()
+        return JsonResponse("success", safe=False)
+    return JsonResponse("fail", safe=False)
 
 
 @login_required
-def manage_team(request, pk):
+def manage_team(request, pk, team_name):
     user = request.user
     profile = Profile.objects.get(user=user)
     team_manager = TeamManager.objects.filter(team=profile.team).filter(user=user).first()
     if team_manager:
-        if request.method == "POST":
-            member = Profile.objects.get(pk=pk)
-            is_manager = TeamManager.objects.filter(user=member.user).exists()
-            if is_manager:
-                permit = TeamManager.objects.filter(user=member.user)
-                permit.delete()
-            team = request.POST.get('team')
-            team = Team.objects.get(name=team)
-            member.team = team
-            member.save()
-            return redirect('manage_detail', pk)
-    return redirect('index')
+        member = Profile.objects.get(pk=pk)
+        is_manager = TeamManager.objects.filter(user=member.user).exists()
+        if is_manager:
+            permit = TeamManager.objects.filter(user=member.user)
+            permit.delete()
+        team = Team.objects.get(name=team_name)
+        member.team = team
+        member.save()
+        return JsonResponse("success", safe=False)
+    return JsonResponse("fail", safe=False)

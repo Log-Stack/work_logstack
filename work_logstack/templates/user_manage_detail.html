@@ -2,11 +2,132 @@
 
 
 {% block content %}
+
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.1/main.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.1/main.css">
+<script src='http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery.min.js'></script>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script>
+
+function getWorkCalendar(){
+var start_date = document.getElementsByName('start_date');
+var end_date = document.getElementsByName('end_date');
+alert(start_date[0].value + " : " + end_date[0].value);
+$.ajax({
+                type: 'GET',
+                url: '',
+                dataType: 'json',
+                data : {
+                    start : start_date.value,
+                    start : end_date.value,
+                },
+                success: function(data){
+
+                var color_list = ['#0096c6', '#ff6939', '#fa3d00', '#6937a1',  '#003458'];
+
+                var titles = Array();
+			    for (var i = 0 ; i < data.length; i++){
+                    if(data[i].worker_count + data[i].vacation_count == 0){
+                        continue;
+                    }
+                    var work_count = "근무 인원 : " + data[i].worker_count + "명";
+                    var work_time ="";
+                    if(data[i].worker_count == 0){
+                        work_time = "근무 인원이 없습니다";
+                    }
+                    else{
+                        work_time = data[i].start + " ~ " + data[i].end;
+                    }
+                    var vacation_count = "휴가 인원 : " + data[i].vacation_count + "명";
+
+                    titles.push({'title' : work_count, 'start': data[i].date, 'end' : data[i].date, "color": color_list[0] });
+                    titles.push({'title' : work_time, 'start': data[i].date, 'end' : data[i].date, "color": color_list[4] });
+                    titles.push({'title' : vacation_count, 'start': data[i].date, 'end' : data[i].date, "color": color_list[2] });
+			    }
+
+                var calendarEl = document.getElementById('calendar');
+                var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                events : titles,
+                      dateClick: function(info) {
+                            location.href="/schedule/register/day/" + info.dateStr.split('-')[0] + "/" + info.dateStr.split('-')[1] + "/" + info.dateStr.split('-')[2];
+                      },
+                });
+
+                calendar.render();
+        }
+    })
+}
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    calendarEl = document.getElementById('calendar');
+    calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: 'dayGridMonth',
+          dateClick: function(info) {
+                location.href="/schedule/register/day/" + info.dateStr.split('-')[0] + "/" + info.dateStr.split('-')[1] + "/" + info.dateStr.split('-')[2];
+          },
+    });
+
+    calendar.render();
+
+
+});
+
+$(document).ready(function(){
+
+    var current_team = document.getElementById('current_team');
+
+    $('#edit_team').change(function(){
+        var team =  $('#edit_team').val();
+
+        $.ajax({
+          type: 'GET',
+          url: '/authy/manage_team/{{ member.pk }}/' + team,
+          dataType: 'json',
+          success: function(data){
+			    if (data === 'success'){
+			        current_team.innerText = '팀: ' + team
+			    } else {
+			        window.location.href='{% url 'schedule-index' %}'
+			    }
+            }
+        });
+    });
+});
+
+$(document).ready(function(){
+
+    var current_position = document.getElementById('current_position');
+
+    $('#edit_position').change(function(){
+        var position =  $('#edit_position').val();
+
+        $.ajax({
+          type: 'GET',
+          url: '/authy/manage_position/{{ member.pk }}/' + position,
+          dataType: 'json',
+          success: function(data){
+			    if (data === 'success'){
+			        current_position.innerText = '직급: ' + position
+			    } else {
+			        window.location.href='{% url 'schedule-index' %}'
+			    }
+            }
+        });
+    });
+});
+
+</script>
+
+
 <div class="container">
     <br>
     <div class="hero is-primary is-small">
         <div class="hero-body">
             <p class="title">
+                <a href="{% url 'manage_list' %}" class="button is-primary"><i class="material-icons">arrow_back_ios_new</i></a>
                 User Manage Detail
             </p>
         </div>
@@ -16,39 +137,35 @@
             <div class="media">
                 <div class="media-content">
                     <p class="title is-4">
+                        <span class="material-icons" style="margin: 0.5rem; vertical-align: middle;">person</span><span style="vertical-align: middle;">Profile</span>
+                        &nbsp;
+                        &nbsp;
+                        {% if is_manager %}
+                            <a href="{% url 'manage_permit' member.pk %}" class="button is-primary">매니저 권한 없애기</a>
+                        {% else %}
+                            <a href="{% url 'manage_permit' member.pk %}" class="button is-primary">매니저 권한 주기</a>
+                        {% endif %}
+                        {% if member.currently_employed %}
+                            <a href="{% url 'manage_delete' member.pk %}" class="button is-primary is-light">퇴사 처리</a>
+                        {% else %}
+                            <a href="{% url 'manage_delete' member.pk %}" class="button is-primary is-light">복귀 처리</a>
+                        {% endif %}
+                    </p>
+                    <div style="margin-left: 1rem;">
+                        <p>
                         이름: {{ member.name }}
                         {% if member.currently_employed == False %}
                             - 퇴사
                         {% endif %}
-                    </p>
-                    <p>팀: {{ member.team }}</p>
-                    <p>매니저 권한: {% if is_manager %}있음{% else %}없음{% endif %}</p>
-                    <p>직급: {{ member.position }}</p>
-                    <p>이메일: {{ member.email_address }}</p>
-                    <p>생년월일: {{ member.birth_day }}</p>
-                    <p>전화번호: {{ member.phone_number }}</p>
-                </div>
-                <div class="field">
-                    {% if is_manager %}
-                        <div class="control">
-                            <a href="{% url 'manage_permit' member.pk %}" class="button is-primary">매나저 권한 없애기</a>
-                        </div>
-                    {% else %}
-                        <div class="control">
-                            <a href="{% url 'manage_permit' member.pk %}" class="button is-primary">매니저 권한 주기</a>
-                        </div>
-                    {% endif %}
-                </div>
-                <div class="field">
-                    {% if member.currently_employed %}
-                        <div class="control">
-                            <a href="{% url 'manage_delete' member.pk %}" class="button is-primary is-light">퇴사 처리</a>
-                        </div>
-                    {% else %}
-                        <div class="control">
-                            <a href="{% url 'manage_delete' member.pk %}" class="button is-primary is-light">복귀 처리</a>
-                        </div>
-                    {% endif %}
+                        </p>
+                        <p id="current_team">팀: {{ member.team }}</p>
+                        <p id="current_position">직급: {{ member.position }}</p>
+                        <p>매니저 권한: {% if is_manager %}있음{% else %}없음{% endif %}</p>
+                        <p>입사일: {{ member.start_date }}</p>
+                        <p>이메일: {{ member.email_address }}</p>
+                        <p>전화번호: {{ member.phone_number }}</p>
+                        <p>생년월일: {{ member.birth_day }}</p>
+                    </div>
                 </div>
                 <div class="media-right">
                     <figure class="image is-128x128">
@@ -63,57 +180,34 @@
             </div>
             <div class="media">
                 <div class="media-content">
+                    <p class="title is-4">
+                        <span class="material-icons" style="margin: 0.5rem; vertical-align: middle;">edit</span><span style="vertical-align: middle;">Edit</span>
+                    </p>
 
-                    <form method="POST" role="form" action="{% url 'manage_team' member.pk %}">
-                        {% csrf_token %}
-                        <div class="columns is-multiline">
-                            <div class="column is-2">
-                                <label class="label">Team</label>
-                                <div class="select is-primary">
-                                    <select name="team">
-                                        {% for team in teams %}
-                                        <option {% if member.team == team %} selected="selected" {% endif %}>{{ team.name }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="column">
-                                <div class="field">
-                                    <label class="label">수정</label>
-                                    <div class="control">
-                                        <button type="submit" class="button is-primary">Edit</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="column is-2">
-                                <a href="{% url 'manage_list' %}" class="button is-primary is-light">Go To Manage List</a>
+                    <div class="columns is-multiline">
+                        <div class="column is-2">
+                            <label class="label">Team</label>
+                            <div class="select is-primary">
+                                <select name="team" id="edit_team">
+                                    {% for team in teams %}
+                                    <option {% if member.team == team %} selected="selected" {% endif %}>{{ team.name }}</option>
+                                    {% endfor %}
+                                </select>
                             </div>
                         </div>
-                    </form>
-
-                    <form method="POST" role="form" action="{% url 'manage_position' member.pk %}">
-                        {% csrf_token %}
-                        <div class="columns is-multiline">
-                            <div class="column is-2">
-                                <label class="label">Position</label>
-                                <div class="select is-primary">
-                                    <select name="position">
-                                        {% for position in positions %}
-                                        <option {% if member.position == position %} selected="selected" {% endif %}>{{ position.name }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="column is-1">
-                                <div class="field">
-                                    <label class="label">수정</label>
-                                    <div class="control">
-                                        <button type="submit" class="button is-primary">Edit</button>
-                                    </div>
-                                </div>
+                        <div class="column">
+                            <label class="label">Position</label>
+                            <div class="select is-primary">
+                                <select name="position" id="edit_position">
+                                    {% for position in positions %}
+                                    <option {% if member.position == position %} selected="selected" {% endif %}>{{ position.name }}</option>
+                                    {% endfor %}
+                                </select>
                             </div>
                         </div>
-                    </form>
+                    </div>
+
+
 
                     <form method="POST" role="form">
                         {% csrf_token %}
@@ -171,7 +265,6 @@
             <p class="has-text-centered"><strong>출퇴근 기록이 없습니다.</strong></p>
         </div>
     {% endif %}
-
     {% for work_hour in work_hours %}
         <div class="box">
             <div class="columns is-mobile">
@@ -191,5 +284,8 @@
         </div>
     {% endfor %}
 
+    <div class="box">
+        <div id='calendar'></div>
+    </div>
 </div>
 {% endblock %}
