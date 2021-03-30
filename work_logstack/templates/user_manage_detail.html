@@ -7,6 +7,7 @@
     <div class="hero is-primary is-small">
         <div class="hero-body">
             <p class="title">
+                <a href="{% url 'manage_list' %}" class="button is-primary"><i class="material-icons">arrow_back_ios_new</i></a>
                 User Manage Detail
             </p>
         </div>
@@ -24,9 +25,10 @@
                     <p>팀: {{ member.team }}</p>
                     <p>매니저 권한: {% if is_manager %}있음{% else %}없음{% endif %}</p>
                     <p>직급: {{ member.position }}</p>
+                    <p>입사일: {{ member.start_date }}</p>
                     <p>이메일: {{ member.email_address }}</p>
-                    <p>생년월일: {{ member.birth_day }}</p>
                     <p>전화번호: {{ member.phone_number }}</p>
+                    <p>생년월일: {{ member.birth_day }}</p>
                 </div>
                 <div class="field">
                     {% if is_manager %}
@@ -84,9 +86,6 @@
                                         <button type="submit" class="button is-primary">Edit</button>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="column is-2">
-                                <a href="{% url 'manage_list' %}" class="button is-primary is-light">Go To Manage List</a>
                             </div>
                         </div>
                     </form>
