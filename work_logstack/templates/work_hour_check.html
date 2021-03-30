@@ -13,33 +13,45 @@
             </p>
         </div>
     </div>
-    {% if work_hour %}
-    <div class="card">
-        <header class="card-header">
+    {% if schedule %}
+    <div class="columns">
+        <div class="column has-text-centered">
+            <div class="box">
+                <p class="has-text-centered"><strong>예정된 업무 시간</strong></p>
                 <p class="card-header-title">
-                    Date: {{ work_hour.date }}
+                    Start Time: {{ schedule.start }}
                 </p>
                 <p class="card-header-title">
-                    Start Time: {{ work_hour.start_time|time }}
+                    End Time: {{ schedule.end }}
                 </p>
-                {% if work_hour.end_time %}
+            </div>
+        </div>
+        <div class="column has-text-centered">
+            <div class="box">
+                {% if work_hour %}
+                    <p class="has-text-centered"><strong>Working Time</strong></p>
                     <p class="card-header-title">
-                        End Time: {{ work_hour.end_time|time }}
+                        Start Time: {{ work_hour.start_time|time }}
                     </p>
-                    <p class="card-header-title">
-                        <a href="{% url 'work_log_write' %}" class="button is-primary is-light">퇴근 일지 작성하기</a>
-                    </p>
+                    {% if work_hour.end_time %}
+                        <p class="card-header-title">
+                            End Time: {{ work_hour.end_time|time }}
+                        </p>
+                    {% else %}
+                        <p class="card-header-title">
+                            퇴근 전입니다.
+                        </p>
+                    {% endif %}
                 {% else %}
-                    <p class="card-header-title">
-                        퇴근 전입니다.
-                    </p>
-
+                    <p class="has-text-centered"><strong>업무 시작 버튼을 눌러주세요!</strong></p>
+                    <a style="margin: 1.15rem" href="{% url 'start_working' %}" class="button is-primary is-large is-rounded">업무 시작!</a>
                 {% endif %}
-        </header>
+            </div>
+        </div>
     </div>
     {% else %}
         <div class="box">
-            <p class="has-text-centered"><strong>출근 체크를 해주세요.</strong></p>
+            <p class="has-text-centered"><strong>예정된 업무가 없습니다.</strong></p>
         </div>
     {% endif %}
 

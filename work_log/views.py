@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from .models import WorkHour, WorkLog
 from .forms import WorkLogForm, WorkHourForm
 from authy.models import Team, TeamManager, Profile, Position
+from schedule.models import Schedule, ScheduleApproved
 from django.core.paginator import Paginator
 
 
@@ -29,15 +30,17 @@ def end_working(request):
     if work_hour:
         work_hour.end_time = timezone.now()
         work_hour.save()
-    return redirect('work_hour_check')
+    return redirect('logout')
 
 
 @login_required
 def work_hour_check(request):
     user = request.user
     work_hour = WorkHour.objects.filter(user=user).filter(date=timezone.now().date()).first()
+    schedule = Schedule.objects.filter(user=user).filter(date=timezone.now().date()).first()
     context = {
-        'work_hour': work_hour
+        'work_hour': work_hour,
+        'schedule': schedule,
     }
     return render(request, 'work_hour_check.html', context)
 
@@ -64,7 +67,7 @@ def work_hour_edit(request, pk):
             'member': member,
         }
         return render(request, 'work_hour_edit.html', context)
-    return redirect('index')
+    return redirect('schedule-index')
 
 
 @login_required
@@ -75,11 +78,14 @@ def work_log_write(request):
             work_log = form.save(commit=False)
             work_log.user = request.user
             work_log.save()
-            return redirect('work_log_detail', pk=work_log.pk)
+            return redirect('end_working')
     else:
         work_log = WorkLog.objects.filter(user=request.user).filter(create_time__date=timezone.now().date()).first()
         if work_log:
-            return redirect('work_log_detail', pk=work_log.pk)
+            return redirect('end_working')
+        work_hour = WorkHour.objects.filter(user=request.user).filter(date=timezone.now().date()).first()
+        if not work_hour:
+            return redirect('logout')
         form = WorkLogForm()
     return render(request, 'work_log_write.html', {'form': form})
 

@@ -7,6 +7,7 @@
         <div class="hero is-primary is-small">
             <div class="hero-body">
                 <p class="title">
+                    <a href="{% url 'work_log_list' %}" class="button is-primary"><i class="material-icons">arrow_back_ios_new</i></a>
                     Work Log Detail
                 </p>
             </div>
@@ -42,9 +43,6 @@
                             <a href="{% url 'work_log_edit' work_log.pk %}" class="button is-primary">Edit</a>
                         </div>
                     {% endif %}
-                        <div class="control">
-                            <a href="{% url 'work_log_list' %}" class="button is-primary is-light">Go To Work Log List</a>
-                        </div>
                     </div>
                 </div>
             </div>
