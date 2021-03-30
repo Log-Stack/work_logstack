@@ -4,7 +4,7 @@ from .models import Schedule
 from django.forms import ClearableFileInput
 
 
-class NewScheduleForm(forms.ModelForm):
+class NewScheduleWeekForm(forms.ModelForm):
     week_start_date = forms.DateField(
         widget=forms.DateInput(attrs={'class': "input", 'type': "date", 'id': 'week_start_date'}))
 
@@ -74,3 +74,23 @@ class NewScheduleForm(forms.ModelForm):
                   'sat_work_type',
                   'sat_start',
                   'sat_end')
+
+
+class NewScheduleDayForm(forms.ModelForm):
+    week_start_date = forms.DateField(
+        widget=forms.DateInput(attrs={'class': "input", 'type': "date", 'id': 'week_start_date'}))
+
+    work_type = forms.ChoiceField(widget=forms.Select(attrs={'class': 'select is-success work_type'}),
+                                      choices=Schedule.WORK_TYPES)
+    start = forms.TimeField(widget=forms.TimeInput(attrs={'class': "input start_time", 'type': "time"}), required=False)
+    end = forms.TimeField(widget=forms.TimeInput(attrs={'class': "input end_time", 'type': "time"}), required=False)
+
+    class Meta:
+        model = Schedule
+        fields = ('week_start_date',
+
+                  'work_type',
+                  'start',
+                  'end',
+
+                  )

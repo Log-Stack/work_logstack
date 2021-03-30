@@ -18,6 +18,19 @@ var working_time = null;
 var start_time = null;
 var end_time = null;
 
+
+function CalculateAllWorkTime(){
+    for (let i = 0; i < start_time.length; i++) {
+        if(start_time[i].value == "" ||  end_time[i].value == ""){
+            working_time[i].innerText = '00:00';
+        }
+        else{
+        working_time[i].innerText = diff(start_time[i].value, end_time[i].value);
+        }
+    }
+    sumAll();
+}
+
 function CheckWorkTime(){
     for(let i = 0 ; i < work_type.length; i++){
         if(work_type[i].value != 1){
@@ -32,6 +45,7 @@ function CheckWorkTime(){
 
         }
     }
+    CalculateAllWorkTime();
 }
 
 function getWorkTimes(){
@@ -153,19 +167,6 @@ function sumAll(){
 
     total_time.innerText = result;
 }
-
-function CalculateAllWorkTime(){
-    for (let i = 0; i < start_time.length; i++) {
-        if(start_time[i].value == "" ||  end_time[i].value == ""){
-            working_time[i].innerText = '00:00';
-        }
-        else{
-        working_time[i].innerText = diff(start_time[i].value, end_time[i].value);
-        }
-    }
-    sumAll();
-}
-
 
 function addAllEvents(){
     for (let i = 0; i < start_time.length; i++) {

@@ -1,0 +1,284 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<script src='http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery.min.js'></script>
+
+<script>
+
+var selected_date = "{{selected_date}}";
+
+var date = null;
+
+var working_time = null;
+var start_time = null;
+var end_time = null;
+
+
+function CalculateAllWorkTime(){
+    for (let i = 0; i < start_time.length; i++) {
+        if(start_time[i].value == "" ||  end_time[i].value == ""){
+            working_time[i].innerText = '00:00';
+        }
+        else{
+        working_time[i].innerText = diff(start_time[i].value, end_time[i].value);
+        }
+    }
+    sumAll();
+}
+
+function CheckWorkTime(){
+    for(let i = 0 ; i < date.length; i++){
+        if(work_type[i].value != 1){
+        start_time[i].value = '';
+        start_time[i].readOnly = true;
+        end_time[i].value = '';
+        end_time[i].readOnly = true;
+        }
+        else{
+        start_time[i].readOnly = false;
+        end_time[i].readOnly = false;
+
+        }
+    }
+    CalculateAllWorkTime();
+}
+
+function getWorkTimes(){
+var week_start_date = document.getElementById('week_start_date').value.split('-');
+   $.ajax({
+        type: 'GET',
+        url: '/schedule/register/list/week/' +  week_start_date[0] + '/' + week_start_date[1] + '/' + week_start_date[2],
+        dataType: 'json',
+
+        success: function(data){
+                if(data.length == 0){
+                    for(let i=0;i<date.length;i++){
+                        work_type[i].value = 0;
+                        start_time[i].value = null;
+                        end_time[i].value = null;
+                    }
+                }
+                else{
+                    for(let i=0;i<date.length;i++){
+                        work_type[i].value = data[i].work_type;
+                        start_time[i].value = data[i].start;
+                        end_time[i].value = data[i].end;
+                    };
+                }
+                CheckWorkTime();
+            }
+        });
+}
+
+
+function setFormDate(){
+var week = ['일', '월', '화', '수', '목', '금', '토'];
+var d = new Date(document.getElementById('week_start_date').value);
+    for(let i = 0; i<date.length;i++){
+        date[i].innerText = (d.getMonth() + 1) + "." + d.getDate() + " (" + week[d.getDay()] + ")";
+        d.setDate(d.getDate() + 1);
+    }
+
+getWorkTimes();
+
+CheckWorkTime();
+}
+
+function setDateInit(){
+var d = new Date(selected_date);
+result_str = d.getFullYear() + "-" +("0" +  (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+document.getElementById('week_start_date').value = result_str;
+
+}
+
+function setDateBefore(){
+var d = new Date(document.getElementById('week_start_date').value);
+d.setDate(d.getDate() - 1);
+if (d <= Date.now()){
+alert("이번주 이전 날자는 신청이 불가능 합니다.");
+return;
+}
+result_str = d.getFullYear() + "-" +("0" +  (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+document.getElementById('week_start_date').value = result_str;
+
+setFormDate()
+}
+
+function setDateAfter(){
+var d = new Date(document.getElementById('week_start_date').value);
+d.setDate(d.getDate() + 1);
+result_str = d.getFullYear() + "-" +("0" +  (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+document.getElementById('week_start_date').value = result_str;
+
+setFormDate()
+}
+
+
+function getAllWorkTimes(){
+
+
+date = document.getElementsByClassName("date");
+
+work_type = document.getElementsByClassName("work_type");
+working_time = document.getElementsByClassName("work_time");
+start_time = document.getElementsByClassName("start_time");
+end_time = document.getElementsByClassName("end_time");
+}
+
+function diff(start, end) {
+    start = start.split(":");
+    end = end.split(":");
+    var startDate = new Date(0, 0, 0, start[0], start[1], 0);
+    var endDate = new Date(0, 0, 0, end[0], end[1], 0);
+    var diff = endDate.getTime() - startDate.getTime();
+    var hours = Math.floor(diff / 1000 / 60 / 60);
+    diff -= hours * 1000 * 60 * 60;
+    var minutes = Math.floor(diff / 1000 / 60);
+
+    // If using time pickers with 24 hours format, add the below line get exact hours
+    if (hours < 0)
+       hours = hours + 24;
+
+    return (hours <= 9 ? "0" : "") + hours + ":" + (minutes <= 9 ? "0" : "") + minutes;
+}
+
+function sumAll(){
+    var result = "";
+    var sum_hour = 0;
+    var sum_minute = 0;
+
+    for (let i = 0; i < start_time.length; i++) {
+        var time = working_time[i].innerText;
+        sum_hour += time.split(":")[0] *  1;
+        sum_minute += time.split(":")[1] * 1;
+
+    }
+    sum_hour += Math.floor(sum_minute / 60);
+    sum_minute = sum_minute % 60;
+
+    result =  ("0" +  sum_hour).slice(-2) + ":" + ("0" + sum_minute).slice(-2);
+
+
+}
+
+function addAllEvents(){
+    document.getElementById('week_start_date').addEventListener('change', setFormDate);
+    for (let i = 0; i < start_time.length; i++) {
+        start_time[i].addEventListener('change', CalculateAllWorkTime);
+        end_time[i].addEventListener('change', CalculateAllWorkTime);
+        work_type[i].addEventListener('change', CheckWorkTime);
+    }
+}
+
+function init(){
+    setDateInit();
+    getAllWorkTimes();
+    addAllEvents();
+
+    setFormDate();
+}
+
+
+window.addEventListener('DOMContentLoaded', init);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+
+<form method="post" action="" role="form">
+    {% csrf_token %}
+
+
+    <div class="columns is-centered">
+        <div class="column is-7">
+
+            <div class="box">
+
+                <div class="columns is-centered">
+                    <div class="column is-4 title is-3">
+                        <div class="buttons has-addons">
+                            <p class="button" onclick="setDateBefore()">
+                            <span class="material-icons">
+                                arrow_back
+                            </span>
+                            </p>
+                            <p class="button">
+                                {{ forms.week_start_date }}
+                            </p>
+                            <p class="button" onclick="setDateAfter()">
+                            <span class="material-icons">
+                                arrow_forward
+                            </span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="column is-4">
+
+
+                    </div>
+                    <div class="column is-4">
+                        <button type="submit" class="button is-info is-fullwidth">근무 신청</button>
+                    </div>
+                </div>
+            </div>
+            <div class="box">
+                <div class="columns is-centered">
+                    <div class="column is-2">
+                        <p class='title is-5 date'>3.21(일)</p>
+                    </div>
+                    <div class="column is-7">
+                        <div class="columns is-centered">
+
+                            <div class="column is-3">
+                                <div class="select is-success">
+                                    {{ forms.work_type }}
+                                </div>
+                            </div>
+                            <div class="column is-3">
+                                {{ forms.start }}
+                            </div>
+                            <div class="column is-1">
+                                -
+                            </div>
+                            <div class="column is-3">
+                                {{ forms.end }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column is-3">
+
+                        <div class="columns is-centered">
+                            <div class="column">
+                                <span class="tag is-primary is-medium"><p>예정 근무 시간&nbsp;</p><p
+                                        class="work_time">00:00</p></span>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</form>
+
+
+{% endblock %}
