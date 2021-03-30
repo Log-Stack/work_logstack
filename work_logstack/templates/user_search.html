@@ -1,5 +1,124 @@
 {% extends 'base.html' %}
 {% block content %}
+
+<script src='http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery.min.js'></script>
+<script>
+
+function getTeam(num){
+    var user_team;
+    $.ajax({
+                type: 'GET',
+                url: '/authy/api/teams/',
+                dataType: 'json',
+                async : false,
+
+                success: function(data){
+                    console.log("num", num);
+                    user_team = data[num-1].name;
+                     console.log(data[num].name);
+                }
+            })
+    return user_team;
+}
+
+
+function SearchUser() {
+    var input = document.getElementById('search_key').value;
+    var p_results = document.getElementById('p_results');
+    var p_list = [];
+    p_results.innerHTML="";
+
+    $.ajax({
+			type: 'GET',
+			url: '/authy/api/profiles/',
+			dataType: 'json',
+
+			success: function(data){
+                for(let i = 0;i<data.length;i++)
+                {
+
+
+                    if(typeof data[i].name == "string" && input !="")
+                    {
+                      if(data[i].name.includes(input) === true)
+                      {
+                        p_id = data[i].user_id;
+                        p_name = data[i].name;
+                        p_team = data[i].team;
+                        p_picture = data[i].picture;
+                        var p = [p_id, p_name, p_team, p_picture];
+                        p_list.push(p);
+                        console.log(i,"/51/", p_list, p_list.length);
+
+                        for(j=0; j<p_list.length;j++)
+                        {
+
+                            user_id = p_list[j][0];
+                            user_name = p_list[j][1];
+                            user_team_num = p_list[j][2];
+                            user_team = getTeam(user_team_num);
+                            user_pic = p_list[j][3];
+                        }
+                            var url = "{% url 'userdetail' 123 %}";
+                            url = url.replace('123',user_id);
+                            var list = document.createElement('li');
+
+                            var a = document.createElement('a');
+                            a.setAttribute('href',"http://127.0.0.1:8000"+url);
+                            list.appendChild(a);
+                            p_results.appendChild(list);
+
+                            var div_box = document.createElement("div");
+                            div_box.className += "box";
+                            div_box.style.display = 'flex';
+
+                            a.appendChild(div_box);
+
+
+
+                            var img = document.createElement("img");
+                            img.setAttribute("src",user_pic);
+                            img.setAttribute("height","128px");
+                            img.setAttribute("width","128px");
+                            div_box.appendChild(img);
+
+                            var not_img = document.createElement("div");
+                            not_img.style.marginLeft='10px';
+                            div_box.appendChild(not_img);
+
+                            var name = document.createElement("p");
+                            name.style.fontWeight="bold";
+                            name.innerText =  `${user_name}`;
+                            not_img.appendChild(name);
+
+                            var team = document.createElement("p");
+
+                            team.innerText = `@${user_team}`;
+                            not_img.appendChild(team);
+
+
+
+
+
+                        }
+                    }
+                }
+	        }
+        })
+}
+
+
+
+
+
+
+
+
+
+
+
+</script>
+
 <style>
 .search_body{
       padding-top:120px;
@@ -10,7 +129,9 @@
 .search{
   width:500px;
 }
+
 </style>
+<div class="container">
 <div class="hero is-primary is-small">
         <div class="hero-body">
             <p class="title">
@@ -20,6 +141,7 @@
     </div>
 <div class="tabs">
   <ul>
+      <li><a href="{% url 'searchall' %}">All Staffs</a></li>
     <li class="is-active"><a href="{% url 'search' %}">by Name</a></li>
     <li><a href="{% url 'searchselect' %}">by Team</a></li>
 
@@ -38,7 +160,7 @@
         </p>
 
           <div class="control">
-            <input class="input is-large" name="q" type="text" placeholder="Name + Enter" value="{{ request.GET.q }}">
+            <input class="input is-large" id="search_key" name="q" type="text" onkeyup="SearchUser()" placeholder="이름을 입력하세요." value="{{ request.GET.q }}">
 
           </div>
 
@@ -46,37 +168,40 @@
 
         </form>
 
-      <!--  직원 검색 결과 프로필-->
-        {% for user in users %}
-        <a href="{% url 'userdetail' user.user_id %}">
-           <div class="box">
-              <article class="media">
-                <div class="media-left">
-<!--                  <figure class="image is-96x96">-->
-<!--                    <img src="https://bulma.io/images/placeholders/96x96.png" alt="Placeholder image">-->
-<!--                  </figure>-->
-                                    <figure class="image is-128x128">
-                  <img src="{% if user.picture %}
-          {{ user.picture.url }} {% else %} https://bulma.io/images/placeholders/128x128.png {% endif %}">
-    </figure>
-                </div>
-                <div class="media-content">
-                  <div class="content">
-                    <p>
-                      <strong>{{ user.name }}</strong><br> <small>@{{ user.team }}</small>
-                    </p>
-                  </div>
+        <ul id="p_results">
 
-                </div>
-              </article>
-          </div>
-</a>
-        {% endfor %}
+        </ul>
+
+
+<!--&lt;!&ndash;  직원 검색 결과 프로필&ndash;&gt;-->
+<!--{% for user in users %}-->
+<!--<a href="{% url 'userdetail' user.user_id %}">-->
+<!--   <div class="box">-->
+<!--      <article class="media">-->
+<!--        <div class="media-left">-->
+<!--        <figure class="image is-128x128">-->
+<!--          <img src="{% if user.picture %}-->
+<!--                {{ user.picture.url }} {% else %} https://bulma.io/images/placeholders/128x128.png {% endif %}">-->
+<!--        </figure>-->
+<!--        </div>-->
+<!--        <div class="media-content">-->
+<!--          <div class="content">-->
+<!--            <p>-->
+<!--              <strong>{{ user.name }}</strong><br> <small>@{{ user.team }}</small>-->
+<!--            </p>-->
+<!--          </div>-->
+
+<!--        </div>-->
+<!--      </article>-->
+<!--  </div>-->
+<!--</a>-->
+<!--{% endfor %}-->
 
 
     </article>
 
 </div>
+    </div>
 
 
 {% endblock %}

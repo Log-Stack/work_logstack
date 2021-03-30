@@ -9,8 +9,17 @@
     }
      .profile{
             width:500px;
-
         }
+
+    .team{
+          display: inline-block;
+        margin-top: 20px;
+        padding-right: 5px;
+        padding-left: 5px;
+        background: #01C4A7;
+        color: white;
+        width: max-content;
+    }
 </style>
     <div class="profile_body">
     <div class="profile">
@@ -31,7 +40,16 @@
             </div>
           </div>
         </div>
-
+        <div class="teams">
+            <br><br>
+            <strong>현재 팀 목록</strong>
+        {% for team in teams %}
+            <ul class="teams">
+               <li class="team">{{ team }}</li>
+            </ul>
+        {% endfor %}
+        </div>
     </div>
+
     </div>
 {% endblock %}

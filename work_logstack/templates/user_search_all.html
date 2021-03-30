@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+.search_body{
+      padding-top:120px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+}
+.search{
+  width:700px;
+}
+.card {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-gap: 1rem;
+
+}
+
+@media (min-width: 800px) {
+  .card { grid-template-columns: repeat(2, 1fr); }
+}
+
+
+
+</style>
+<div class="container">
+<div class="hero is-primary is-small">
+        <div class="hero-body">
+            <p class="title">
+                Search Staff
+            </p>
+        </div>
+    </div>
+<div class="tabs">
+  <ul>
+      <li class="is-active"><a href="{% url 'searchall' %}">All Staffs</a></li>
+    <li><a href="{% url 'search' %}">by Name</a></li>
+    <li><a href="{% url 'searchselect' %}">by Team</a></li>
+
+  </ul>
+</div>
+<div class="search_body">
+
+
+    <article class="panel is-primary search card">
+
+
+        <!-- 직원 검색 input, 엔터로 검색 가능-->
+
+      <!--  직원 검색 결과 프로필-->
+        {% for user in users %}
+        <a href="{% url 'userdetail' user.user_id %}">
+           <div class="box">
+              <article class="media">
+                <div class="media-left">
+<!--                  <figure class="image is-96x96">-->
+<!--                    <img src="https://bulma.io/images/placeholders/96x96.png" alt="Placeholder image">-->
+<!--                  </figure>-->
+                                    <figure class="image is-128x128">
+                  <img src="{% if user.picture %}
+          {{ user.picture.url }} {% else %} https://bulma.io/images/placeholders/128x128.png {% endif %}">
+    </figure>
+                </div>
+                <div class="media-content">
+                  <div class="content">
+                    <p>
+                      <strong>{{ user.name }}</strong><br> <small>@{{ user.team }}</small>
+                    </p>
+                  </div>
+
+                </div>
+              </article>
+          </div>
+</a>
+        {% endfor %}
+
+
+    </article>
+
+</div>
+</div>
+
+{% endblock %}

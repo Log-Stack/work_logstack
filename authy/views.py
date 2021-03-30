@@ -98,6 +98,7 @@ def CreateUserView(request):
 # Leader of team creates team
 @login_required
 def CreateTeamView(request):
+    teams = list(Team.objects.all().values_list('name', flat=True))
     if request.method == 'POST':
         form = TeamCreateForm(request.POST)
         if form.is_valid():
@@ -113,6 +114,7 @@ def CreateTeamView(request):
 
     context = {
         'form': form,
+        'teams': teams,
     }
 
     return render(request, 'team_create.html', context)
@@ -221,6 +223,15 @@ def UserSearchView(request):
 
 
     return HttpResponse(template.render(context, request))
+
+
+@login_required
+def SearchAllView(request):
+    profile = Profile.objects.all().order_by('name')
+    context = {
+        'users': profile
+    }
+    return render(request,'user_search_all.html', context)
 
 
 @login_required
