@@ -13,46 +13,29 @@
 function getWorkCalendar(){
 var start_date = document.getElementsByName('start_date');
 var end_date = document.getElementsByName('end_date');
-alert(start_date[0].value + " : " + end_date[0].value);
+
 $.ajax({
                 type: 'GET',
-                url: '',
+                url: '/authy/calc_work_hours',
                 dataType: 'json',
                 data : {
-                    start : start_date.value,
-                    start : end_date.value,
+                    start : start_date[0].value,
+                    end : end_date[0].value,
                 },
                 success: function(data){
-
+                document.getElementsByClassName("total_time")[0].innerText= data.total_working_time;
                 var color_list = ['#0096c6', '#ff6939', '#fa3d00', '#6937a1',  '#003458'];
 
                 var titles = Array();
-			    for (var i = 0 ; i < data.length; i++){
-                    if(data[i].worker_count + data[i].vacation_count == 0){
-                        continue;
-                    }
-                    var work_count = "근무 인원 : " + data[i].worker_count + "명";
-                    var work_time ="";
-                    if(data[i].worker_count == 0){
-                        work_time = "근무 인원이 없습니다";
-                    }
-                    else{
-                        work_time = data[i].start + " ~ " + data[i].end;
-                    }
-                    var vacation_count = "휴가 인원 : " + data[i].vacation_count + "명";
-
-                    titles.push({'title' : work_count, 'start': data[i].date, 'end' : data[i].date, "color": color_list[0] });
-                    titles.push({'title' : work_time, 'start': data[i].date, 'end' : data[i].date, "color": color_list[4] });
-                    titles.push({'title' : vacation_count, 'start': data[i].date, 'end' : data[i].date, "color": color_list[2] });
+			    for (var i = 0 ; i < data.work_hours_list.length; i++){
+                    titles.push({'title' : data.work_hours_list[i].start_time, 'start': data.work_hours_list[i].date, 'end' : data.work_hours_list[i].date, "color": color_list[0] });
+                    titles.push({'title' : data.work_hours_list[i].end_time, 'start': data.work_hours_list[i].date, 'end' : data.work_hours_list[i].date, "color": color_list[4] });
 			    }
 
                 var calendarEl = document.getElementById('calendar');
                 var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 events : titles,
-                      dateClick: function(info) {
-                            location.href="/schedule/register/day/" + info.dateStr.split('-')[0] + "/" + info.dateStr.split('-')[1] + "/" + info.dateStr.split('-')[2];
-                      },
                 });
 
                 calendar.render();
@@ -62,15 +45,7 @@ $.ajax({
 
 
 document.addEventListener('DOMContentLoaded', function() {
-    calendarEl = document.getElementById('calendar');
-    calendar = new FullCalendar.Calendar(calendarEl, {
-          initialView: 'dayGridMonth',
-          dateClick: function(info) {
-                location.href="/schedule/register/day/" + info.dateStr.split('-')[0] + "/" + info.dateStr.split('-')[1] + "/" + info.dateStr.split('-')[2];
-          },
-    });
-
-    calendar.render();
+    getWorkCalendar()
 
 
 });
@@ -236,53 +211,26 @@ $(document).ready(function(){
                                     </div>
                                 </div>
                             </div>
+
                         </div>
                     </form>
 
+                    <div class="columns">
+                        <div class="notification is-primary">
+                            <div class="column is-3">
+                                <p class="subtitle is-3 total_time has-text-right"></p>
+                            </div>
+                            <div class="column is-9">
+                                <p class="subtitle is-3">시간 근무</p>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    {% if work_hours %}
-        <div class="box">
-            <div class="columns is-mobile">
-                <div class="column is-3">
-                    <b>Date</b>
-                </div>
-                <div class="column">
-                    <b>Start Time</b>
-                </div>
-                <div class="column">
-                    <b>End Time</b>
-                </div>
-                <div class="column is-1">
-                </div>
-            </div>
-        </div>
-    {% else %}
-        <div class="box">
-            <p class="has-text-centered"><strong>출퇴근 기록이 없습니다.</strong></p>
-        </div>
-    {% endif %}
-    {% for work_hour in work_hours %}
-        <div class="box">
-            <div class="columns is-mobile">
-                <div class="column is-3">
-                    <p>{{ work_hour.date }}</p>
-                </div>
-                <div class="column">
-                    <p>{{ work_hour.start_time|date:'A h:i' }}</p>
-                </div>
-                <div class="column">
-                    <p>{{ work_hour.end_time|date:'A h:i' }}</p>
-                </div>
-                <div class="column is-1">
-                    <a href="{% url 'work_hour_edit' work_hour.pk %}" class="button is-primary">Edit</a>
-                </div>
-            </div>
-        </div>
-    {% endfor %}
 
     <div class="box">
         <div id='calendar'></div>

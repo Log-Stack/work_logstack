@@ -479,16 +479,18 @@ def manage_team(request, pk, team_name):
 
 # 일자 선택시 실 출퇴근 시간, 총 근무 시간 가져오는 api(시간은 반올림 된 형태로 출력 및 합산)
 @login_required
-def calc_work_hours(request, member_pk, start_date, end_date):
+def calc_work_hours(request):
     user = request.user
+    start_date = request.GET.get('start')
+    end_date = request.GET.get('end')
     profile = Profile.objects.get(user=user)
     team_manager = TeamManager.objects.filter(team=profile.team).filter(user=user).first()
     if team_manager:
         result = {}
         total_working_time = 0
         work_hours_list = []
-        member = Profile.objects.get(pk=member_pk)
-        work_hours = WorkHour.objects.filter(user=member.user)
+        member = Profile.objects.get(pk=user.id)
+        work_hours = WorkHour.objects.filter(user=member.id)
 
         if start_date:
             work_hours = work_hours.filter(date__gte=start_date)
