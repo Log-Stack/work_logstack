@@ -23,7 +23,7 @@ class ProfileForm(forms.ModelForm):
 
     class Meta:
         model = Profile
-        fields = ['picture', 'name', 'birth_day', 'phone_number', 'email_address']
+        fields = ['picture', 'name', 'birth_day', 'phone_number', 'email_address', 'start_date']
 
 
 class ForbiddenUsers(object):
