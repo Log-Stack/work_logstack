@@ -40,7 +40,7 @@ $(document).ready(function(){
           dataType: 'json',
           success: function(data){
 			    if (data === 'success'){
-			        current_team.innerText = '직급: ' + position
+			        current_position.innerText = '직급: ' + position
 			    } else {
 			        window.location.href='{% url 'schedule-index' %}'
 			    }
