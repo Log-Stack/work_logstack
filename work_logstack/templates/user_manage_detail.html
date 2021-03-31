@@ -10,6 +10,26 @@
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script>
 
+function getWorkLogContent(targetDate){
+var work_log_date = document.getElementsByClassName('work_log_date')[0];
+var work_log_content = document.getElementsByClassName('work_log_content')[0];
+
+$.ajax({
+                type: 'GET',
+                url: '/authy/send_work_log/2/' + targetDate,
+                dataType: 'json',
+                data : {
+                    date : targetDate,
+                },
+                success: function(data){
+                work_log_date.innerText = targetDate;
+
+                work_log_content.innerText = data.content;
+        }
+    })
+}
+
+
 function getWorkCalendar(){
 var start_date = document.getElementsByName('start_date');
 var end_date = document.getElementsByName('end_date');
@@ -36,6 +56,9 @@ $.ajax({
                 var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 events : titles,
+                dateClick: function(info) {
+                    getWorkLogContent(info.dateStr)
+                },
                 });
 
                 calendar.render();
@@ -71,6 +94,8 @@ $(document).ready(function(){
         });
     });
 });
+
+
 
 $(document).ready(function(){
 
@@ -162,7 +187,7 @@ $(document).ready(function(){
                     </p>
 
                     <div class="columns is-multiline">
-                        <div class="column is-2">
+                        <div class="column is-5">
                             <label class="label">Team</label>
                             <div class="select is-primary">
                                 <select name="team" id="edit_team">
@@ -172,7 +197,7 @@ $(document).ready(function(){
                                 </select>
                             </div>
                         </div>
-                        <div class="column">
+                        <div class="column is-5">
                             <label class="label">Position</label>
                             <div class="select is-primary">
                                 <select name="position" id="edit_position">
@@ -189,7 +214,7 @@ $(document).ready(function(){
                     <form method="POST" role="form">
                         {% csrf_token %}
                         <div class="columns">
-                            <div class="column is-2">
+                            <div class="column is-4">
                                 <div class="field">
                                     <label class="label">Start date</label>
                                     <div class="control">
@@ -197,7 +222,7 @@ $(document).ready(function(){
                                     </div>
                                 </div>
                             </div>
-                            <div class="column is-2">
+                            <div class="column is-4">
                                 <div class="field">
                                     <label class="label">End date</label>
                                     <div class="control">
@@ -225,14 +250,23 @@ $(document).ready(function(){
 
                     </div>
                 </div>
+                </div>
+            </div>
+                </div>
+                <div class="column is-6">
+
+                    <div style="height:100%;" class="box">
+                        <p class="title is-4 work_log_date"></p>
+                        <hr>
+                        <p class="subtitle is-6 work_log_content"></p>
+                    </div>
+                </div>
             </div>
         </div>
-                </div></div>
-    </div>
 
 
     <div class="box">
         <div id='calendar'></div>
     </div>
-</div>
+    </div></div>
 {% endblock %}
