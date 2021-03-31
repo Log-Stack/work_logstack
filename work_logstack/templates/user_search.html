@@ -13,11 +13,13 @@ function getTeam(num){
                 async : false,
 
                 success: function(data){
-                    console.log("num", num);
-                    user_team = data[num-1].name;
+                    for(let i=0;i<data.length;i++){
+                        if(data[i].id == num){
+                            return data[i].name;
+                        }
+                    }
                 }
             })
-    return user_team;
 }
 
 
