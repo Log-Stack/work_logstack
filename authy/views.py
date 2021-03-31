@@ -482,6 +482,7 @@ def manage_team(request, pk, team_name):
 @login_required
 def calc_work_hours(request):
     user = request.user
+    member_pk = request.GET.get('member_pk')
     start_date = request.GET.get('start')
     end_date = request.GET.get('end')
     profile = Profile.objects.get(user=user)
@@ -490,8 +491,8 @@ def calc_work_hours(request):
         result = {}
         total_working_time = 0
         work_hours_list = []
-        member = Profile.objects.get(pk=user.id)
-        work_hours = WorkHour.objects.filter(user=member.id)
+        member = Profile.objects.get(pk=member_pk)
+        work_hours = WorkHour.objects.filter(user=member.user)
 
         if start_date:
             work_hours = work_hours.filter(date__gte=start_date)

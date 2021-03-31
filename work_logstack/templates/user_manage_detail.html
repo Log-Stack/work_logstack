@@ -16,7 +16,7 @@ var work_log_content = document.getElementsByClassName('work_log_content')[0];
 
 $.ajax({
                 type: 'GET',
-                url: '/authy/send_work_log/2/' + targetDate,
+                url: '/authy/send_work_log/{{ member.pk }}/' + targetDate,
                 dataType: 'json',
                 data : {
                     date : targetDate,
@@ -39,6 +39,7 @@ $.ajax({
                 url: '/authy/calc_work_hours',
                 dataType: 'json',
                 data : {
+                    member_pk : {{ member.pk }},
                     start : start_date[0].value,
                     end : end_date[0].value,
                 },

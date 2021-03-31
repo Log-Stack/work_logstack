@@ -7,7 +7,7 @@ from authy import views
 from authy.views import index, CreateUserView, CreateTeamView, EditProfileView, ChangePWView, ChangePWDoneView, \
     UserSearchView, SearchSelectView, UserDetailView, ProfileView, SearchAllView
 
-from .views import manage_list, manage_detail, manage_delete, manage_permit, manage_position, manage_team, calc_work_hours, send_work_log
+from .views import manage_list, manage_detail, manage_delete, manage_permit, manage_position, manage_team, calc_work_hours, send_work_log, SearchAllView
 
 router = routers.DefaultRouter()
 router.register(r'teams', views.TeamViewSet)
