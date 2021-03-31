@@ -15,7 +15,6 @@ function getTeam(num){
                 success: function(data){
                     console.log("num", num);
                     user_team = data[num-1].name;
-                     console.log(data[num].name);
                 }
             })
     return user_team;
@@ -48,62 +47,59 @@ function SearchUser() {
                         p_picture = data[i].picture;
                         var p = [p_id, p_name, p_team, p_picture];
                         p_list.push(p);
-                        console.log(i,"/51/", p_list, p_list.length);
-
-                        for(j=0; j<p_list.length;j++)
-                        {
-
-                            user_id = p_list[j][0];
-                            user_name = p_list[j][1];
-                            user_team_num = p_list[j][2];
-                            user_team = getTeam(user_team_num);
-                            user_pic = p_list[j][3];
-                        }
-                            var url = "{% url 'userdetail' 123 %}";
-                            url = url.replace('123',user_id);
-                            var list = document.createElement('li');
-
-                            var a = document.createElement('a');
-                            a.setAttribute('href',"http://127.0.0.1:8000"+url);
-                            list.appendChild(a);
-                            p_results.appendChild(list);
-
-                            var div_box = document.createElement("div");
-                            div_box.className += "box";
-                            div_box.style.display = 'flex';
-
-                            a.appendChild(div_box);
-
-
-
-                            var img = document.createElement("img");
-                            img.setAttribute("src",user_pic);
-                            img.setAttribute("height","128px");
-                            img.setAttribute("width","128px");
-                            div_box.appendChild(img);
-
-                            var not_img = document.createElement("div");
-                            not_img.style.marginLeft='10px';
-                            div_box.appendChild(not_img);
-
-                            var name = document.createElement("p");
-                            name.style.fontWeight="bold";
-                            name.innerText =  `${user_name}`;
-                            not_img.appendChild(name);
-
-                            var team = document.createElement("p");
-
-                            team.innerText = `@${user_team}`;
-                            not_img.appendChild(team);
-
-
-
-
-
-                        }
+                      }
                     }
                 }
-	        }
+                console.log("/51/", p_list, p_list.length);
+                for(j=0; j<p_list.length;j++)
+                {
+
+                    user_id = p_list[j][0];
+                    user_name = p_list[j][1];
+                    user_team_num = p_list[j][2];
+                    user_team = getTeam(user_team_num);
+                    user_pic = p_list[j][3];
+
+                    var url = "{% url 'userdetail' 123 %}";
+                    url = url.replace('123',user_id);
+                    var list = document.createElement('li');
+
+                    var a = document.createElement('a');
+                    a.setAttribute('href',"http://127.0.0.1:8000"+url);
+                    list.appendChild(a);
+                    p_results.appendChild(list);
+
+                    var div_box = document.createElement("div");
+                    div_box.className += "box";
+                    div_box.style.display = 'flex';
+
+                    a.appendChild(div_box);
+
+
+
+                    var img = document.createElement("img");
+                    img.setAttribute("src",user_pic);
+                    img.setAttribute("height","128px");
+                    img.setAttribute("width","128px");
+                    div_box.appendChild(img);
+
+                    var not_img = document.createElement("div");
+                    not_img.style.marginLeft='10px';
+                    div_box.appendChild(not_img);
+
+                    var name = document.createElement("p");
+                    name.style.fontWeight="bold";
+                    name.innerText =  `${user_name}`;
+                    not_img.appendChild(name);
+
+                    var team = document.createElement("p");
+
+                    team.innerText = `@${user_team}`;
+                    not_img.appendChild(team);
+
+                }
+            }
+
         })
 }
 
