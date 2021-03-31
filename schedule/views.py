@@ -308,7 +308,7 @@ def schedule_summary_team(request):
     month = int(request.GET.get('month', None))
 
     day_start = datetime(year, month, 1).strftime('%Y-%m-%d')
-    day_end = (datetime(year, month, 1) + relativedelta(months=1)).strftime('%Y-%m-%d')
+    day_end = (datetime(year, month, 1) + relativedelta(months=2)).strftime('%Y-%m-%d')
 
     users = Profile.objects.filter(team=team_id).values_list('id', flat=True)
     schedule = Schedule.objects.filter(user__in=users, date__range=[day_start, day_end]).order_by('date')
