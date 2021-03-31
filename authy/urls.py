@@ -29,6 +29,7 @@ urlpatterns = [
     path('profile/changepw/done',ChangePWDoneView, name='changepwdone'),
     path('search',UserSearchView,name='search'),
     path('search/all/',SearchAllView, name='searchall'),
+
     path('search/select',SearchSelectView, name='searchselect'),
     path('search/select/<int:user_id>', UserDetailView, name='userdetail'),
 
