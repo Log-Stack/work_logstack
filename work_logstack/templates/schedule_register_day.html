@@ -201,84 +201,94 @@ window.addEventListener('DOMContentLoaded', init);
 
 
 
+
 </script>
+<div class="container">
+    <br>
+    <div class="hero is-primary is-small">
+        <div class="hero-body">
+            <p class="title">
+                Modify Schedule
+            </p>
+        </div>
+    </div>
+    <br>
+    <form method="post" action="" role="form">
+        {% csrf_token %}
 
-<form method="post" action="" role="form">
-    {% csrf_token %}
 
+        <div class="columns is-centered">
+            <div class="column">
 
-    <div class="columns is-centered">
-        <div class="column is-7">
+                <div class="box">
 
-            <div class="box">
-
-                <div class="columns is-centered">
-                    <div class="column is-4 title is-3">
-                        <div class="buttons has-addons">
-                            <p class="button" onclick="setDateBefore()">
+                    <div class="columns is-centered">
+                        <div class="column is-4 title is-3">
+                            <div class="buttons has-addons">
+                                <p class="button" onclick="setDateBefore()">
                             <span class="material-icons">
                                 arrow_back
                             </span>
-                            </p>
-                            <p class="button">
-                                {{ forms.week_start_date }}
-                            </p>
-                            <p class="button" onclick="setDateAfter()">
+                                </p>
+                                <p class="button">
+                                    {{ forms.week_start_date }}
+                                </p>
+                                <p class="button" onclick="setDateAfter()">
                             <span class="material-icons">
                                 arrow_forward
                             </span>
-                            </p>
+                                </p>
+                            </div>
                         </div>
-                    </div>
-                    <div class="column is-4">
+                        <div class="column is-4">
 
 
-                    </div>
-                    <div class="column is-4">
-                        <button type="submit" class="button is-info is-fullwidth">근무 신청</button>
+                        </div>
+                        <div class="column is-4">
+                            <button type="submit" class="button is-info is-fullwidth">근무 신청</button>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="box">
-                <div class="columns is-centered">
-                    <div class="column is-2">
-                        <p class='title is-5 date'>3.21(일)</p>
-                    </div>
-                    <div class="column is-7">
-                        <div class="columns is-centered">
+                <div class="box">
+                    <div class="columns is-centered">
+                        <div class="column is-2">
+                            <p class='title is-5 date'>3.21(일)</p>
+                        </div>
+                        <div class="column is-7">
+                            <div class="columns is-centered">
 
-                            <div class="column is-3">
-                                <div class="select is-success">
-                                    {{ forms.work_type }}
+                                <div class="column is-3">
+                                    <div class="select is-success">
+                                        {{ forms.work_type }}
+                                    </div>
+                                </div>
+                                <div class="column is-3">
+                                    {{ forms.start }}
+                                </div>
+                                <div class="column is-1">
+                                    <span class="subtitle is-3">-</span>
+                                </div>
+                                <div class="column is-3">
+                                    {{ forms.end }}
                                 </div>
                             </div>
-                            <div class="column is-3">
-                                {{ forms.start }}
-                            </div>
-                            <div class="column is-1">
-                                -
-                            </div>
-                            <div class="column is-3">
-                                {{ forms.end }}
-                            </div>
                         </div>
-                    </div>
-                    <div class="column is-3">
+                        <div class="column is-3">
 
-                        <div class="columns is-centered">
-                            <div class="column">
+                            <div class="columns is-centered">
+                                <div class="column">
                                 <span class="tag is-primary is-medium"><p>예정 근무 시간&nbsp;</p><p
                                         class="work_time">00:00</p></span>
-                            </div>
+                                </div>
 
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-</form>
-
+    </form>
+</div>
 
 {% endblock %}
