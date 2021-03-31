@@ -4,7 +4,6 @@
 
 {% block content %}
 
-<script src='http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery.min.js'></script>
 
 <script>
 
@@ -19,61 +18,6 @@ var start_time = null;
 var end_time = null;
 
 
-function CalculateAllWorkTime(){
-    for (let i = 0; i < start_time.length; i++) {
-        if(start_time[i].value == "" ||  end_time[i].value == ""){
-            working_time[i].innerText = '00:00';
-        }
-        else{
-        working_time[i].innerText = diff(start_time[i].value, end_time[i].value);
-        }
-    }
-    sumAll();
-}
-
-function CheckWorkTime(){
-    for(let i = 0 ; i < work_type.length; i++){
-        if(work_type[i].value != 1){
-        start_time[i].value = '';
-        start_time[i].readOnly = true;
-        end_time[i].value = '';
-        end_time[i].readOnly = true;
-        }
-        else{
-        start_time[i].readOnly = false;
-        end_time[i].readOnly = false;
-
-        }
-    }
-    CalculateAllWorkTime();
-}
-
-function getWorkTimes(){
-var week_start_date = document.getElementById('week_start_date').value.split('-');
-   $.ajax({
-        type: 'GET',
-        url: 'list/week/' +  week_start_date[0] + '/' + week_start_date[1] + '/' + week_start_date[2],
-        dataType: 'json',
-
-        success: function(data){
-                if(data.length == 0){
-                    for(let i=0;i<7;i++){
-                        work_type[i].value = 0;
-                        start_time[i].value = null;
-                        end_time[i].value = null;
-                    }
-                }
-                for(let i=0;i<data.length;i++){
-                    work_type[i].value = data[i].work_type;
-                    start_time[i].value = data[i].start;
-                    end_time[i].value = data[i].end;
-                };
-
-                CheckWorkTime();
-            }
-        });
-}
-
 
 function setFormDate(){
 var week = ['일', '월', '화', '수', '목', '금', '토'];
@@ -82,10 +26,6 @@ var d = new Date(document.getElementById('week_start_date').value);
         date[i].innerText = (d.getMonth() + 1) + "." + d.getDate() + " (" + week[d.getDay()] + ")";
         d.setDate(d.getDate() + 1);
     }
-
-getWorkTimes();
-
-CheckWorkTime();
 }
 
 function setDateInit(){
@@ -125,7 +65,6 @@ total_time = document.getElementsByClassName("sum_time")[0];
 
 date = document.getElementsByClassName("date");
 
-work_type = document.getElementsByClassName("work_type");
 working_time = document.getElementsByClassName("work_time");
 start_time = document.getElementsByClassName("start_time");
 end_time = document.getElementsByClassName("end_time");
@@ -168,20 +107,30 @@ function sumAll(){
     total_time.innerText = result;
 }
 
+function CalculateAllWorkTime(){
+    for (let i = 0; i < start_time.length; i++) {
+        if(start_time[i].value == "" ||  end_time[i].value == ""){
+            working_time[i].innerText = '00:00';
+        }
+        else{
+        working_time[i].innerText = diff(start_time[i].value, end_time[i].value);
+        }
+    }
+    sumAll();
+}
+
 function addAllEvents(){
     for (let i = 0; i < start_time.length; i++) {
         start_time[i].addEventListener('change', CalculateAllWorkTime);
         end_time[i].addEventListener('change', CalculateAllWorkTime);
-        work_type[i].addEventListener('change', CheckWorkTime);
     }
 }
-
 function init(){
     setDateInit();
     getAllWorkTimes();
     addAllEvents();
 
-    setFormDate();
+    setFormDate()
 }
 
 
@@ -195,62 +144,89 @@ window.addEventListener('DOMContentLoaded', init);
 
 
 
-
-
-
-
-
-
-
 </script>
-
+<div class="container">
+    <br>
+    <div class="hero is-primary is-small">
+        <div class="hero-body">
+            <p class="title">
+                Register Schedule
+            </p>
+        </div>
+    </div>
+    <br>
 <form method="post" action="" role="form">
     {% csrf_token %}
 
+    <div class="columns is-centered">
+        <div class="column">
+<!--            <div class="columns is-centered">-->
+<!--                <div class="column is-6">-->
+                    <div class="box has-text-centered">
+                        <h3 class="title is-3">총 예정 근무 </h3>
+                        <h1 class="title is-1"><p class="sum_time">00:00</p></h1>
+                    </div>
+<!--                </div>-->
+<!--            </div>-->
+        </div>
+    </div>
 
     <div class="columns is-centered">
-        <div class="column is-7">
+        <div class="column">
 
+<!--            <div class="columns is-centered">-->
+<!--                <div class="column">-->
+<!--                    <div class="box">-->
+<!--                        <div class="buttons has-addons" style="margin-left: 37%">-->
+<!--                            <p class="button" onclick="setDateBefore()">-->
+<!--                            <span class="material-icons">-->
+<!--                                arrow_back-->
+<!--                            </span>-->
+<!--                            </p>-->
+<!--                            <p class="button">-->
+<!--                                {{ forms.week_start_date }}-->
+<!--                            </p>-->
+<!--                            <p class="button" onclick="setDateAfter()">-->
+<!--                            <span class="material-icons">-->
+<!--                                arrow_forward-->
+<!--                            </span>-->
+<!--                            </p>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
             <div class="box">
+                <div class="columns">
 
-                <div class="columns is-centered">
-                    <div class="column is-4 title is-3">
-                        <div class="buttons has-addons">
-                            <p class="button" onclick="setDateBefore()">
-                            <span class="material-icons">
-                                arrow_back
-                            </span>
-                            </p>
-                            <p class="button">
-                                {{ forms.week_start_date }}
-                            </p>
-                            <p class="button" onclick="setDateAfter()">
-                            <span class="material-icons">
-                                arrow_forward
-                            </span>
-                            </p>
-                        </div>
-                    </div>
-                    <div class="column is-4">
-                                <span class="tag is-light is-large">
-                            <div class="columns is-centered">
-
-                                <div class="column is-6">
-                                    <div class="title is-3">총 근무 시간</div>
-                                </div>
-                                <div class="column is-1">
-
-                                </div>
-                                <div class="column is-5">
-                                    <div class="title is-3 sum_time">00:00</div>
-                                </div>
+                    <div class="column is-5" style="display: flex;">
+<!--                        <div class="box">-->
+                            <div class="buttons has-addons">
+                                <p class="button" onclick="setDateBefore()">
+                                <span class="material-icons">
+                                    arrow_back
+                                </span>
+                                </p>
+                                <p class="button">
+                                    {{ forms.week_start_date }}
+                                </p>
+                                <p class="button" onclick="setDateAfter()">
+                                <span class="material-icons">
+                                    arrow_forward
+                                </span>
+                                </p>
                             </div>
-                                                                    </span>
+<!--                        </div>-->
+                    </div>
 
+
+                    <div class="column" style="position: relative;">
+                        <b class="title is-3" style="padding-left: 30px; position: absolute; top: 25%;">이번 주 근무</b>
                     </div>
-                    <div class="column is-4">
-                        <button type="submit" class="button is-info is-fullwidth">근무 신청</button>
+
+                    <div class="column is-2">
+                        <button type="submit" class="button is-primary is-large" style="margin-left: 100px">신청</button>
                     </div>
+
                 </div>
             </div>
             <div class="box">
@@ -281,7 +257,7 @@ window.addEventListener('DOMContentLoaded', init);
 
                         <div class="columns is-centered">
                             <div class="column">
-                                <span class="tag is-primary is-medium"><p>예정 근무 시간&nbsp;</p><p
+                                <span class="tag is-primary is-medium"><p>예정 근무 시간</p><p
                                         class="work_time">00:00</p></span>
                             </div>
 
@@ -317,7 +293,7 @@ window.addEventListener('DOMContentLoaded', init);
 
                         <div class="columns is-centered">
                             <div class="column">
-                                <span class="tag is-primary is-medium"><p>예정 근무 시간&nbsp;</p><p
+                                <span class="tag is-primary is-medium"><p>예정 근무 시간</p><p
                                         class="work_time">00:00</p></span>
                             </div>
 
@@ -353,7 +329,7 @@ window.addEventListener('DOMContentLoaded', init);
 
                         <div class="columns is-centered">
                             <div class="column">
-                                <span class="tag is-primary is-medium"><p>예정 근무 시간&nbsp;</p><p
+                                <span class="tag is-primary is-medium"><p>예정 근무 시간</p><p
                                         class="work_time">00:00</p></span>
                             </div>
 
@@ -389,7 +365,7 @@ window.addEventListener('DOMContentLoaded', init);
 
                         <div class="columns is-centered">
                             <div class="column">
-                                <span class="tag is-primary is-medium"><p>예정 근무 시간&nbsp;</p><p
+                                <span class="tag is-primary is-medium"><p>예정 근무 시간</p><p
                                         class="work_time">00:00</p></span>
                             </div>
 
@@ -425,7 +401,7 @@ window.addEventListener('DOMContentLoaded', init);
 
                         <div class="columns is-centered">
                             <div class="column">
-                                <span class="tag is-primary is-medium"><p>예정 근무 시간&nbsp;</p><p
+                                <span class="tag is-primary is-medium"><p>예정 근무 시간</p><p
                                         class="work_time">00:00</p></span>
                             </div>
 
@@ -461,7 +437,7 @@ window.addEventListener('DOMContentLoaded', init);
 
                         <div class="columns is-centered">
                             <div class="column">
-                                <span class="tag is-primary is-medium"><p>예정 근무 시간&nbsp;</p><p
+                                <span class="tag is-primary is-medium"><p>예정 근무 시간</p><p
                                         class="work_time">00:00</p></span>
                             </div>
 
@@ -497,7 +473,7 @@ window.addEventListener('DOMContentLoaded', init);
 
                         <div class="columns is-centered">
                             <div class="column">
-                                <span class="tag is-primary is-medium"><p>예정 근무 시간&nbsp;</p><p
+                                <span class="tag is-primary is-medium"><p>예정 근무 시간</p><p
                                         class="work_time">00:00</p></span>
                             </div>
 
@@ -505,12 +481,13 @@ window.addEventListener('DOMContentLoaded', init);
                     </div>
                 </div>
             </div>
+
+
         </div>
     </div>
 
 </form>
 
-</div>
 </div>
 
 {% endblock %}

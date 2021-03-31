@@ -16,9 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
     calendarEl = document.getElementById('calendar');
     calendar = new FullCalendar.Calendar(calendarEl, {
           initialView: 'dayGridMonth',
-          dateClick: function(info) {
-                location.href="/schedule/register/day/" + info.dateStr.split('-')[0] + "/" + info.dateStr.split('-')[1] + "/" + info.dateStr.split('-')[2];
-          },
+
     });
 
     calendar.render();
@@ -30,67 +28,11 @@ function getEventByUser(){
 var user_select = document.getElementById('user_select');
 
 var user_id = user_select.options[user_select.selectedIndex].value;
-
-if(user_id == '-'){
-    getEventByTeamSummary();
-}
-else if(user_id != '-1'){
-    $.ajax({
-                type: 'GET',
-                url: '/schedule/list/user/' + user_id + "/" + (calendar.getDate().getYear() + 1900) + "/" + (calendar.getDate().getMonth()+1),
-                dataType: 'json',
-
-                success: function(data){
-
-                var color_list = ['#0096c6', '#ff6939', '#fa3d00', '#6937a1',  '#003458'];
-
-                var titles = Array();
-                for (var i = 0 ; i < data.length; i++){
-                    var title = ""
-                    var start = data[i].date
-                    var end = data[i].date
-                    var color = ""
-                    if (data[i].work_type == 1){
-                        title = data[i].name + " | " +  data[i].start + " : " + data[i].end;
-                        color = color_list[data[i].color];
-                    }
-                    else if(data[i].work_type == 2){
-                        title = data[i].name + " | " + "휴가";
-                        color = '#008000';
-                    }
-                    else if(data[i].work_type == 0){
-                        continue;
-                    }
-                    titles.push({'title' : title, 'start': start, 'end' : end, "color": color });
-                }
-
-                var calendarEl = document.getElementById('calendar');
-                var calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                events : titles,
-          dateClick: function(info) {
-                location.href="/schedule/register/day/" + info.dateStr.split('-')[0] + "/" + info.dateStr.split('-')[1] + "/" + info.dateStr.split('-')[2];
-          },
-                });
-
-                calendar.render();
-        }
-    })
-}
-else{
-getEventByTeamAllUsers();
-
-}
-}
-
-function getEventByTeamAllUsers(){
-var team_select = document.getElementById('team_select');
-
-var team_id = team_select.options[team_select.selectedIndex].value;
 $.ajax({
 			type: 'GET',
-			url: '/schedule/list/team/' + team_id + "/"+(calendar.getDate().getYear() + 1900) + "/" + (calendar.getDate().getMonth()+1),
+			url: '/schedule/list/user/' + user_id + "/" + (calendar.getDate().getYear() + 1900) + "/" + (calendar.getDate().getMonth()+1),
 			dataType: 'json',
+
 			success: function(data){
 
 			var color_list = ['#0096c6', '#ff6939', '#fa3d00', '#6937a1',  '#003458'];
@@ -118,10 +60,7 @@ $.ajax({
             var calendarEl = document.getElementById('calendar');
             var calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
-            events : titles,
-          dateClick: function(info) {
-                location.href="/schedule/register/day/" + info.dateStr.split('-')[0] + "/" + info.dateStr.split('-')[1] + "/" + info.dateStr.split('-')[2];
-          },
+            events : titles
             });
 
             calendar.render();
@@ -129,51 +68,43 @@ $.ajax({
 })
 }
 
-function getEventByTeamSummary(){
+function getEventByTeam(){
 var team_select = document.getElementById('team_select');
 
 var team_id = team_select.options[team_select.selectedIndex].value;
 $.ajax({
 			type: 'GET',
-			url: '/schedule/list/summary/',
+			url: '/schedule/list/team/' + team_id + "/"+(calendar.getDate().getYear() + 1900) + "/" + (calendar.getDate().getMonth()+1),
 			dataType: 'json',
-			data : {
-			    team : team_id,
-			    year : (calendar.getDate().getYear() + 1900),
-			    month : (calendar.getDate().getMonth()+1),
-			},
+
 			success: function(data){
 
 			var color_list = ['#0096c6', '#ff6939', '#fa3d00', '#6937a1',  '#003458'];
 
 			var titles = Array();
 			for (var i = 0 ; i < data.length; i++){
-			    if(data[i].worker_count + data[i].vacation_count == 0){
-			        continue;
-			    }
-			    var work_count = "근무 인원 : " + data[i].worker_count + "명";
-			    var work_time ="";
-			    if(data[i].worker_count == 0){
-                    work_time = "근무 인원이 없습니다";
-			    }
-                else{
-                    work_time = data[i].start + " ~ " + data[i].end;
+                var title = ""
+                var start = data[i].date
+                var end = data[i].date
+                var color = ""
+			    if (data[i].work_type == 1){
+			        title = data[i].name + " | " +  data[i].start + " : " + data[i].end;
+			        color = color_list[data[i].color];
                 }
-			    var vacation_count = "휴가 인원 : " + data[i].vacation_count + "명";
-
-                titles.push({'title' : work_count, 'start': data[i].date, 'end' : data[i].date, "color": color_list[0] });
-                titles.push({'title' : work_time, 'start': data[i].date, 'end' : data[i].date, "color": color_list[4] });
-                titles.push({'title' : vacation_count, 'start': data[i].date, 'end' : data[i].date, "color": color_list[2] });
+                else if(data[i].work_type == 2){
+                    title = data[i].name + " | " + "휴가";
+                    color = '#008000';
+                }
+                else if(data[i].work_type == 0){
+                    continue;
+                }
+                titles.push({'title' : title, 'start': start, 'end' : end, "color": color });
 			}
 
             var calendarEl = document.getElementById('calendar');
             var calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
-            events : titles,
-            eventOrder: 'color',
-          dateClick: function(info) {
-                location.href="/schedule/register/day/" + info.dateStr.split('-')[0] + "/" + info.dateStr.split('-')[1] + "/" + info.dateStr.split('-')[2];
-          },
+            events : titles
             });
 
             calendar.render();
@@ -185,7 +116,7 @@ function setTeamSelect(){
 var team_select = document.getElementById('team_select');
 
 team_select.addEventListener('change', setUserSelect);
-team_select.addEventListener('change', getEventByTeamSummary);
+team_select.addEventListener('change', getEventByTeam);
 $.ajax({
 			type: 'GET',
 			url: '/authy/api/teams/',
@@ -220,8 +151,8 @@ $.ajax({
 			dataType: 'json',
 
 			success: function(data){
-			    for(let i = 2;i<=user_select.options.length;i++){
-                    user_select.remove(2);
+			    for(let i = 1;i<=user_select.options.length;i++){
+                    user_select.remove(1);
 			    }
                 for(let i = 0;i<data.length;i++){
                 var temp = document.createElement("option");
@@ -242,26 +173,32 @@ window.addEventListener('DOMContentLoaded', init);
 
 
 
-
 </script>
 <br>
 
-<div class="columns is-centered">
-    <div class="column is-10">
-        <div class="select is-primary">
-            <select id="team_select">
-                <option>team</option>
-            </select>
+<div class="container">
+    <div class="hero is-primary is-small">
+        <div class="hero-body">
+            <p class="title">
+                Show Schedule
+            </p>
         </div>
-        <div class="select is-primary">
-            <select id="user_select">
-                <option>-</option>
-                <option value="-1">All</option>
-            </select>
+    </div>
+    <br>
+    <div class="columns is-centered">
+        <div class="column">
+            <div class="select is-primary">
+                <select id="team_select">
+                    <option>team</option>
+                </select>
+            </div>
+            <div class="select is-primary">
+                <select id="user_select">
+                    <option>user</option>
+                </select>
+            </div>
+            <div id='calendar'></div>
         </div>
-        <div id='calendar'></div>
-
-
     </div>
 </div>
 
