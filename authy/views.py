@@ -248,6 +248,7 @@ def UserSearchView(request):
     return HttpResponse(template.render(context, request))
 
 
+
 @login_required
 def SearchAllView(request):
     profile = Profile.objects.all().order_by('name')
