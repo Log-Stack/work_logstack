@@ -4,9 +4,9 @@ from rest_framework import routers
 from django.contrib.auth import views as authViews
 
 from authy import views
-from authy.views import index, CreateUserView, CreateTeamView, EditProfileView, ChangePWView, ChangePWDoneView, UserSearchView, SearchSelectView, UserDetailView, ProfileView, SearchAllView
+from authy.views import index, CreateUserView, CreateTeamView, EditProfileView, ChangePWView, ChangePWDoneView, UserSearchView, SearchSelectView, UserDetailView, ProfileView
 
-from .views import manage_list, manage_detail, manage_delete, manage_permit, manage_position, manage_team, calc_work_hours
+from .views import manage_list, manage_detail, manage_delete, manage_permit, manage_position, manage_team, calc_work_hours, send_work_log
 
 router = routers.DefaultRouter()
 router.register(r'teams', views.TeamViewSet)
@@ -28,7 +28,6 @@ urlpatterns = [
     path('profile/changepw', ChangePWView, name='changepw'),
     path('profile/changepw/done',ChangePWDoneView, name='changepwdone'),
     path('search',UserSearchView,name='search'),
-    path('search/all/',SearchAllView, name='searchall'),
     path('search/select',SearchSelectView, name='searchselect'),
     path('search/select/<int:user_id>', UserDetailView, name='userdetail'),
 
@@ -48,7 +47,8 @@ urlpatterns = [
     path('manage_team/<int:pk>/<str:team_name>', manage_team, name='manage_team'),
 
     # 매니지 디테일 페이지 관련 api
-    path('calc_work_hours/', calc_work_hours, name='calc_work_hours'),
+    path('calc_work_hours/<int:member_pk>/<str:start_date>/<str:end_date>', calc_work_hours, name='calc_work_hours'),
+    path('send_work_log/<int:member_pk>/<str:date>', send_work_log, name='send_work_log'),
 
 ]
 
