@@ -15,11 +15,12 @@ function getTeam(num){
                 success: function(data){
                     for(let i=0;i<data.length;i++){
                         if(data[i].id == num){
-                            return data[i].name;
+                            user_team = data[i].name;
                         }
                     }
                 }
             })
+    return user_team;
 }
 
 
@@ -52,7 +53,7 @@ function SearchUser() {
                       }
                     }
                 }
-                console.log("/51/", p_list, p_list.length);
+
                 for(j=0; j<p_list.length;j++)
                 {
 
@@ -60,6 +61,7 @@ function SearchUser() {
                     user_name = p_list[j][1];
                     user_team_num = p_list[j][2];
                     user_team = getTeam(user_team_num);
+                    console.log(user_team_num);
                     user_pic = p_list[j][3];
 
                     var url = "{% url 'userdetail' 123 %}";
