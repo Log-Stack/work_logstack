@@ -189,7 +189,7 @@ $.ajax({
 			    }
 
                 var temp = document.createElement("option");
-                temp.value = '-';
+                temp.value = '-2';
                 temp.text = 'Summary';
                 user_select.add(temp);
 
@@ -210,12 +210,91 @@ $.ajax({
 
 function setSelectMoveToCalendar(){
     selector = document.getElementsByClassName("select_team_user");
+    button = document.getElementsByClassName("edit_button");
     document.getElementsByClassName("fc-toolbar-chunk")[1].appendChild(selector[0]);
+    document.getElementsByClassName("fc-toolbar-chunk")[2].appendChild(button[0]);
+}
+
+function setModifyScheduleCalendar(){
+    $.ajax({
+                type: 'GET',
+                url: '/schedule/list/edit',
+                dataType: 'json',
+                data :{
+                    year : (calendar.getDate().getYear() + 1900),
+                    month : (calendar.getDate().getMonth()+1),
+			    },
+                success: function(data){
+                var calendarEl = document.getElementById('calendar');
+                var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                events : data,
+                eventMouseEnter: function(info) {
+                  var eventObj = info.event;
+                  info.el.style.cursor = 'default';
+                },
+                navLinks: true,
+                navLinkDayClick: function(date, jsEvent) {
+                    var year = date.getFullYear();
+                    var month = ("0" + (1 + date.getMonth())).slice(-2);
+                    var day = ("0" + date.getDate()).slice(-2);
+                    location.href="/schedule/register/day/" + year + "/" + month + "/" + day;
+                  },
+                });
+
+                calendar.render();
+                }
+    });
+}
+function checkScheduleMode(){
+    var user_select = document.getElementById('user_select');
+    var team_select = document.getElementById('team_select');
+    if(user_select.value == -2){
+        getEventByTeamSummary();
+    }
+    else if(user_select.value == -1){
+        getEventByTeamAllUsers();
+    }
+    else if(team_select.value == 'team'){
+        calendarEl = document.getElementById('calendar');
+        calendar = new FullCalendar.Calendar(calendarEl, {
+              initialView: 'dayGridMonth',
+        });
+        calendar.render();
+    }
+    else if(user_select.value != null){
+        getEventByUser();
+    }
+    else{
+        calendarEl = document.getElementById('calendar');
+        calendar = new FullCalendar.Calendar(calendarEl, {
+              initialView: 'dayGridMonth',
+        });
+        calendar.render();
+    }
+}
+
+function editSchedule(){
+    var button = document.getElementsByClassName("edit_button")[0];
+    if(button.value == 0){
+        setModifyScheduleCalendar();
+        button.value = 1;
+        button.classList.remove('is-primary');
+        button.classList.add('is-danger');
+        button.innerText = 'Stop';
+    }
+    else{
+        checkScheduleMode();
+        button.value = 0;
+        button.classList.remove('is-danger');
+        button.classList.add('is-primary');
+        button.innerText = 'Edit';
+
+    }
 }
 
 
 function init(){
-
         calendarEl = document.getElementById('calendar');
         calendar = new FullCalendar.Calendar(calendarEl, {
               initialView: 'dayGridMonth',
@@ -225,6 +304,8 @@ function init(){
 
         setTeamSelect();
         setSelectMoveToCalendar();
+        document.getElementsByClassName("edit_button")[0].addEventListener('click', editSchedule);;
+
 }
 
 window.addEventListener('DOMContentLoaded', init);
@@ -256,7 +337,10 @@ window.addEventListener('DOMContentLoaded', init);
                     <select id="user_select">
                     </select>
                 </div>
+
             </div>
+
+            <button class="edit_button button is-primary" value="0">Edit</button>
             <div id='calendar'></div>
         </div>
     </div>
