@@ -1,5 +1,7 @@
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.template import loader
 
 from django.utils import timezone
 import datetime
@@ -30,7 +32,7 @@ def end_working(request):
     if work_hour:
         work_hour.end_time = timezone.now()
         work_hour.save()
-    return redirect('logout')
+    return redirect('work_log_written')
 
 
 @login_required
@@ -88,6 +90,19 @@ def work_log_write(request):
             return redirect('logout')
         form = WorkLogForm()
     return render(request, 'work_log_write.html', {'form': form})
+
+
+@login_required
+def work_log_written(request):
+    user = request.user
+
+    template = loader.get_template('work_log_written.html')
+
+    context = {
+        'user': user,
+    }
+
+    return HttpResponse(template.render(context, request))
 
 
 @login_required()
