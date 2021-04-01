@@ -362,19 +362,19 @@ def manage_list(request):
         team_members = Profile.objects.filter(team=team)
 
         if request.method == "POST":
-            member = request.POST.get('member')
+            # member = request.POST.get('member')
             search = request.POST.get('search')
 
             result = team_members
-            if member != 'all':
-                result = team_members.filter(name=member)
+            # if member != 'all':
+            #     result = team_members.filter(name=member)
             result = result.filter(name__icontains=search)
 
             context = {
                 'team': team,
                 'team_members': team_members,
                 'result': result,
-                'member': member,
+                # 'member': member,
                 'search': search,
             }
         else:
@@ -382,7 +382,7 @@ def manage_list(request):
                 'team': team,
                 'team_members': team_members,
                 'result': team_members,
-                'member': "",
+                # 'member': "",
                 'search': "",
             }
         return render(request, 'user_manage.html', context)
@@ -538,7 +538,7 @@ def calc_work_hours(request):
             work_hour_dict['end_time'] = end_time
             work_hours_list.append(work_hour_dict)
 
-        result['total_working_time'] = round(total_working_time/3600, 1)
+        result['total_working_time'] = str(round(total_working_time/3600, 1)) + ' 시간 근무'
         result['work_hours_list'] = work_hours_list
 
         return JsonResponse(result, safe=False)
