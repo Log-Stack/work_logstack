@@ -14,6 +14,19 @@ class CustomAuthenticationForm(AuthenticationForm):
             raise forms.ValidationError('There was a problem with your login.', code='invalid_login')
 
 
+class MemberInfoForm(forms.ModelForm):
+
+    class Meta:
+        model = Profile
+        fields = ['birth_day', 'phone_number', 'email_address', 'start_date']
+        widgets = {
+            'email_address': forms.TextInput(attrs={'type': "text", 'class': 'input is-primary'}),
+            'phone_number': forms.TextInput(attrs={'type': "text", 'class': 'input is-primary'}),
+            'start_date': forms.DateInput(attrs={'type': "date", 'class': 'input is-primary'}),
+            'birth_day': forms.DateInput(attrs={'type': "date", 'class': 'input is-primary'}),
+        }
+
+
 class TeamCreateForm(forms.ModelForm):
     class Meta:
         model = Team

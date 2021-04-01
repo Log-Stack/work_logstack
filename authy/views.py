@@ -15,7 +15,7 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from authy.forms import TeamCreateForm, UserCreateForm, ProfileForm, SignupForm, ChangePasswordForm, CustomAuthenticationForm
+from authy.forms import TeamCreateForm, UserCreateForm, ProfileForm, SignupForm, ChangePasswordForm, CustomAuthenticationForm, MemberInfoForm
 from authy.models import Team, Profile
 from authy.serializers import TeamSerializer, ProfileSerializer
 from django.contrib.auth import login as auth_login
@@ -159,6 +159,17 @@ def ProfileView(request):
     }
 
     return render(request,'user_info.html', context)
+
+
+@login_required
+def EditProfileData(request, pk):
+    profile = Profile.objects.get(pk=pk)
+    if request.method == "POST":
+        form = MemberInfoForm(request.POST, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect('manage_detail', pk)
+    return redirect('index')
 
 
 # Staff edits profile
@@ -370,38 +381,28 @@ def manage_detail(request, pk):
         teams = Team.objects.all()
         positions = Position.objects.all()
 
-        start_date = ""
-        end_date = ""
-        work_hours = WorkHour.objects.filter(user=member.user)
+        work_start_date = ""
+        work_end_date = ""
+        # work_hours = WorkHour.objects.filter(user=member.user)
 
         if request.method == "POST":
-            start_date = request.POST.get('start_date')
-            end_date = request.POST.get('end_date')
+            work_start_date = request.POST.get('work_start_date')
+            work_end_date = request.POST.get('work_end_date')
 
-            if start_date:
-                work_hours = work_hours.filter(date__gte=start_date)
-            if end_date:
-                work_hours = work_hours.filter(date__lte=end_date)
+            # if work_start_date:
+            #     work_hours = work_hours.filter(date__gte=work_start_date)
+            # if work_end_date:
+            #     work_hours = work_hours.filter(date__lte=work_end_date)
 
-            context = {
-                'member': member,
-                'is_manager': is_manager,
-                'teams': teams,
-                'positions': positions,
-                'start_date': start_date,
-                'end_date': end_date,
-                'work_hours': work_hours.order_by('-date'),
-            }
-        else:
-            context = {
-                'member': member,
-                'is_manager': is_manager,
-                'teams': teams,
-                'positions': positions,
-                'start_date': start_date,
-                'end_date': end_date,
-                'work_hours': work_hours.order_by('-date')[:10],
-            }
+        context = {
+            'member': member,
+            'is_manager': is_manager,
+            'teams': teams,
+            'positions': positions,
+            'work_start_date': work_start_date,
+            'work_end_date': work_end_date,
+            'profile': MemberInfoForm(instance=member)
+        }
         return render(request, 'user_manage_detail.html', context)
     else:
         return redirect('schedule-index')
