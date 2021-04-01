@@ -30,6 +30,34 @@ def index(request):
 
 
 @login_required
+def schedule_day(request):
+    user = request.user.id
+    selected_date = datetime.today().strftime("%Y-%m-%d")
+    template = loader.get_template('schedule_day.html')
+
+    context = {
+        'user': user,
+        'selected_date': selected_date,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+@login_required
+def schedule_day_user_work_time(request, date):
+    user = request.user.id
+    selected_date = datetime.today().strftime("%Y-%m-%d")
+    template = loader.get_template('schedule_day.html')
+
+    context = {
+        'user': user,
+        'selected_date': selected_date,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+@login_required
 def approved(request):
     user = request.user
     selected_date = datetime.today().strftime("%Y-%m-%d")

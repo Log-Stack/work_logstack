@@ -1,10 +1,14 @@
 from django.urls import path
 
-from schedule.views import index, approved, register_index, schedule_list_user, schedule_list_team, approved_list, \
-    approved_user, register_schedule_list_week, register_schedule_day, schedule_summary_team, schedule_list_edit
+from schedule.views import index, schedule_day, approved, register_index, schedule_list_user, schedule_list_team, \
+    approved_list, \
+    approved_user, register_schedule_list_week, register_schedule_day, schedule_summary_team, schedule_list_edit, \
+    schedule_day_user_work_time
 
 urlpatterns = [
     path('', index, name='schedule-index'),
+    path('day/', schedule_day, name='schedule-day'),
+    path('day/<date>', schedule_day_user_work_time, name='schedule-day'),
 
     path('approved/', approved, name='schedule-approved'),
     path('approved/list/<team_id>/<year>/<month>/<day>', approved_list, name='schedule-approved-list'),
