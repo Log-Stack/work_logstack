@@ -95,23 +95,26 @@ def index(request):
 @login_required
 def CreateUserView(request):
     teams = list(Team.objects.all().values_list('name', flat=True))
-    print(teams)
+    positions = list(Position.objects.all().values_list('name', flat=True))
+
     if request.method == 'POST':
         form = SignupForm(request.POST)
-        # team_form = TeamForm(request.POST)
+        #form.fields['password'].widget.render_value = True
+
         if form.is_valid():
 
             username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
+            # password = form.cleaned_data.get('password')
+            password = 'logstack'
             user = User.objects.create_user(username=username, password=password)
 
-            #user = form.save()
+
             team_name = request.POST.get('team')
-            # team_name = form.cleaned_data.get('name')
+            position_name = request.POST.get('position')
             team = Team.objects.get(name=team_name)
-            profile = Profile(user=user, team=team)
+            position = Position.objects.get(name=position_name)
+            profile = Profile(user=user, team=team, position=position)
             profile.save()
-            print(profile)
             return redirect('schedule-index')
     else:
         form = SignupForm()
@@ -119,6 +122,7 @@ def CreateUserView(request):
     context = {
         'form': form,
         'teams': teams,
+        'positions' : positions,
     }
 
     return render(request, 'user_create.html', context)
@@ -169,6 +173,17 @@ def ProfileView(request):
     return render(request,'user_info.html', context)
 
 
+@login_required
+def EditProfileData(request, pk):
+    profile = Profile.objects.get(pk=pk)
+    if request.method == "POST":
+        form = MemberInfoForm(request.POST, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect('manage_detail', pk)
+    return redirect('index')
+
+
 # Staff edits profile
 #   fields = ['name', 'birth_day', 'phone_number', 'email_address']
 def EditProfileView(request):
@@ -200,6 +215,7 @@ def EditProfileView(request):
         'profile': profile,
     }
     return render(request, 'user_info_edit.html', context)
+
 
 
 #User Change Password
@@ -257,9 +273,17 @@ def UserSearchView(request):
 
 @login_required
 def SearchAllView(request):
+    teams = Team.objects.all().order_by('name')
     profile = Profile.objects.all().order_by('name')
+    teams_exists = []
+
+    for team in teams:
+        if len(profile.filter(team=team.pk))!=0:
+            teams_exists.append(team)
+
     context = {
-        'users': profile
+        'users': profile,
+        'teams' : teams_exists,
     }
     return render(request,'user_search_all.html', context)
 
@@ -378,38 +402,28 @@ def manage_detail(request, pk):
         teams = Team.objects.all()
         positions = Position.objects.all()
 
-        start_date = ""
-        end_date = ""
-        work_hours = WorkHour.objects.filter(user=member.user)
+        work_start_date = ""
+        work_end_date = ""
+        # work_hours = WorkHour.objects.filter(user=member.user)
 
         if request.method == "POST":
-            start_date = request.POST.get('start_date')
-            end_date = request.POST.get('end_date')
+            work_start_date = request.POST.get('work_start_date')
+            work_end_date = request.POST.get('work_end_date')
 
-            if start_date:
-                work_hours = work_hours.filter(date__gte=start_date)
-            if end_date:
-                work_hours = work_hours.filter(date__lte=end_date)
+            # if work_start_date:
+            #     work_hours = work_hours.filter(date__gte=work_start_date)
+            # if work_end_date:
+            #     work_hours = work_hours.filter(date__lte=work_end_date)
 
-            context = {
-                'member': member,
-                'is_manager': is_manager,
-                'teams': teams,
-                'positions': positions,
-                'start_date': start_date,
-                'end_date': end_date,
-                'work_hours': work_hours.order_by('-date'),
-            }
-        else:
-            context = {
-                'member': member,
-                'is_manager': is_manager,
-                'teams': teams,
-                'positions': positions,
-                'start_date': start_date,
-                'end_date': end_date,
-                'work_hours': work_hours.order_by('-date')[:10],
-            }
+        context = {
+            'member': member,
+            'is_manager': is_manager,
+            'teams': teams,
+            'positions': positions,
+            'work_start_date': work_start_date,
+            'work_end_date': work_end_date,
+            'profile': MemberInfoForm(instance=member)
+        }
         return render(request, 'user_manage_detail.html', context)
     else:
         return redirect('schedule-index')
@@ -551,3 +565,23 @@ def send_work_log(request, member_pk, date):
             }
         return JsonResponse(result, safe=False)
     return JsonResponse("fail", safe=False)
+
+
+@login_required
+def manage_delete_real(request, pk):
+    user = request.user
+    profile = Profile.objects.get(user=user)
+    team_manager = TeamManager.objects.filter(team=profile.team).filter(user=user).first()
+    member = Profile.objects.get(pk=pk)
+    if team_manager:
+        if request.method == "POST":
+            member_user = User.objects.get(pk=member.user.pk)
+            member_user.delete()
+            return redirect('manage_list')
+        else:
+            context = {
+                'member': member,
+            }
+            return render(request, 'user_delete_confirm.html', context)
+    else:
+        return redirect('schedule-index')
