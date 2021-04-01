@@ -53,25 +53,25 @@
                 </div>
 
 
-                <div class="field">
-                    <p class="control has-icons-left">
-                        <label class="label is-medium">Password</label>
-                        {{ form.password }}
-                        <span class="icon is-small is-left">
-                                <i class="fas fa-lock"></i>
-                              </span>
-                    </p>
-                </div>
+<!--                <div class="field">-->
+<!--                    <p class="control has-icons-left">-->
+<!--                        <label class="label is-medium">Password</label>-->
+<!--                        {{ form.password }}-->
+<!--                        <span class="icon is-small is-left">-->
+<!--                                <i class="fas fa-lock"></i>-->
+<!--                              </span>-->
+<!--                    </p>-->
+<!--                </div>-->
 
-                <div class="field">
-                    <p class="control has-icons-left">
-                        <label class="label is-medium">Confirm password</label>
-                        {{ form.confirm_password }}
-                        <span class="icon is-small is-left">
-                                <i class="fas fa-lock"></i>
-                              </span>
-                    </p>
-                </div>
+<!--                <div class="field">-->
+<!--                    <p class="control has-icons-left">-->
+<!--                        <label class="label is-medium">Confirm password</label>-->
+<!--                        {{ form.confirm_password }}-->
+<!--                        <span class="icon is-small is-left">-->
+<!--                                <i class="fas fa-lock"></i>-->
+<!--                              </span>-->
+<!--                    </p>-->
+<!--                </div>-->
 
                 <label class="label is-medium">Choose Team</label>
                 <div class="select is-primary" style="margin-bottom:20px;">
@@ -80,6 +80,17 @@
                         <option>all</option>
                         {% for team in teams %}
                         <option>{{ team }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <label class="label is-medium">Choose Position</label>
+                <div class="select is-primary" style="margin-bottom:20px;">
+
+                    <select name="position">
+                        <option>all</option>
+                        {% for position in positions %}
+                        <option>{{ position }}</option>
                         {% endfor %}
                     </select>
                 </div>

@@ -33,9 +33,18 @@ def login(request):
         return redirect('schedule-index')
     if request.method == "POST":
         form = AuthenticationForm(request, request.POST)
+
+
+
         if form.is_valid():
             auth_login(request, form.get_user())
             is_manager = TeamManager.objects.filter(user=form.get_user()).exists()
+            user = form.get_user()
+            profile = Profile.objects.filter(user=user)
+
+            if profile[0].name == None:
+                return redirect('editprofile')
+
             if is_manager:
                 return redirect('schedule-index')
             else:
@@ -89,23 +98,26 @@ def index(request):
 @login_required
 def CreateUserView(request):
     teams = list(Team.objects.all().values_list('name', flat=True))
-    print(teams)
+    positions = list(Position.objects.all().values_list('name', flat=True))
+
     if request.method == 'POST':
         form = SignupForm(request.POST)
-        # team_form = TeamForm(request.POST)
+        #form.fields['password'].widget.render_value = True
+
         if form.is_valid():
 
             username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
+            # password = form.cleaned_data.get('password')
+            password = 'logstack'
             user = User.objects.create_user(username=username, password=password)
 
-            #user = form.save()
+
             team_name = request.POST.get('team')
-            # team_name = form.cleaned_data.get('name')
+            position_name = request.POST.get('position')
             team = Team.objects.get(name=team_name)
-            profile = Profile(user=user, team=team)
+            position = Position.objects.get(name=position_name)
+            profile = Profile(user=user, team=team, position=position)
             profile.save()
-            print(profile)
             return redirect('schedule-index')
     else:
         form = SignupForm()
@@ -113,6 +125,7 @@ def CreateUserView(request):
     context = {
         'form': form,
         'teams': teams,
+        'positions' : positions,
     }
 
     return render(request, 'user_create.html', context)
@@ -251,9 +264,17 @@ def UserSearchView(request):
 
 @login_required
 def SearchAllView(request):
+    teams = Team.objects.all().order_by('name')
     profile = Profile.objects.all().order_by('name')
+    teams_exists = []
+
+    for team in teams:
+        if len(profile.filter(team=team.pk))!=0:
+            teams_exists.append(team)
+
     context = {
-        'users': profile
+        'users': profile,
+        'teams' : teams_exists,
     }
     return render(request,'user_search_all.html', context)
 

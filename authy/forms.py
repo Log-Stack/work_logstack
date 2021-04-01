@@ -73,38 +73,36 @@ class UniqueUser(object):
 #         model = Team
 #         fields = ('name',)
 
+def SetPassword():
+    password = "logstack"
+    return password
+
+
 
 class SignupForm(forms.ModelForm):
-    # django form widget
-    #teams = Team.objects.all().values_list('name', flat=True)
-    #TEAM_CHOICES = list(map(lambda x: (x, x), teams))
 
     username = forms.CharField(widget=forms.TextInput(attrs={'class': 'input is-medium'}), max_length=30,
                                required=True, )
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'input is-medium'}))
-    confirm_password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'input is-medium'}), required=True,
-                                       label="Confirm your password.")
-    #name = forms.ChoiceField(choices=TEAM_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
+    # password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'input is-medium', 'value':'logstack'}))
+    # confirm_password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'input is-medium'}), required=True,
+    #                                    label="Confirm your password.")
+
 
     class Meta:
         model = User
-        fields = ('username', 'password',)
+        fields = ('username', )
 
     def __init__(self, *args, **kwargs):
         super(SignupForm, self).__init__(*args, **kwargs)
-        # self.fields['username'].validators.append(ForbiddenUsers)
-        # self.fields['username'].validators.append(InvalidUser)
-        # self.fields['username'].validators.append(UniqueUser)
-        # self.fields['email'].validators.append(UniqueEmail)
 
-    def clean(self):
-        super(SignupForm, self).clean()
-        password = self.cleaned_data.get('password')
-        confirm_password = self.cleaned_data.get('confirm_password')
-
-        if password != confirm_password:
-            self._errors['password'] = self.error_class(['Passwords do not match. Try again'])
-        return self.cleaned_data
+    # def clean(self):
+    #     super(SignupForm, self).clean()
+    #     password = self.cleaned_data.get('password')
+    #     #confirm_password = self.cleaned_data.get('confirm_password')
+    #
+    #     #if password != confirm_password:
+    #     #    self._errors['password'] = self.error_class(['Passwords do not match. Try again'])
+    #     return self.cleaned_data
 
 
 class ChangePasswordForm(forms.ModelForm):
