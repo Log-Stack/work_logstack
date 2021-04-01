@@ -15,10 +15,9 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from authy.forms import TeamCreateForm, UserCreateForm, ProfileForm, SignupForm, ChangePasswordForm
+from authy.forms import TeamCreateForm, UserCreateForm, ProfileForm, SignupForm, ChangePasswordForm, CustomAuthenticationForm
 from authy.models import Team, Profile
 from authy.serializers import TeamSerializer, ProfileSerializer
-from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login as auth_login
 
 from authy.models import TeamManager, Position
@@ -27,12 +26,11 @@ from django.utils import timezone
 import datetime
 
 
-
 def login(request):
     if request.user.is_authenticated:
         return redirect('schedule-index')
     if request.method == "POST":
-        form = AuthenticationForm(request, request.POST)
+        form = CustomAuthenticationForm(request, request.POST)
         if form.is_valid():
             auth_login(request, form.get_user())
             is_manager = TeamManager.objects.filter(user=form.get_user()).exists()
@@ -41,7 +39,7 @@ def login(request):
             else:
                 return redirect('work_hour_check')
     else:
-        form = AuthenticationForm()
+        form = CustomAuthenticationForm()
     context = {"form": form}
     return render(request, "login.html", context)
 
@@ -332,19 +330,19 @@ def manage_list(request):
         team_members = Profile.objects.filter(team=team)
 
         if request.method == "POST":
-            member = request.POST.get('member')
+            # member = request.POST.get('member')
             search = request.POST.get('search')
 
             result = team_members
-            if member != 'all':
-                result = team_members.filter(name=member)
+            # if member != 'all':
+            #     result = team_members.filter(name=member)
             result = result.filter(name__icontains=search)
 
             context = {
                 'team': team,
                 'team_members': team_members,
                 'result': result,
-                'member': member,
+                # 'member': member,
                 'search': search,
             }
         else:
@@ -352,7 +350,7 @@ def manage_list(request):
                 'team': team,
                 'team_members': team_members,
                 'result': team_members,
-                'member': "",
+                # 'member': "",
                 'search': "",
             }
         return render(request, 'user_manage.html', context)
@@ -518,7 +516,7 @@ def calc_work_hours(request):
             work_hour_dict['end_time'] = end_time
             work_hours_list.append(work_hour_dict)
 
-        result['total_working_time'] = round(total_working_time/3600, 1)
+        result['total_working_time'] = str(round(total_working_time/3600, 1)) + ' 시간 근무'
         result['work_hours_list'] = work_hours_list
 
         return JsonResponse(result, safe=False)
@@ -545,3 +543,23 @@ def send_work_log(request, member_pk, date):
             }
         return JsonResponse(result, safe=False)
     return JsonResponse("fail", safe=False)
+
+
+@login_required
+def manage_delete_real(request, pk):
+    user = request.user
+    profile = Profile.objects.get(user=user)
+    team_manager = TeamManager.objects.filter(team=profile.team).filter(user=user).first()
+    member = Profile.objects.get(pk=pk)
+    if team_manager:
+        if request.method == "POST":
+            member_user = User.objects.get(pk=member.user.pk)
+            member_user.delete()
+            return redirect('manage_list')
+        else:
+            context = {
+                'member': member,
+            }
+            return render(request, 'user_delete_confirm.html', context)
+    else:
+        return redirect('schedule-index')

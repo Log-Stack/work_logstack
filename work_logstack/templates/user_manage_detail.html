@@ -140,7 +140,9 @@ $(document).ready(function(){
             <div class="media">
                 <div class="media-content">
                     <p class="title is-4">
-                        <span class="material-icons" style="margin: 0.5rem; vertical-align: middle;">person</span><span style="vertical-align: middle;">Profile</span>
+                        <span class="material-icons" style="margin: 0.5rem; vertical-align: middle;">person</span><span style="vertical-align: middle;">
+                        {{ member.name }}
+                        </span>
                         &nbsp;
                         &nbsp;
                         {% if is_manager %}
@@ -153,21 +155,35 @@ $(document).ready(function(){
                         {% else %}
                             <a href="{% url 'manage_delete' member.pk %}" class="button is-primary is-light">복귀 처리</a>
                         {% endif %}
+                        <a href="{% url 'manage_delete_real' member.pk %}" class="button is-danger is-light">삭제</a>
                     </p>
-                    <div style="margin-left: 1rem;">
-                        <p>
-                        이름: {{ member.name }}
-                        {% if member.currently_employed == False %}
-                            - 퇴사
-                        {% endif %}
-                        </p>
-                        <p id="current_team">팀: {{ member.team }}</p>
-                        <p id="current_position">직급: {{ member.position }}</p>
-                        <p>매니저 권한: {% if is_manager %}있음{% else %}없음{% endif %}</p>
-                        <p>입사일: {{ member.start_date }}</p>
-                        <p>이메일: {{ member.email_address }}</p>
-                        <p>전화번호: {{ member.phone_number }}</p>
-                        <p>생년월일: {{ member.birth_day }}</p>
+                    <div class="content" style="margin-left: 1rem;">
+                        <ul>
+                            <li>
+                                매니저 권한: {% if is_manager %}있음{% else %}없음{% endif %}
+                            </li>
+                            <li>
+                                재직 현황: {% if member.currently_employed == True %}재직 중{% else %}퇴사{% endif %}
+                            </li>
+                            <li id="current_team">
+                                {% if member.team %}팀: {{ member.team }}{% else %}팀을 설정해주세요.{% endif %}
+                            </li>
+                            <li id="current_position">
+                                {% if member.position %}직급: {{ member.position }}{% else %}직급을 설정해주세요.{% endif %}
+                            </li>
+                            <li>
+                                {% if member.email_address %}이메일: {{ member.email_address }}{% else %}이메일을 설정해주세요.{% endif %}
+                            </li>
+                            <li>
+                                {% if member.phone_number %}전화번호: {{ member.phone_number }}{% else %}전화번호를 설정해주세요.{% endif %}
+                            </li>
+                            <li>
+                                {% if member.start_date %}입사일: {{ member.start_date }}{% else %}입사일을 설정해주세요.{% endif %}
+                            </li>
+                            <li>
+                                {% if member.birth_day %}생년월일: {{ member.birth_day }}{% else %}생년월일을 설정해주세요.{% endif %}
+                            </li>
+                        </ul>
                     </div>
                 </div>
                 <div class="media-right">
@@ -183,10 +199,6 @@ $(document).ready(function(){
             </div>
             <div class="media">
                 <div class="media-content">
-                    <p class="title is-4">
-                        <span class="material-icons" style="margin: 0.5rem; vertical-align: middle;">edit</span><span style="vertical-align: middle;">Edit</span>
-                    </p>
-
                     <div class="columns is-multiline">
                         <div class="column is-5">
                             <label class="label">Team</label>
@@ -209,9 +221,11 @@ $(document).ready(function(){
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
 
-
-
+            <div class="media">
+                <div class="media-content">
                     <form method="POST" role="form">
                         {% csrf_token %}
                         <div class="columns">
@@ -231,34 +245,28 @@ $(document).ready(function(){
                                     </div>
                                 </div>
                             </div>
-                            <div class="column is-3">
+                            <div class="column">
                                 <div class="field">
-                                    <label class="label">출퇴근 시간 검색</label>
+                                    <label class="label" style="visibility: hidden;">검색</label>
                                     <div class="control">
                                         <button class="button is-primary" type="submit">Search</button>
                                     </div>
                                 </div>
                             </div>
-
                         </div>
                     </form>
-
-                    <div style="margin:3rem;"  class="columns notification is-primary">
-                            <div class="column is-4 subtitle is-3 total_time has-text-right ">
-                            </div>
-                            <div class="column is-8 subtitle is-3">
-                                시간 근무
-
+                    <div style="margin-top: 1rem;" class="box notification is-primary">
+                        <div class="title total_time has-text-centered"></div>
                     </div>
-                </div>
                 </div>
             </div>
                 </div>
                 <div class="column is-6">
 
                     <div style="height:100%;" class="box">
-                        <p class="title is-4 work_log_date"></p>
+                        <p class="title is-4">Work Log</p>
                         <hr>
+                        <p class="subtitle is-4 work_log_date"></p>
                         <p class="subtitle is-6 work_log_content"></p>
                     </div>
                 </div>

@@ -4,6 +4,14 @@ from django.core.exceptions import ValidationError
 from django.db import models
 
 from authy.models import Team, Profile
+from django.contrib.auth.forms import AuthenticationForm
+
+
+class CustomAuthenticationForm(AuthenticationForm):
+    def confirm_login_allowed(self, user):
+        profile = Profile.objects.get(user=user)
+        if not profile.currently_employed:
+            raise forms.ValidationError('There was a problem with your login.', code='invalid_login')
 
 
 class TeamCreateForm(forms.ModelForm):
