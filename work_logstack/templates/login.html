@@ -1,11 +1,16 @@
-{% extends 'base.html' %}
-
 {% load static %}
 
-{% block content %}
-<div class="login_form">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100&display=swap" rel="stylesheet">
+<style>
 
-    <style>
         .login_body {
             height: 70vh;
             display: flex;
@@ -45,7 +50,32 @@
         }
 
 
-    </style>
+
+</style>
+<body>
+<div class="container">
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <strong><p style="font-family: 'Montserrat', sans-serif;margin-top:18px; margin-right:20px; margin-left: 10px; padding-top:2px;"><a href="{% url 'schedule-index' %}" style="text-decorations:none; color:inherit;">LOGSTACK</a></p></strong>
+<!--            <img src="{% static 'img/logstack.png' %}" width="122" height="104">-->
+
+            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false"
+               data-target="navbarBasicExample">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
+        </div>
+
+    </nav>
+</div>
+
+
+
+
+<div class="login_form">
+
+
     <div class="login_body">
         <form method="post" action="" role="form" id="login-form">
             {% csrf_token %}
@@ -64,4 +94,5 @@
         </form>
     </div>
 </div>
-{% endblock %}
+</body>
+</html>
