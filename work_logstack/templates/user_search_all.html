@@ -2,27 +2,22 @@
 {% block content %}
 <style>
 .search_body{
-      padding-top:120px;
+      padding-top:30px;
       display: flex;
-      justify-content: center;
-      align-items: center;
+      flex-direction: column;
+
 }
-.search{
-  width:700px;
-}
-.card {
+
+.wrappers{
+    width:700px;
   max-width: 1200px;
   margin: 0 auto;
   display: grid;
-  grid-gap: 1rem;
-
+  grid-gap: 2rem;
 }
-
-@media (min-width: 800px) {
-  .card { grid-template-columns: repeat(2, 1fr); }
+@media (min-width: 300px) {
+  .card { grid-template-columns: repeat(4, 1fr); }
 }
-
-
 
 </style>
 <div class="container">
@@ -36,49 +31,53 @@
     </div>
 <div class="tabs">
   <ul>
+      <li><a href="{% url 'search' %}">by Name</a></li>
       <li class="is-active"><a href="{% url 'searchall' %}">All Staffs</a></li>
-    <li><a href="{% url 'search' %}">by Name</a></li>
-    <li><a href="{% url 'searchselect' %}">by Team</a></li>
+
+<!--    <li><a href="{% url 'searchselect' %}">by Team</a></li>-->
 
   </ul>
 </div>
 <div class="search_body">
 
 
-    <article class="panel is-primary search card">
 
+        {% for team in teams %}
+            <button style="width:100px;" class="button is-outlined">{{ team }}</button><br>
+              <!--  직원 검색 결과 프로필-->
+            {% for user in users %}
+                {% if user.team == team  %}
+                    <div class="wrappers">
+                        <a href="{% url 'userdetail' user.user_id %}" class="box column">
+
+                              <article class="media">
+                                <div class="media-left">
+                                                    <figure class="image is-128x128">
+                                  <img src="{% if user.picture %}
+                          {{ user.picture.url }} {% else %} https://bulma.io/images/placeholders/128x128.png {% endif %}">
+                              </figure>
+                                </div>
+                                <div class="media-content">
+                                  <div class="content">
+                                    <p>
+                                      <strong>{{ user.name }}</strong><br> <small>@{{ user.team }}</small>
+                                    </p>
+                                  </div>
+
+                                </div>
+                              </article>
+
+                          </a>
+                      </div>
+                 {% endif %}
+            {% endfor %}
+            <br><br><br><br>
+        {% endfor %}
 
         <!-- 직원 검색 input, 엔터로 검색 가능-->
 
-      <!--  직원 검색 결과 프로필-->
-        {% for user in users %}
-        <a href="{% url 'userdetail' user.user_id %}">
-           <div class="box">
-              <article class="media">
-                <div class="media-left">
-<!--                  <figure class="image is-96x96">-->
-<!--                    <img src="https://bulma.io/images/placeholders/96x96.png" alt="Placeholder image">-->
-<!--                  </figure>-->
-                                    <figure class="image is-128x128">
-                  <img src="{% if user.picture %}
-          {{ user.picture.url }} {% else %} https://bulma.io/images/placeholders/128x128.png {% endif %}">
-    </figure>
-                </div>
-                <div class="media-content">
-                  <div class="content">
-                    <p>
-                      <strong>{{ user.name }}</strong><br> <small>@{{ user.team }}</small>
-                    </p>
-                  </div>
-
-                </div>
-              </article>
-          </div>
-</a>
-        {% endfor %}
 
 
-    </article>
 
 </div>
 </div>

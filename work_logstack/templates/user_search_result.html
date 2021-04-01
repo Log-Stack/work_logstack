@@ -105,9 +105,9 @@ setTeamSelect()
     </div>
     <div class="tabs">
   <ul>
-      <li><a href="{% url 'searchall' %}">All Staffs</a></li>
     <li><a href="{% url 'search' %}">by Name</a></li>
-    <li class="is-active"><a href="{% url 'searchselect' %}">by Team</a></li>
+    <li><a href="{% url 'searchall' %}">All Staffs</a></li>
+<!--    <li class="is-active"><a href="{% url 'searchselect' %}">by Team</a></li>-->
 
   </ul>
 </div>
@@ -116,23 +116,23 @@ setTeamSelect()
 
 <!-- 팀이 볼 수 있는 회원 정보 -->
 <div class="info">
-    <div class="category">
+<!--    <div class="category">-->
 
-        <!-- 팀 선택 -->
-        <div style="margin-right:20px;" class="select">
-            <select name="team" id="team_select">
-                <option>all</option>
-            </select>
-        </div>
+<!--        &lt;!&ndash; 팀 선택 &ndash;&gt;-->
+<!--        <div style="margin-right:20px;" class="select">-->
+<!--            <select name="team" id="team_select">-->
+<!--                <option>all</option>-->
+<!--            </select>-->
+<!--        </div>-->
 
-        <!-- 팀 선택 이후에 생성 되는 직원 선택 창, 여기서 user_id 를 보내면 url 'userdetail'로 이동 -->
-        <div class="select">
-          <select name="member" id="user_select">
-            <option>직원 선택</option>
-          </select>
-        </div>
+<!--        &lt;!&ndash; 팀 선택 이후에 생성 되는 직원 선택 창, 여기서 user_id 를 보내면 url 'userdetail'로 이동 &ndash;&gt;-->
+<!--        <div class="select">-->
+<!--          <select name="member" id="user_select">-->
+<!--            <option>직원 선택</option>-->
+<!--          </select>-->
+<!--        </div>-->
 
-    </div>
+<!--    </div>-->
     <!-- 직원 선택 후에 나타나는 직원 프로필 -->
         {% if profile %}
             <div class="card">
