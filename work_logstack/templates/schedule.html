@@ -12,19 +12,6 @@
 var calendarEl = null;
 var calendar = null;
 
-document.addEventListener('DOMContentLoaded', function() {
-    calendarEl = document.getElementById('calendar');
-    calendar = new FullCalendar.Calendar(calendarEl, {
-          initialView: 'dayGridMonth',
-          dateClick: function(info) {
-                location.href="/schedule/register/day/" + info.dateStr.split('-')[0] + "/" + info.dateStr.split('-')[1] + "/" + info.dateStr.split('-')[2];
-          },
-    });
-
-    calendar.render();
-
-
-});
 
 function getEventByUser(){
 var user_select = document.getElementById('user_select');
@@ -220,9 +207,21 @@ $.ajax({
 			dataType: 'json',
 
 			success: function(data){
-			    for(let i = 2;i<=user_select.options.length;i++){
-                    user_select.remove(2);
+			    var len = user_select.options.length;
+			    for(let i = 0;i<=len;i++){
+                    user_select.remove(0);
 			    }
+
+                var temp = document.createElement("option");
+                temp.value = '-';
+                temp.text = 'Summary';
+                user_select.add(temp);
+
+                var temp = document.createElement("option");
+                temp.value = -1;
+                temp.text = 'All';
+                user_select.add(temp);
+
                 for(let i = 0;i<data.length;i++){
                 var temp = document.createElement("option");
                 temp.value = data[i].user_id
@@ -233,14 +232,31 @@ $.ajax({
         })
 }
 
+function setSelectMoveToCalendar(){
+    selector = document.getElementsByClassName("select_team_user");
+    document.getElementsByClassName("fc-toolbar-chunk")[1].appendChild(selector[0]);
+}
+
 
 function init(){
-    setTeamSelect();
+
+        calendarEl = document.getElementById('calendar');
+        calendar = new FullCalendar.Calendar(calendarEl, {
+              initialView: 'dayGridMonth',
+              dateClick: function(info) {
+                    location.href="/schedule/register/day/" + info.dateStr.split('-')[0] + "/" + info.dateStr.split('-')[1] + "/" + info.dateStr.split('-')[2];
+              },
+        });
+
+        calendar.render();
+
+
+
+        setTeamSelect();
+        setSelectMoveToCalendar();
 }
 
 window.addEventListener('DOMContentLoaded', init);
-
-
 
 
 
@@ -259,16 +275,16 @@ window.addEventListener('DOMContentLoaded', init);
     <br>
     <div class="columns is-centered">
         <div class="column">
-            <div class="select is-primary">
-                <select id="team_select">
-                    <option>team</option>
-                </select>
-            </div>
-            <div class="select is-primary">
-                <select id="user_select">
-                    <option>-</option>
-                    <option value="-1">All</option>
-                </select>
+            <div class="select_team_user">
+                <div class="select is-primary">
+                    <select id="team_select">
+                        <option>team</option>
+                    </select>
+                </div>
+                <div class="select is-primary">
+                    <select id="user_select">
+                    </select>
+                </div>
             </div>
             <div id='calendar'></div>
         </div>
