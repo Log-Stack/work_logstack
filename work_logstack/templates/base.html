@@ -10,11 +10,16 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <link rel="preconnect" href="https://fonts.gstatic.com">
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100&display=swap" rel="stylesheet">
+<style>
+    .navbar-item{
+        font-size:18px;
+    }
+</style>
 <body>
 <div class="container">
     <nav class="navbar" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
-            <strong><p style="font-family: 'Montserrat', sans-serif;margin-top:18px; margin-right:20px; margin-left: 10px;"><a href="{% url 'schedule-index' %}" style="text-decorations:none; color:inherit;">LOGSTACK</a></p></strong>
+            <strong><p style="font-family: 'Montserrat', sans-serif;margin-top:18px; margin-right:20px; margin-left: 10px; padding-top:2px;"><a href="{% url 'schedule-index' %}" style="text-decorations:none; color:inherit;">LOGSTACK</a></p></strong>
 <!--            <img src="{% static 'img/logstack.png' %}" width="122" height="104">-->
 
             <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false"
@@ -101,15 +106,18 @@
                         <!-- log in 했을 시-->
                         {% if user.is_authenticated %}
 
-                        <div style="margin-right:20px;">
+                        <div style="margin-right:20px; margin-bottom:5px;">
                             <strong>{{ request.user }}님 안녕하세요</strong>
                         </div>
 
-                        <a class="button is-primary" href="{% url 'profile' %}">
+                        <a style="margin-top:5px;" class="button is-primary" href="{% url 'profile' %}">
                             <strong>My Profile</strong>
                         </a>
-                        <a class="button is-light" href="{% url 'work_log_write' %}">
+                        <a style="margin-top:5px;" class="button is-light" href="{% url 'work_log_write' %}">
                             퇴근하기
+                        </a>
+                        <a style="margin-top:5px;" class="button is-light" href="{% url 'logout' %}">
+                            로그아웃
                         </a>
 
                         {% endif %}
