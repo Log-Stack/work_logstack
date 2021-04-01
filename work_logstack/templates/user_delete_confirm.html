@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <br>
+    <div class="hero is-primary is-small">
+        <div class="hero-body">
+            <p class="title">
+                <a href="{% url 'manage_detail' member.pk %}" class="button is-primary"><i class="material-icons">arrow_back_ios_new</i></a>
+                정말 삭제하시겠습니까?
+            </p>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-content">
+
+            <form method="post" role="form">
+                {% csrf_token %}
+                <p>
+                {{ member.name }}의 모든 정보가 사라집니다.
+                </p>
+                <br>
+                <div class="content">
+                    <div class="field is-grouped">
+                        <div class="control">
+                            <button type="submit" class="button is-danger is-light">삭제하기</button>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

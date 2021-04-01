@@ -7,7 +7,8 @@ from authy import views
 from authy.views import index, CreateUserView, CreateTeamView, EditProfileView, ChangePWView, ChangePWDoneView, \
     UserSearchView, SearchSelectView, UserDetailView, ProfileView, SearchAllView
 
-from .views import manage_list, manage_detail, manage_delete, manage_permit, manage_position, manage_team, calc_work_hours, send_work_log, SearchAllView
+# from .views import manage_list, manage_detail, manage_delete, manage_permit, manage_position, manage_team, calc_work_hours, send_work_log, SearchAllView, manage_delete_real
+from .views import *
 
 router = routers.DefaultRouter()
 router.register(r'teams', views.TeamViewSet)
@@ -22,6 +23,7 @@ urlpatterns = [
     # 팀장
     path('create/team',CreateTeamView, name='createteam'),
     path('create/user', CreateUserView, name='createuser'),
+    path('edit/profile/<int:pk>/', EditProfileData, name='editprofile_manage'),
 
     # 팀원
     path('profile', ProfileView, name='profile'),
@@ -47,6 +49,7 @@ urlpatterns = [
     path('manage_permit/<int:pk>/', manage_permit, name='manage_permit'),
     path('manage_position/<int:pk>/<str:position_name>', manage_position, name='manage_position'),
     path('manage_team/<int:pk>/<str:team_name>', manage_team, name='manage_team'),
+    path('manage_delete_real/<int:pk>/', manage_delete_real, name='manage_delete_real'),
 
     # 매니지 디테일 페이지 관련 api
     path('calc_work_hours/', calc_work_hours, name='calc_work_hours'),

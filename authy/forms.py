@@ -4,6 +4,27 @@ from django.core.exceptions import ValidationError
 from django.db import models
 
 from authy.models import Team, Profile
+from django.contrib.auth.forms import AuthenticationForm
+
+
+class CustomAuthenticationForm(AuthenticationForm):
+    def confirm_login_allowed(self, user):
+        profile = Profile.objects.get(user=user)
+        if not profile.currently_employed:
+            raise forms.ValidationError('There was a problem with your login.', code='invalid_login')
+
+
+class MemberInfoForm(forms.ModelForm):
+
+    class Meta:
+        model = Profile
+        fields = ['birth_day', 'phone_number', 'email_address', 'start_date']
+        widgets = {
+            'email_address': forms.TextInput(attrs={'type': "text", 'class': 'input is-primary'}),
+            'phone_number': forms.TextInput(attrs={'type': "text", 'class': 'input is-primary'}),
+            'start_date': forms.DateInput(attrs={'type': "date", 'class': 'input is-primary'}),
+            'birth_day': forms.DateInput(attrs={'type': "date", 'class': 'input is-primary'}),
+        }
 
 
 class TeamCreateForm(forms.ModelForm):
