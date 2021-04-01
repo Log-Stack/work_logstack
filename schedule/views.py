@@ -13,6 +13,8 @@ from authy.models import Profile, TeamManager, Team
 from .forms import NewScheduleWeekForm, NewScheduleDayForm
 from .models import Schedule, ScheduleApproved
 
+COLORS = ['#0096c6', '#ff6939', '#fa3d00', '#6937a1', '#003458', '#008000']
+
 
 @login_required
 def index(request):
@@ -278,25 +280,37 @@ def schedule_list_user(request, user_id, year, month):
 @login_required
 def schedule_list_team(request, team_id, year, month):
     result = []
-    users = Profile.objects.filter(team=team_id)
-    for user in users:
-        schedule = Schedule.objects.filter(user=user.user_id, date__year=year, date__month=month).order_by(
-            'user_id')
-        schedule = schedule | Schedule.objects.filter(user=user.user_id, date__year=year,
-                                                      date__month=str(int(month) + 1)).order_by('user_id')
-        for item in list(schedule):
-            name = str(user.name)
-            date = str(item.date)
-            if item.start is not None and item.end is not None:
-                start = str(item.start.strftime("%H:%M"))
-                end = str(item.end.strftime("%H:%M"))
+    users = Profile.objects.filter(team=team_id).values_list('user_id', flat=True)
+    day_start = datetime(year, month, 1).strftime('%Y-%m-%d')
+    day_end = (datetime(year, month, 1) + relativedelta(months=2)).strftime('%Y-%m-%d')
+
+    work_schedule = Schedule.objects.filter(user__in=users, date__range=[day_start, day_end], work_type=1)\
+                                    .order_by('date')
+    for item in list(work_schedule):
+        name = Profile.objects.get(user=item.user.id).name
+        start = str(item.start.strftime("%H:%M"))
+        end = str(item.end.strftime("%H:%M"))
+
+        result.append({'title': name + " | " + start + " ~ " + end, 'start': item.date.strftime('%Y-%m-%d'),
+                       'end': item.date.strftime('%Y-%m-%d'),
+                       "color": COLORS[item.user.id % len(COLORS)]})
+
+    vacation_schedule = Schedule.objects.filter(user__in=users, date__range=[day_start, day_end], work_type=2)\
+                                        .values("date").distinct()
+
+    for vacation_date in list(vacation_schedule):
+        name_list = ""
+        vacation_users = Schedule.objects.filter(user__in=users, date=vacation_date['date'], work_type=2)
+        for item in vacation_users:
+            name = Profile.objects.get(user=item.user.id).name
+            if name is None:
+                name_list += "익명, "
             else:
-                start = "00:00"
-                end = "00:00"
-            work_type = item.work_type
-            result.append(
-                {'name': name, 'date': date, 'start': start, 'end': end, 'work_type': work_type,
-                 'color': user.id % 5})
+                name_list += Profile.objects.get(user=item.user.id).name + ", "
+
+        result.append({'title': "휴가중 | " + name_list[:-2], 'start': item.date.strftime('%Y-%m-%d'),
+                       'end': item.date.strftime('%Y-%m-%d'),
+                       "color": COLORS[5]})
     return JsonResponse(result, safe=False)
 
 
@@ -312,9 +326,7 @@ def schedule_summary_team(request):
 
     users = Profile.objects.filter(team=team_id).values_list('user_id', flat=True)
     schedule = Schedule.objects.filter(user__in=users, date__range=[day_start, day_end]).order_by('date')
-
     for work_date in schedule.values_list('date', flat=True).distinct():
-        # test = Schedule.objects.filter(user__in=users, date=work_date).annotate(Count('work_type'))
         worker_count = Schedule.objects.annotate(num_work_types=Count('work_type')).filter(user__in=users,
                                                                                            date=work_date,
                                                                                            work_type=1).count()
@@ -323,16 +335,28 @@ def schedule_summary_team(request):
                                                                                              work_type=2).count()
         times = Schedule.objects.filter(user__in=users, date=work_date).aggregate(start_time=Min('start'),
                                                                                   end_time=Max('end'))
-        start = ""
-        end = ""
+
+        working_time = ""
         if times['start_time'] is not None and times['end_time'] is not None:
             start = times['start_time'].strftime("%H:%M")
             end = times['end_time'].strftime("%H:%M")
-        result.append({
-            'date': work_date.strftime('%Y-%m-%d'),
-            'start': start,
-            'end': end,
-            'worker_count': worker_count,
-            'vacation_count': vacation_count,
-        })
+            working_time = start + " ~ " + end
+        else:
+            working_time = "근무 인원이 없습니다"
+
+        result.append({'title': "근무 인원 : " + str(worker_count) + "명", 'start': work_date.strftime('%Y-%m-%d'),
+                       'end': work_date.strftime('%Y-%m-%d'), "color": COLORS[0]})
+        result.append(
+            {'title': working_time, 'start': work_date.strftime('%Y-%m-%d'), 'end': work_date.strftime('%Y-%m-%d'),
+             "color": COLORS[3]})
+        result.append({'title': "휴가 인원 : " + str(vacation_count) + "명", 'start': work_date.strftime('%Y-%m-%d'),
+                       'end': work_date.strftime('%Y-%m-%d'), 'color': COLORS[2]})
+
+    birthday_users = Profile.objects.filter(team=team_id, birth_day__range=[day_start, day_end]).values()
+    for day in list(birthday_users):
+        result.append({'title': day['name'] + "님의 생일을 축하합니다!",
+                       'start': day['birth_day'].strftime('%Y-%m-%d'),
+                       'end': day['birth_day'].strftime('%Y-%m-%d'),
+                       "color": COLORS[1]})
+
     return JsonResponse(result, safe=False)

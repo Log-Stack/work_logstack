@@ -16,6 +16,6 @@ urlpatterns = [
          name='schedule-register-list-user-day'),
 
     path('list/user/<user_id>/<year>/<month>', schedule_list_user, name='schedule-list-user'),
-    path('list/team/<team_id>/<year>/<month>', schedule_list_team, name='schedule-list-team'),
+    path('list/team/<int:team_id>/<int:year>/<int:month>', schedule_list_team, name='schedule-list-team'),
     path('list/summary/', schedule_summary_team, name='schedule-summary-team'),
 ]
