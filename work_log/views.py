@@ -198,6 +198,9 @@ def work_log_list(request):
 @login_required
 def work_logs_by_team(request, team_id, year, month):
     result = []
+    if team_id is -1:
+        return JsonResponse([], safe=False)
+
     users = Profile.objects.filter(team=team_id)
     for user in users:
         work_logs = WorkLog.objects\
@@ -208,7 +211,11 @@ def work_logs_by_team(request, team_id, year, month):
             name = str(user.name)
             create_date = str(item.create_time.date())
             result.append(
-                {'work_logs_pk': work_logs_pk, 'name': name, 'create_date': create_date, 'color': user.id % 5})
+                {'url': '/work_log/detail/'+str(work_logs_pk)+'/',
+                 'title': name,
+                 'start': create_date,
+                 'end': create_date,
+                 })
     return JsonResponse(result, safe=False)
 
 
@@ -223,7 +230,11 @@ def work_logs_by_user(request, user_id, year, month):
         name = str(user_profile.name)
         create_date = str(item.create_time.date())
         result.append(
-            {'work_logs_pk': work_logs_pk, 'name': name, 'create_date': create_date, 'color': user.id % 5})
+            {'url': '/work_log/detail/' + str(work_logs_pk) + '/',
+             'title': name,
+             'start': create_date,
+             'end': create_date,
+             })
     return JsonResponse(result, safe=False)
 
 
