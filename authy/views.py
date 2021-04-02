@@ -338,8 +338,10 @@ class ProfileViewSet(viewsets.ModelViewSet):
 
 def check_manager(request):
     if request.user.is_authenticated:
+        profile = Profile.objects.get(user=request.user)
         return {
-            'team_manager': TeamManager.objects.filter(user=request.user).exists()
+            'team_manager': TeamManager.objects.filter(user=request.user).exists(),
+            'name': profile.name
         }
     else:
         return {

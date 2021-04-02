@@ -230,14 +230,14 @@ def work_logs_by_user(request, user_id, year, month):
 @login_required
 def work_logs_summary_team(request):
     result = []
-    team_id = request.GET.get('team', None)
-    year = int(request.GET.get('year', None))
-    month = int(request.GET.get('month', None))
+    # team_id = request.GET.get('team', None)
+    # year = int(request.GET.get('year', None))
+    # month = int(request.GET.get('month', None))
 
     # test
-    # team_id = 1
-    # year = 2021
-    # month = 3
+    team_id = 1
+    year = 2021
+    month = 3
 
     day_start = datetime(year, month, 1).strftime('%Y-%m-%d')
     day_end = (datetime(year, month, 1) + relativedelta(months=2)).strftime('%Y-%m-%d')

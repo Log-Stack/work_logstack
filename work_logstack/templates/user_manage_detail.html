@@ -289,12 +289,8 @@ $(document).ready(function(){
                     <div style="height:100%; overflow-y: scroll; height: 818px" class="box">
                         <p class="title is-4">Work Log</p>
                         <hr>
-                        {% if last_work_log %}
                         <p class="subtitle is-4 work_log_date">{{ last_work_log.create_time|date:"Y-m-d" }}</p>
                         <p class="subtitle is-6 work_log_content">{{ last_work_log.content }}</p>
-                        {% else %}
-                        <p class="subtitle is-4">작성된 Work Log 가 없습니다.</p>
-                        {% endif %}
                     </div>
                 </div>
             </div>
