@@ -16,7 +16,14 @@ var calendar = null;
 function goDetailSchedule(date){
 var date = new Date(date.split("T")[0]);
 date.setDate(date.getDate() + 1);
+var team_id = document.getElementById('team_select').value;
 
+var url = '/schedule/day/' + team_id + "/" +
+            (date.getFullYear()) + "-" +
+            ("0" +(date.getMonth()+1)).slice(-2)+ "-" +
+            ("0" + (date.getDate())).slice(-2);
+
+location.href = url;
 }
 
 

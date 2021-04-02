@@ -7,8 +7,8 @@ from schedule.views import index, schedule_day, approved, register_index, schedu
 
 urlpatterns = [
     path('', index, name='schedule-index'),
-    path('day/', schedule_day, name='schedule-day'),
-    path('day/<date>', schedule_day_user_work_time, name='schedule-day'),
+    path('day/api/<team_id>/<date>/', schedule_day_user_work_time, name='schedule-day-user-work-time'),
+    path('day/<team_id>/<date>/', schedule_day, name='schedule-day'),
 
     path('approved/', approved, name='schedule-approved'),
     path('approved/list/<team_id>/<year>/<month>/<day>', approved_list, name='schedule-approved-list'),

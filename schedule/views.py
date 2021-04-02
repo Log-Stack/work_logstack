@@ -30,31 +30,57 @@ def index(request):
 
 
 @login_required
-def schedule_day(request):
+def schedule_day(request, team_id, date):
     user = request.user.id
-    selected_date = datetime.today().strftime("%Y-%m-%d")
+    selected_date = datetime.strptime(date, "%Y-%m-%d").strftime("%Y-%m-%d")
+
     template = loader.get_template('schedule_day.html')
 
     context = {
         'user': user,
         'selected_date': selected_date,
+        'selected_team': team_id,
     }
 
     return HttpResponse(template.render(context, request))
 
 
 @login_required
-def schedule_day_user_work_time(request, date):
-    user = request.user.id
-    selected_date = datetime.today().strftime("%Y-%m-%d")
-    template = loader.get_template('schedule_day.html')
+def schedule_day_user_work_time(request, team_id, date):
+    # team_id와 date를 받으면 팀원 리스트와 팀원의 해당 일자 예상 근무를 반환
+    # events: [
+    # {"resourceId":"team_id","title":"team_name",
+    # "start":"2021-04-02T12:00:00+00:00","end":"2021-04-03T06:00:00+00:00",
+    # "color" : COLORS[item.user.id % len(COLORS)]},
+    # ...
+    # ]
 
-    context = {
-        'user': user,
-        'selected_date': selected_date,
-    }
+    selected_date = datetime.strptime(date, "%Y-%m-%d").strftime("%Y-%m-%d")
 
-    return HttpResponse(template.render(context, request))
+    team = Team.objects.get(id=team_id)
+
+    profiles = Profile.objects.filter(team=team)
+
+    resources = []
+    for item in profiles.values_list("user_id", "name"):
+        resources.append(
+            {'id': str(item[0]), 'title': item[1]}
+        )
+    events = []
+    users = Profile.objects.filter(team=team_id).values_list('user_id', flat=True)
+    work_times = Schedule.objects.filter(user__in=users, date=selected_date)
+
+    for item in work_times.values_list("user_id", "date", "start", "end"):
+        events.append({
+            'resourceId': str(item[0]),
+            'title': Profile.objects.get(user=item[0]).name,
+            'start': str(item[1]) + "T" + item[2].isoformat(timespec='seconds') + "+00:00",
+            'end': str(item[1]) + "T" + item[3].isoformat(timespec='seconds') + "+00:00",
+            'color': COLORS[item[0] % len(COLORS)],
+        })
+    result = {"resources": resources, 'event': events}
+
+    return JsonResponse(result, safe=False)
 
 
 @login_required
@@ -317,7 +343,7 @@ def schedule_list_edit(request):
     schedule = Schedule.objects.filter(user=user, date__range=[day_start, day_end]).order_by('date')
 
     user_profile = Profile.objects.get(user=user)
-    
+
     schedule_list = list(schedule)
     result = []
     for item in schedule_list:
@@ -338,7 +364,6 @@ def schedule_list_edit(request):
     return JsonResponse(result, safe=False)
 
 
-
 @login_required
 def schedule_list_team(request, team_id, year, month):
     result = []
@@ -346,8 +371,8 @@ def schedule_list_team(request, team_id, year, month):
     day_start = datetime(year, month, 1).strftime('%Y-%m-%d')
     day_end = (datetime(year, month, 1) + relativedelta(months=2)).strftime('%Y-%m-%d')
 
-    work_schedule = Schedule.objects.filter(user__in=users, date__range=[day_start, day_end], work_type=1)\
-                                    .order_by('date')
+    work_schedule = Schedule.objects.filter(user__in=users, date__range=[day_start, day_end], work_type=1) \
+        .order_by('date')
     for item in list(work_schedule):
         name = Profile.objects.get(user=item.user.id).name
         start = str(item.start.strftime("%H:%M"))
@@ -357,8 +382,8 @@ def schedule_list_team(request, team_id, year, month):
                        'end': item.date.strftime('%Y-%m-%d'),
                        "color": COLORS[item.user.id % len(COLORS)]})
 
-    vacation_schedule = Schedule.objects.filter(user__in=users, date__range=[day_start, day_end], work_type=2)\
-                                        .values("date").distinct()
+    vacation_schedule = Schedule.objects.filter(user__in=users, date__range=[day_start, day_end], work_type=2) \
+        .values("date").distinct()
 
     for vacation_date in list(vacation_schedule):
         name_list = ""

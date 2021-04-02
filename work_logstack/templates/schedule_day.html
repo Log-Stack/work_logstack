@@ -11,6 +11,7 @@
 <script>
 
 var selected_date = "{{selected_date}}";
+var selected_team = "{{selected_team}}";
 
 function setDateInit(){
 var d = new Date(selected_date);
@@ -47,25 +48,59 @@ function init(){
     addAllEvents();
 }
 
+function setEvents(){
+    $.ajax({
+            type: 'GET',
+            url: '/schedule/day/api/1/2021-04-04/',
+            dataType: 'json',
+            success: function(data){
+            var calendarEl = document.getElementById('calendar');
+
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                timeZone: 'UTC',
+                initialView: 'resourceTimeGridDay',
+                initialDate: selected_date,
+                resources: data.resources,
+                events: data.event,
+            });
+            calendar.render();
+            alert(data.event[0].start);
+            }
+    })
+}
+
+
+
 
 window.addEventListener('DOMContentLoaded', init);
 
 
 
 document.addEventListener('DOMContentLoaded', function() {
+
   var calendarEl = document.getElementById('calendar');
 
   var calendar = new FullCalendar.Calendar(calendarEl, {
     timeZone: 'UTC',
     initialView: 'resourceTimeGridDay',
+    initialDate: selected_date,
     resources: [
       { id: 'a', title: 'Room A' },
       { id: 'b', title: 'Room B'},
       { id: 'c', title: 'Room C' },
       { id: '4', title: 'dsad' },
+      { id: '5', title: 'ㅅㄷㄴ' },
       { id: 'd', title: 'Room D' }
     ],
-    events: 'https://fullcalendar.io/demo-events.json?with-resources=4&single-day'
+    events: [
+    {"resourceId":"b","title":"event 3","start":"2021-04-02T12:00:00+00:00","end":"2021-04-03T06:00:00+00:00", "color" : '#0096c6'},
+    {"resourceId":"c","title":"event 4","start":"2021-04-02T07:30:00+00:00","end":"2021-04-02T09:30:00+00:00", "color" : '#0096c6'},
+    {"resourceId":"d","title":"event 5","start":"2021-04-02T10:00:00+00:00","end":"2021-04-02T15:00:00+00:00", "color" : '#0096c6'},
+    {"resourceId":"a","title":"event 2","start":"2021-04-02T09:00:00+00:00","end":"2021-04-02T14:00:00+00:00", "color" : '#0096c6'},
+    {"resourceId":"5","title":"event 2","start":"2021-04-02T09:00:00+00:00","end":"2021-04-02T14:00:00+00:00", "color" : '#0096c6'},
+    {"resourceId": "4", "title": "test1_authy", "start": "2021-04-04T17:06:00+00:00", "end": "2021-04-04T17:06:00+00:00", "color": "#fa3d00"}
+    ]
+
   });
 
   calendar.render();
