@@ -15,7 +15,8 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from authy.forms import TeamCreateForm, UserCreateForm, ProfileForm, SignupForm, ChangePasswordForm, CustomAuthenticationForm, MemberInfoForm
+from authy.forms import TeamCreateForm, UserCreateForm, ProfileForm, SignupForm, ChangePasswordForm, \
+    CustomAuthenticationForm, MemberInfoForm
 from authy.models import Team, Profile
 from authy.serializers import TeamSerializer, ProfileSerializer
 from django.contrib.auth.forms import AuthenticationForm
@@ -153,14 +154,7 @@ def CreateTeamView(request):
     return render(request, 'team_create.html', context)
 
 
-# @login_required
-# def UserDetailView(request, user_id):
-#     profile = get_object_or_404(Profile, user_id=user_id)
-#     context = {
-#         'profile': profile
-#     }
-#
-#     return render(request,'user_search_result.html',context)
+
 
 @login_required
 def ProfileView(request):
@@ -298,13 +292,20 @@ def SearchSelectView(request):
 
 
 @login_required
-def UserDetailView(request, user_id):
-    profile = get_object_or_404(Profile, user_id=user_id)
+def UserDetailView(request, pk):
+    profile = get_object_or_404(Profile, user_id=pk)
+
+    if request.method == "POST":
+        work_start_date = request.POST.get('work_start_date')
+        work_end_date = request.POST.get('work_end_date')
+
     context = {
-        'profile': profile
+        'profile': profile,
+        # 'work_start_date': work_start_date,
+        # 'work_end_date': work_end_date,
     }
 
-    return render(request,'user_search_result.html',context)
+    return render(request,'user_search_result.html', context)
 
 
 # api view
@@ -352,6 +353,12 @@ def check_manager(request):
         #team_manager = TeamManager.objects.filter(user=user).exists()
         #print(type(team_manager))
     # return {'team_manager': team_manager}
+# @login_required
+# def super_manage_list(request, pk):
+#     user = request.user
+#
+#
+#     return render(request, 'index.html')
 
 
 @login_required

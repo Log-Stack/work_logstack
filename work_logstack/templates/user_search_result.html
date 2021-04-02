@@ -1,102 +1,137 @@
 {% extends 'base.html' %}
 {% block content %}
-
-
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.1/main.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.1/main.css">
 <script src='http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery.min.js'></script>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script>
 
-
-function moveUserProfile(){
-var user_select = document.getElementById('user_select');
-
-var user_id = user_select.options[user_select.selectedIndex].value;
-var url = window.location.href;
-var length_id = url.split('/')[window.location.href.split('/').length - 1]
-if(length_id == "select"){
-window.location.href = window.location.href.slice(0, (-1) * length_id.length) +"select/" + user_select.options[user_select.selectedIndex].value;
-}
-else{
-window.location.href = window.location.href.slice(0, (-1) * length_id.length) + user_select.options[user_select.selectedIndex].value;
-}
-}
-
-function setUserSelect(){
-var user_select = document.getElementById('user_select');
-var team_select = document.getElementById('team_select');
-
-var team_id = team_select.options[team_select.selectedIndex].value;
-
-
-user_select.addEventListener('change', moveUserProfile);
+function getWorkLogContent(targetDate){
+var work_log_date = document.getElementsByClassName('work_log_date')[0];
+var work_log_content = document.getElementsByClassName('work_log_content')[0];
 
 $.ajax({
-			type: 'GET',
-			url: '/authy/byteam/' + team_id,
-			dataType: 'json',
+                type: 'GET',
+                url: '/authy/send_work_log/{{ profile.pk }}/' + targetDate,
+                dataType: 'json',
+                data : {
+                    date : targetDate,
+                },
+                success: function(data){
+                work_log_date.innerText = targetDate;
 
-			success: function(data){
-			    for(let i = 1;i<=user_select.options.length;i++){
-                    user_select.remove(1);
-			    }
-                for(let i = 0;i<data.length;i++){
-                var temp = document.createElement("option");
-                temp.value = data[i].user_id
-                temp.text = data[i].name
-                user_select.add(temp);
-                }
-	        }
-        })
+                work_log_content.innerText = data.content;
+        }
+    })
 }
-function setTeamSelect(){
-var team_select = document.getElementById('team_select');
 
-team_select.addEventListener('change', setUserSelect);
+
+function getWorkCalendar(){
+var work_start_date = document.getElementsByName('work_start_date');
+var work_end_date = document.getElementsByName('work_end_date');
+
 $.ajax({
-			type: 'GET',
-			url: '/authy/api/teams/',
-			dataType: 'json',
+                type: 'GET',
+                url: '/authy/calc_work_hours',
+                dataType: 'json',
+                data : {
+                    member_pk : {{ profile.pk }},
+                    start : work_start_date[0].value,
+                    end : work_end_date[0].value,
+                },
+                success: function(data){
+                document.getElementsByClassName("total_time")[0].innerText= data.total_working_time;
+                var color_list = ['#0096c6', '#ff6939', '#fa3d00', '#6937a1',  '#003458'];
 
-			success: function(data){
-			    for(let i = 1;i<=team_select.options.length;i++){
-                    team_select.remove(1);
+                var titles = Array();
+			    for (var i = 0 ; i < data.work_hours_list.length; i++){
+                    titles.push({'title' : data.work_hours_list[i].start_time, 'start': data.work_hours_list[i].date, 'end' : data.work_hours_list[i].date, "color": color_list[0] });
+                    titles.push({'title' : data.work_hours_list[i].end_time, 'start': data.work_hours_list[i].date, 'end' : data.work_hours_list[i].date, "color": color_list[4] });
 			    }
-                for(let i = 0;i<data.length;i++){
-                var temp = document.createElement("option");
-                temp.value = data[i].id
-                temp.text = data[i].name
-                team_select.add(temp);
-                }
-	        }
-        })
+
+                var calendarEl = document.getElementById('calendar');
+                var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                events : titles,
+                dateClick: function(info) {
+                    getWorkLogContent(info.dateStr)
+                },
+                });
+
+                calendar.render();
+        }
+    })
 }
+
 
 document.addEventListener('DOMContentLoaded', function() {
-setTeamSelect()
+    getWorkCalendar()
+
 
 });
+
+$(document).ready(function(){
+
+    var current_team = document.getElementById('current_team');
+
+    $('#edit_team').change(function(){
+        var team =  $('#edit_team').val();
+
+        $.ajax({
+          type: 'GET',
+          url: '/authy/manage_team/{{ profile.pk }}/' + team,
+          dataType: 'json',
+          success: function(data){
+			    if (data === 'success'){
+			        current_team.innerText = '팀: ' + team
+			    } else {
+			        window.location.href='{% url 'schedule-index' %}'
+			    }
+            }
+        });
+    });
+});
+
+
+
+$(document).ready(function(){
+
+    var current_position = document.getElementById('current_position');
+
+    $('#edit_position').change(function(){
+        var position =  $('#edit_position').val();
+
+        $.ajax({
+          type: 'GET',
+          url: '/authy/manage_position/{{ profile.pk }}/' + position,
+          dataType: 'json',
+          success: function(data){
+			    if (data === 'success'){
+			        current_position.innerText = '직급: ' + position
+			    } else {
+			        window.location.href='{% url 'schedule-index' %}'
+			    }
+            }
+        });
+    });
+});
+
 </script>
 
-
     <style>
-    .info_body{
-          padding-top:40px;
-          display: flex;
-          justify-content: center;
-          align-items: center;
+    .log_box {
+        overflow-y: scroll;
+        overflow-x: hidden;
+        height:450px;
     }
-    .category{
-        margin-top:100px;
-        margin-bottom:40px;
-        display:flex;
 
-    }
-    .info{
-        width:500px;
-    }
     </style>
+
+<!--탭 메뉴-->
 <div class="container">
     <br>
-    <div class="hero is-primary is-small">
+    <div class="hero is-dark is-small">
         <div class="hero-body">
             <p class="title">
                 Search Staff
@@ -104,85 +139,125 @@ setTeamSelect()
         </div>
     </div>
     <div class="tabs">
-  <ul>
-    <li><a href="{% url 'search' %}">by Name</a></li>
-    <li><a href="{% url 'searchall' %}">All Staffs</a></li>
-<!--    <li class="is-active"><a href="{% url 'searchselect' %}">by Team</a></li>-->
-
-  </ul>
+      <ul>
+        <li><a href="{% url 'search' %}">by Name</a></li>
+        <li><a href="{% url 'searchall' %}">All Staffs</a></li>
+      </ul>
+    </div>
 </div>
 
-<div class="info_body">
+<!--프로필 디테일 메뉴-->
+<div class="container">
+ <div class="card">
+        <div class="card-content">
+            <div class="columns">
+                <div class="column is-6">
+            <div class="media">
+                <div class="media-content">
+                    <p class="title is-4">
+                        <span class="material-icons" style="margin: 0.5rem; vertical-align: middle;">person</span><span style="vertical-align: middle;">
+                        {{ profile.name }}
+                        </span>
+                        &nbsp;
+                        &nbsp;
+                    </p>
+                        <div class="content">
 
-<!-- 팀이 볼 수 있는 회원 정보 -->
-<div class="info">
-<!--    <div class="category">-->
 
-<!--        &lt;!&ndash; 팀 선택 &ndash;&gt;-->
-<!--        <div style="margin-right:20px;" class="select">-->
-<!--            <select name="team" id="team_select">-->
-<!--                <option>all</option>-->
-<!--            </select>-->
-<!--        </div>-->
+                                <ul>
 
-<!--        &lt;!&ndash; 팀 선택 이후에 생성 되는 직원 선택 창, 여기서 user_id 를 보내면 url 'userdetail'로 이동 &ndash;&gt;-->
-<!--        <div class="select">-->
-<!--          <select name="member" id="user_select">-->
-<!--            <option>직원 선택</option>-->
-<!--          </select>-->
-<!--        </div>-->
-
-<!--    </div>-->
-    <!-- 직원 선택 후에 나타나는 직원 프로필 -->
-        {% if profile %}
-            <div class="card">
-              <div class="card-content">
-                <div class="media">
-                  <div class="media-left">
-                <figure class="image is-128x128">
-                  <img src="{% if profile.picture %}
-          {{ profile.picture.url }} {% else %} https://bulma.io/images/placeholders/128x128.png {% endif %}">
-                 </figure>
-                  </div>
-                  <div class="media-content">
-                    <p class="title is-4">{{ profile.user }}</p>
-                    <p class="subtitle is-6">@{{ profile.team }}</p>
-                  </div>
+                                    <li id="current_team">
+                                        팀: {% if profile.team %}{{ profile.team }}{% else %}  {% endif %}
+                                    </li>
+                                    <li id="current_position">
+                                        직급: {% if profile.position %}{{ profile.position }}{% else %} {% endif %}
+                                    </li>
+                                    <li>
+                                        이메일: {{ profile.email_address }}
+                                    </li>
+                                    <li>
+                                        전화번호: {% if profile.phone_number %} {{ profile.phone_number }}{% else %} {% endif %}
+                                    </li>
+                                    <li>
+                                        입사일:
+                                        {% if profile.start_date %}
+                                        {{ profile.start_date }}
+                                        {% else %}
+                                        {% endif %}
+                                    </li>
+                                    <li>
+                                        생년월일: {% if profile.birth_day %}{{ profile.birth_day }}{% else %} {% endif %}
+                                    </li>
+                                </ul>
+                        </div>
                 </div>
 
-              </div>
-            </div>
-            <div class="card">
-              <div class="card-content">
-                <div class="content">
-                    <strong><p>Birth Date</p></strong>
-                    <br>
-                    <p>{{ profile.birth_day }}</p>
-                    <br><br>
-                    <strong><p>Mobile</p></strong>
-                     <br>
-                    <p>{{ profile.phone_number }}</p>
-                    <br><br>
-                    <strong><p>Email Address</p></strong>
-                     <br>
-                    <p>{{ profile.email_address }}</p>
-                    <br><br>
-                    <strong><p>Current Employee</p></strong>
-                     <br>
-                    <p>{{ profile.current_employed }}</p>
-                    <br><br>
+                <div class="media-right">
+                    <figure class="image is-128x128">
+                        <img src="
+                        {% if profile.picture %}
+                        {{ profile.picture.url }}
+                        {% else %}
+                        https://bulma.io/images/placeholders/128x128.png
+                        {% endif %}">
+                    </figure>
                 </div>
-              </div>
             </div>
 
-    <!--스케줄 조회 버튼-->
-<!--    <div style="padding-top: 40px;" class="buttons">-->
-<!--      <button class="button is-primary">Schedule</button>-->
-<!--      <a class="button is-link" href="{% url 'work_log_detail' user.id %}">Work Logs</a>-->
-<!--    </div>-->
-    {% endif %}
 
-</div>
+
+            <div class="media">
+                <div class="media-content">
+                        <form method="POST" role="form">
+                            {% csrf_token %}
+                            <div class="columns">
+                                <div class="column is-4">
+                                    <div class="field">
+                                        <label class="label">Start date</label>
+                                        <div class="control">
+                                            <input class="input is-dark" type="date" name="work_start_date" value="{{ work_start_date }}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="column is-4">
+                                    <div class="field">
+                                        <label class="label">End date</label>
+                                        <div class="control">
+                                            <input class="input is-dark" type="date" name="work_end_date" value="{{ work_end_date }}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="column">
+                                    <div class="field">
+                                        <label class="label" style="visibility: hidden;">검색</label>
+                                        <div class="control">
+                                            <button class="button is-dark" type="submit">Search</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    <div style="margin-top: 1rem;" class="box notification is-dark">
+                        <div class="title total_time has-text-centered"></div>
+                    </div>
+                </div>
+            </div>
+                </div>
+                <div class="column is-6">
+
+                    <div class="log_box">
+                        <p class="title is-4">Work Log</p>
+                        <hr>
+                        <p class="subtitle is-4 work_log_date"></p>
+                        <p class="subtitle is-6 work_log_content"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <div class="box">
+        <div id='calendar'></div>
+    </div>
 </div>
 </div>
 {% endblock %}

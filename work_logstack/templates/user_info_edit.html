@@ -17,7 +17,7 @@
 
 <div class="container">
     <br>
-    <div class="hero is-primary is-small">
+    <div class="hero is-dark is-small">
         <div class="hero-body">
             <p class="title">
                 Edit Profile
@@ -41,7 +41,7 @@
                         <div class="media-content">
                             <p class="title is-4">{{ id }}</p>
                             <p class="subtitle is-6">@Team</p>
-                            <a href="{% url 'changepw' %}" style="margin-top:12px;" class="button is-primary">Change
+                            <a href="{% url 'changepw' %}" style="margin-top:12px;" class="button is-dark">Change
                                 Password</a>
                         </div>
                     </div>
@@ -62,7 +62,9 @@
                             </div>
                             <label for="name">Name</label><br>
 
-                            <input class="input" type="text" id="name" name="name" value="{{ profile.name }}"><br><br>
+                            <input class="input" type="text" id="name" name="name" value="{% if profile.name %}{{ profile.name }}{% else %}{% endif %}">
+
+                            <br><br>
 
 
                             <label for="birth_day">Birth Date</label><br>
@@ -75,14 +77,14 @@
                                    value="{{ profile.email_address }}"><br><br>
 
                             <label for="phone_number">Mobile</label><br>
-                            <input class="input" type="text" id="phone_number" name="phone_number"
-                                   value="{{ profile.phone_number }}"><br><br>
+                            <input class="input" type="text" id="phone_number" name="phone_number" value="{% if profile.phone_number %}{{ profile.phone_number }}{% else %}{% endif %}">
+                            <br><br>
 
                             <label for="start_date">Start Date</label><br>
                             <input class="input" type="date" id="start_date" name="start_date"
                                    value="{{ profile.start_date }}"><br><br><br>
 
-                            <input class="button is-primary" type="submit" value="Submit">
+                            <input class="button is-dark" type="submit" value="Submit">
 
                         </form>
                     </div>
