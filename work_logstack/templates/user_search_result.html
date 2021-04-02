@@ -1,82 +1,5 @@
 {% extends 'base.html' %}
 {% block content %}
-
-
-<script src='http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery.min.js'></script>
-<script>
-
-
-function moveUserProfile(){
-var user_select = document.getElementById('user_select');
-
-var user_id = user_select.options[user_select.selectedIndex].value;
-var url = window.location.href;
-var length_id = url.split('/')[window.location.href.split('/').length - 1]
-if(length_id == "select"){
-window.location.href = window.location.href.slice(0, (-1) * length_id.length) +"select/" + user_select.options[user_select.selectedIndex].value;
-}
-else{
-window.location.href = window.location.href.slice(0, (-1) * length_id.length) + user_select.options[user_select.selectedIndex].value;
-}
-}
-
-function setUserSelect(){
-var user_select = document.getElementById('user_select');
-var team_select = document.getElementById('team_select');
-
-var team_id = team_select.options[team_select.selectedIndex].value;
-
-
-user_select.addEventListener('change', moveUserProfile);
-
-$.ajax({
-			type: 'GET',
-			url: '/authy/byteam/' + team_id,
-			dataType: 'json',
-
-			success: function(data){
-			    for(let i = 1;i<=user_select.options.length;i++){
-                    user_select.remove(1);
-			    }
-                for(let i = 0;i<data.length;i++){
-                var temp = document.createElement("option");
-                temp.value = data[i].user_id
-                temp.text = data[i].name
-                user_select.add(temp);
-                }
-	        }
-        })
-}
-function setTeamSelect(){
-var team_select = document.getElementById('team_select');
-
-team_select.addEventListener('change', setUserSelect);
-$.ajax({
-			type: 'GET',
-			url: '/authy/api/teams/',
-			dataType: 'json',
-
-			success: function(data){
-			    for(let i = 1;i<=team_select.options.length;i++){
-                    team_select.remove(1);
-			    }
-                for(let i = 0;i<data.length;i++){
-                var temp = document.createElement("option");
-                temp.value = data[i].id
-                temp.text = data[i].name
-                team_select.add(temp);
-                }
-	        }
-        })
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-setTeamSelect()
-
-});
-</script>
-
-
     <style>
     .info_body{
           padding-top:40px;
@@ -84,16 +7,9 @@ setTeamSelect()
           justify-content: center;
           align-items: center;
     }
-    .category{
-        margin-top:100px;
-        margin-bottom:40px;
-        display:flex;
-
-    }
-    .info{
-        width:500px;
-    }
     </style>
+
+<!--탭 메뉴-->
 <div class="container">
     <br>
     <div class="hero is-primary is-small">
@@ -107,82 +23,14 @@ setTeamSelect()
   <ul>
     <li><a href="{% url 'search' %}">by Name</a></li>
     <li><a href="{% url 'searchall' %}">All Staffs</a></li>
-<!--    <li class="is-active"><a href="{% url 'searchselect' %}">by Team</a></li>-->
-
   </ul>
 </div>
 
+<!--프로필 디테일 메뉴-->
 <div class="info_body">
 
-<!-- 팀이 볼 수 있는 회원 정보 -->
-<div class="info">
-<!--    <div class="category">-->
 
-<!--        &lt;!&ndash; 팀 선택 &ndash;&gt;-->
-<!--        <div style="margin-right:20px;" class="select">-->
-<!--            <select name="team" id="team_select">-->
-<!--                <option>all</option>-->
-<!--            </select>-->
-<!--        </div>-->
 
-<!--        &lt;!&ndash; 팀 선택 이후에 생성 되는 직원 선택 창, 여기서 user_id 를 보내면 url 'userdetail'로 이동 &ndash;&gt;-->
-<!--        <div class="select">-->
-<!--          <select name="member" id="user_select">-->
-<!--            <option>직원 선택</option>-->
-<!--          </select>-->
-<!--        </div>-->
-
-<!--    </div>-->
-    <!-- 직원 선택 후에 나타나는 직원 프로필 -->
-        {% if profile %}
-            <div class="card">
-              <div class="card-content">
-                <div class="media">
-                  <div class="media-left">
-                <figure class="image is-128x128">
-                  <img src="{% if profile.picture %}
-          {{ profile.picture.url }} {% else %} https://bulma.io/images/placeholders/128x128.png {% endif %}">
-                 </figure>
-                  </div>
-                  <div class="media-content">
-                    <p class="title is-4">{{ profile.user }}</p>
-                    <p class="subtitle is-6">@{{ profile.team }}</p>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-            <div class="card">
-              <div class="card-content">
-                <div class="content">
-                    <strong><p>Birth Date</p></strong>
-                    <br>
-                    <p>{{ profile.birth_day }}</p>
-                    <br><br>
-                    <strong><p>Mobile</p></strong>
-                     <br>
-                    <p>{{ profile.phone_number }}</p>
-                    <br><br>
-                    <strong><p>Email Address</p></strong>
-                     <br>
-                    <p>{{ profile.email_address }}</p>
-                    <br><br>
-                    <strong><p>Current Employee</p></strong>
-                     <br>
-                    <p>{{ profile.current_employed }}</p>
-                    <br><br>
-                </div>
-              </div>
-            </div>
-
-    <!--스케줄 조회 버튼-->
-<!--    <div style="padding-top: 40px;" class="buttons">-->
-<!--      <button class="button is-primary">Schedule</button>-->
-<!--      <a class="button is-link" href="{% url 'work_log_detail' user.id %}">Work Logs</a>-->
-<!--    </div>-->
-    {% endif %}
-
-</div>
 </div>
 </div>
 {% endblock %}
