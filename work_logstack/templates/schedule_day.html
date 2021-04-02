@@ -47,7 +47,7 @@ $.ajax({
 			type: 'GET',
 			url: '/authy/api/teams/',
 			dataType: 'json',
-
+            async : false,
 			success: function(data){
 			    for(let i = 1;i<=team_select.options.length;i++){
                     team_select.remove(1);
@@ -56,6 +56,9 @@ $.ajax({
                 var temp = document.createElement("option");
                 temp.value = data[i].id
                 temp.text = data[i].name
+                if(data[i].id == selected_team){
+                    temp.selected = true;
+                }
                 team_select.add(temp);
                 }
 	        }
@@ -107,11 +110,11 @@ function setEvents(){
 
 
 function init(){
+    setTeamSelect();
     setDateInit();
     addAllEvents();
     calendarEl = document.getElementById('calendar');
     setEvents();
-    setTeamSelect();
 }
 
 
@@ -137,7 +140,7 @@ window.addEventListener('DOMContentLoaded', init);
     <div class="hero is-primary is-small">
         <div class="hero-body">
             <p class="title">
-                Modify Schedule
+                Day Schedule
             </p>
         </div>
     </div>
