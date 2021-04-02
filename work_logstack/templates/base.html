@@ -110,7 +110,7 @@
                 </div>
             </div>
 
-            <div class="navbar-end">
+            <div class="navbar-end" style="padding-right:10px;">
 <!--                <div class="navbar-item">-->
                     <div class="buttons">
                         <!-- log in 안했을 시-->
@@ -122,15 +122,15 @@
                         <!-- log in 했을 시-->
                         {% if user.is_authenticated %}
 
-                        <div style="margin-right:20px; margin-bottom:5px;">
+                        <div style="margin-right:20px;">
                             {{ request.user }}님 안녕하세요
                         </div>
 
-                        <a class="button is-primary" href="{% url 'profile' %}">
+                        <a class="button is-light" href="{% url 'profile' %}">
                             <strong>My Profile</strong>
                         </a>
                         {% if not team_manager %}
-                        <a class="button is-light" href="{% url 'work_log_write' %}">
+                        <a href="{% url 'work_log_write' %}">
                             퇴근하기
                         </a>
                         {% endif %}
