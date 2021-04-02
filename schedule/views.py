@@ -46,7 +46,7 @@ def schedule_day(request, team_id, date):
 
 
 @login_required
-def schedule_day_user_work_time(request, team_id, date):
+def schedule_day_user_work_time(request):
     # team_id와 date를 받으면 팀원 리스트와 팀원의 해당 일자 예상 근무를 반환
     # events: [
     # {"resourceId":"team_id","title":"team_name",
@@ -54,6 +54,8 @@ def schedule_day_user_work_time(request, team_id, date):
     # "color" : COLORS[item.user.id % len(COLORS)]},
     # ...
     # ]
+    team_id = request.GET.get('team_id')
+    date = request.GET.get('selected_date')
 
     selected_date = datetime.strptime(date, "%Y-%m-%d").strftime("%Y-%m-%d")
 

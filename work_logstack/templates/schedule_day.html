@@ -51,7 +51,11 @@ function init(){
 function setEvents(){
     $.ajax({
             type: 'GET',
-            url: '/schedule/day/api/1/2021-04-04/',
+            url: '/schedule/day/api/',
+            data : {
+                'team_id' : 1,
+                'selected_date' : selected_date,
+            },
             dataType: 'json',
             success: function(data){
             var calendarEl = document.getElementById('calendar');
@@ -64,7 +68,6 @@ function setEvents(){
                 events: data.event,
             });
             calendar.render();
-            alert(data.event[0].start);
             }
     })
 }
