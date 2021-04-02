@@ -12,26 +12,27 @@
 var calendarEl = null;
 var calendar = null;
 
-document.addEventListener('DOMContentLoaded', function() {
-    calendarEl = document.getElementById('calendar');
-    calendar = new FullCalendar.Calendar(calendarEl, {
-          initialView: 'dayGridMonth',
-          dateClick: function(info) {
-                location.href="/schedule/register/day/" + info.dateStr.split('-')[0] + "/" + info.dateStr.split('-')[1] + "/" + info.dateStr.split('-')[2];
-          },
-    });
 
-    calendar.render();
+function goDetailSchedule(date){
+var date = new Date(date.split("T")[0]);
+date.setDate(date.getDate() + 1);
+var team_id = document.getElementById('team_select').value;
 
+var url = '/schedule/day/' + team_id + "/" +
+            (date.getFullYear()) + "-" +
+            ("0" +(date.getMonth()+1)).slice(-2)+ "-" +
+            ("0" + (date.getDate())).slice(-2);
 
-});
+location.href = url;
+}
+
 
 function getEventByUser(){
 var user_select = document.getElementById('user_select');
 
 var user_id = user_select.options[user_select.selectedIndex].value;
 
-if(user_id == '-'){
+if(user_id == '-2'){
     getEventByTeamSummary();
 }
 else if(user_id != '-1'){
@@ -68,9 +69,14 @@ else if(user_id != '-1'){
                 var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 events : titles,
-          dateClick: function(info) {
-                location.href="/schedule/register/day/" + info.dateStr.split('-')[0] + "/" + info.dateStr.split('-')[1] + "/" + info.dateStr.split('-')[2];
-          },
+                eventMouseEnter: function(info) {
+                  var eventObj = info.event;
+                  info.el.style.cursor = 'default';
+                },
+                navLinks: true,
+                navLinkDayClick: function(date, jsEvent) {
+                    goDetailSchedule(date.toISOString());
+                  },
                 });
 
                 calendar.render();
@@ -93,35 +99,18 @@ $.ajax({
 			dataType: 'json',
 			success: function(data){
 
-			var color_list = ['#0096c6', '#ff6939', '#fa3d00', '#6937a1',  '#003458'];
-
-			var titles = Array();
-			for (var i = 0 ; i < data.length; i++){
-                var title = ""
-                var start = data[i].date
-                var end = data[i].date
-                var color = ""
-			    if (data[i].work_type == 1){
-			        title = data[i].name + " | " +  data[i].start + " : " + data[i].end;
-			        color = color_list[data[i].color];
-                }
-                else if(data[i].work_type == 2){
-                    title = data[i].name + " | " + "휴가";
-                    color = '#008000';
-                }
-                else if(data[i].work_type == 0){
-                    continue;
-                }
-                titles.push({'title' : title, 'start': start, 'end' : end, "color": color });
-			}
-
             var calendarEl = document.getElementById('calendar');
             var calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
-            events : titles,
-          dateClick: function(info) {
-                location.href="/schedule/register/day/" + info.dateStr.split('-')[0] + "/" + info.dateStr.split('-')[1] + "/" + info.dateStr.split('-')[2];
-          },
+            events : data,
+            eventMouseEnter: function(info) {
+              var eventObj = info.event;
+              info.el.style.cursor = 'default';
+            },
+            navLinks: true,
+            navLinkDayClick: function(date, jsEvent) {
+                goDetailSchedule(date.toISOString());
+              },
             });
 
             calendar.render();
@@ -144,36 +133,19 @@ $.ajax({
 			},
 			success: function(data){
 
-			var color_list = ['#0096c6', '#ff6939', '#fa3d00', '#6937a1',  '#003458'];
-
-			var titles = Array();
-			for (var i = 0 ; i < data.length; i++){
-			    if(data[i].worker_count + data[i].vacation_count == 0){
-			        continue;
-			    }
-			    var work_count = "근무 인원 : " + data[i].worker_count + "명";
-			    var work_time ="";
-			    if(data[i].worker_count == 0){
-                    work_time = "근무 인원이 없습니다";
-			    }
-                else{
-                    work_time = data[i].start + " ~ " + data[i].end;
-                }
-			    var vacation_count = "휴가 인원 : " + data[i].vacation_count + "명";
-
-                titles.push({'title' : work_count, 'start': data[i].date, 'end' : data[i].date, "color": color_list[0] });
-                titles.push({'title' : work_time, 'start': data[i].date, 'end' : data[i].date, "color": color_list[4] });
-                titles.push({'title' : vacation_count, 'start': data[i].date, 'end' : data[i].date, "color": color_list[2] });
-			}
-
             var calendarEl = document.getElementById('calendar');
             var calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
-            events : titles,
+            eventMouseEnter: function(info) {
+              var eventObj = info.event;
+              info.el.style.cursor = 'default';
+            },
+            events : data,
             eventOrder: 'color',
-          dateClick: function(info) {
-                location.href="/schedule/register/day/" + info.dateStr.split('-')[0] + "/" + info.dateStr.split('-')[1] + "/" + info.dateStr.split('-')[2];
-          },
+            navLinks: true,
+            navLinkDayClick: function(date, jsEvent) {
+                goDetailSchedule(date.toISOString());
+              },
             });
 
             calendar.render();
@@ -220,9 +192,21 @@ $.ajax({
 			dataType: 'json',
 
 			success: function(data){
-			    for(let i = 2;i<=user_select.options.length;i++){
-                    user_select.remove(2);
+			    var len = user_select.options.length;
+			    for(let i = 0;i<=len;i++){
+                    user_select.remove(0);
 			    }
+
+                var temp = document.createElement("option");
+                temp.value = '-2';
+                temp.text = 'Summary';
+                user_select.add(temp);
+
+                var temp = document.createElement("option");
+                temp.value = -1;
+                temp.text = 'All';
+                user_select.add(temp);
+
                 for(let i = 0;i<data.length;i++){
                 var temp = document.createElement("option");
                 temp.value = data[i].user_id
@@ -233,14 +217,107 @@ $.ajax({
         })
 }
 
+function setSelectMoveToCalendar(){
+    selector = document.getElementsByClassName("select_team_user");
+    button = document.getElementsByClassName("edit_button");
+    document.getElementsByClassName("fc-toolbar-chunk")[1].appendChild(selector[0]);
+    document.getElementsByClassName("fc-toolbar-chunk")[2].appendChild(button[0]);
+}
+
+function setModifyScheduleCalendar(){
+    $.ajax({
+                type: 'GET',
+                url: '/schedule/list/edit',
+                dataType: 'json',
+                data :{
+                    year : (calendar.getDate().getYear() + 1900),
+                    month : (calendar.getDate().getMonth()+1),
+			    },
+                success: function(data){
+                var calendarEl = document.getElementById('calendar');
+                var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                events : data,
+                eventMouseEnter: function(info) {
+                  var eventObj = info.event;
+                  info.el.style.cursor = 'default';
+                },
+                navLinks: true,
+                navLinkDayClick: function(date, jsEvent) {
+                    var year = date.getFullYear();
+                    var month = ("0" + (1 + date.getMonth())).slice(-2);
+                    var day = ("0" + date.getDate()).slice(-2);
+                    location.href="/schedule/register/day/" + year + "/" + month + "/" + day;
+                  },
+                });
+
+                calendar.render();
+                }
+    });
+}
+function checkScheduleMode(){
+    var user_select = document.getElementById('user_select');
+    var team_select = document.getElementById('team_select');
+    if(user_select.value == -2){
+        getEventByTeamSummary();
+    }
+    else if(user_select.value == -1){
+        getEventByTeamAllUsers();
+    }
+    else if(team_select.value == 'team'){
+        calendarEl = document.getElementById('calendar');
+        calendar = new FullCalendar.Calendar(calendarEl, {
+              initialView: 'dayGridMonth',
+        });
+        calendar.render();
+    }
+    else if(user_select.value != null){
+        getEventByUser();
+    }
+    else{
+        calendarEl = document.getElementById('calendar');
+        calendar = new FullCalendar.Calendar(calendarEl, {
+              initialView: 'dayGridMonth',
+        });
+        calendar.render();
+    }
+}
+
+function editSchedule(){
+    var button = document.getElementsByClassName("edit_button")[0];
+    if(button.value == 0){
+        setModifyScheduleCalendar();
+        button.value = 1;
+        button.classList.remove('is-primary');
+        button.classList.add('is-danger');
+        button.innerText = 'Stop';
+    }
+    else{
+        checkScheduleMode();
+        button.value = 0;
+        button.classList.remove('is-danger');
+        button.classList.add('is-primary');
+        button.innerText = 'Edit';
+
+    }
+}
+
 
 function init(){
-    setTeamSelect();
+        calendarEl = document.getElementById('calendar');
+        calendar = new FullCalendar.Calendar(calendarEl, {
+              initialView: 'dayGridMonth',
+        });
+
+        calendar.render();
+
+        setTeamSelect();
+        setSelectMoveToCalendar();
+        document.getElementsByClassName("edit_button")[0].addEventListener('click', editSchedule);;
+
 }
 
 window.addEventListener('DOMContentLoaded', init);
-
-
 
 
 
@@ -259,17 +336,20 @@ window.addEventListener('DOMContentLoaded', init);
     <br>
     <div class="columns is-centered">
         <div class="column">
-            <div class="select is-primary">
-                <select id="team_select">
-                    <option>team</option>
-                </select>
+            <div class="select_team_user">
+                <div class="select is-primary">
+                    <select id="team_select">
+                        <option>team</option>
+                    </select>
+                </div>
+                <div class="select is-primary">
+                    <select id="user_select">
+                    </select>
+                </div>
+
             </div>
-            <div class="select is-primary">
-                <select id="user_select">
-                    <option>-</option>
-                    <option value="-1">All</option>
-                </select>
-            </div>
+
+            <button class="edit_button button is-primary" value="0">Edit</button>
             <div id='calendar'></div>
         </div>
     </div>

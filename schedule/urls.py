@@ -1,10 +1,14 @@
 from django.urls import path
 
-from schedule.views import index, approved, register_index, schedule_list_user, schedule_list_team, approved_list, \
-    approved_user, register_schedule_list_week, register_schedule_day, schedule_summary_team
+from schedule.views import index, schedule_day, approved, register_index, schedule_list_user, schedule_list_team, \
+    approved_list, \
+    approved_user, register_schedule_list_week, register_schedule_day, schedule_summary_team, schedule_list_edit, \
+    schedule_day_user_work_time
 
 urlpatterns = [
     path('', index, name='schedule-index'),
+    path('day/api/', schedule_day_user_work_time, name='schedule-day-user-work-time'),
+    path('day/<team_id>/<date>/', schedule_day, name='schedule-day'),
 
     path('approved/', approved, name='schedule-approved'),
     path('approved/list/<team_id>/<year>/<month>/<day>', approved_list, name='schedule-approved-list'),
@@ -16,6 +20,7 @@ urlpatterns = [
          name='schedule-register-list-user-day'),
 
     path('list/user/<user_id>/<year>/<month>', schedule_list_user, name='schedule-list-user'),
-    path('list/team/<team_id>/<year>/<month>', schedule_list_team, name='schedule-list-team'),
+    path('list/edit/', schedule_list_edit, name='schedule-list-user'),
+    path('list/team/<int:team_id>/<int:year>/<int:month>', schedule_list_team, name='schedule-list-team'),
     path('list/summary/', schedule_summary_team, name='schedule-summary-team'),
 ]

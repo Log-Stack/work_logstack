@@ -76,16 +76,15 @@ var week_start_date = document.getElementById('week_start_date').value.split('-'
 
 
 function setFormDate(){
-var week = ['일', '월', '화', '수', '목', '금', '토'];
-var d = new Date(document.getElementById('week_start_date').value);
+    var week = ['일', '월', '화', '수', '목', '금', '토'];
+    var d = new Date(document.getElementById('week_start_date').value);
+    d.setDate(d.getDate() - d.getDay());
     for(let i = 0; i<7;i++){
         date[i].innerText = (d.getMonth() + 1) + "." + d.getDate() + " (" + week[d.getDay()] + ")";
         d.setDate(d.getDate() + 1);
     }
-
-getWorkTimes();
-
-CheckWorkTime();
+    getWorkTimes();
+    CheckWorkTime();
 }
 
 function setDateInit(){
@@ -169,6 +168,7 @@ function sumAll(){
 }
 
 function addAllEvents(){
+    document.getElementById('week_start_date').addEventListener('change', setFormDate);
     for (let i = 0; i < start_time.length; i++) {
         start_time[i].addEventListener('change', CalculateAllWorkTime);
         end_time[i].addEventListener('change', CalculateAllWorkTime);
@@ -315,7 +315,7 @@ window.addEventListener('DOMContentLoaded', init);
 
                         <div class="columns is-centered">
                             <div class="column">
-                                <span class="tag is-primary is-medium"><p>예정 근무 시간</p><p
+                                <span class="tag is-primary is-medium"><p>예정 근무 시간&nbsp</p><p
                                         class="work_time">00:00</p></span>
                             </div>
 
@@ -351,7 +351,7 @@ window.addEventListener('DOMContentLoaded', init);
 
                         <div class="columns is-centered">
                             <div class="column">
-                                <span class="tag is-primary is-medium"><p>예정 근무 시간</p><p
+                                <span class="tag is-primary is-medium"><p>예정 근무 시간&nbsp</p><p
                                         class="work_time">00:00</p></span>
                             </div>
 
@@ -387,7 +387,7 @@ window.addEventListener('DOMContentLoaded', init);
 
                         <div class="columns is-centered">
                             <div class="column">
-                                <span class="tag is-primary is-medium"><p>예정 근무 시간</p><p
+                                <span class="tag is-primary is-medium"><p>예정 근무 시간&nbsp</p><p
                                         class="work_time">00:00</p></span>
                             </div>
 
@@ -423,7 +423,7 @@ window.addEventListener('DOMContentLoaded', init);
 
                         <div class="columns is-centered">
                             <div class="column">
-                                <span class="tag is-primary is-medium"><p>예정 근무 시간</p><p
+                                <span class="tag is-primary is-medium"><p>예정 근무 시간&nbsp</p><p
                                         class="work_time">00:00</p></span>
                             </div>
 
@@ -459,7 +459,7 @@ window.addEventListener('DOMContentLoaded', init);
 
                         <div class="columns is-centered">
                             <div class="column">
-                                <span class="tag is-primary is-medium"><p>예정 근무 시간</p><p
+                                <span class="tag is-primary is-medium"><p>예정 근무 시간&nbsp</p><p
                                         class="work_time">00:00</p></span>
                             </div>
 
@@ -495,7 +495,7 @@ window.addEventListener('DOMContentLoaded', init);
 
                         <div class="columns is-centered">
                             <div class="column">
-                                <span class="tag is-primary is-medium"><p>예정 근무 시간</p><p
+                                <span class="tag is-primary is-medium"><p>예정 근무 시간&nbsp</p><p
                                         class="work_time">00:00</p></span>
                             </div>
 
@@ -531,7 +531,7 @@ window.addEventListener('DOMContentLoaded', init);
 
                         <div class="columns is-centered">
                             <div class="column">
-                                <span class="tag is-primary is-medium"><p>예정 근무 시간</p><p
+                                <span class="tag is-primary is-medium"><p>예정 근무 시간&nbsp</p><p
                                         class="work_time">00:00</p></span>
                             </div>
 
