@@ -19,22 +19,32 @@
     body{
      font-family: 'Titillium Web', sans-serif;
     }
+    .navbar{
+       margin-top:10px;
+    }
+    .logo {
+    display: flex;
+    flex-direction: column;
+        text-align: center;
+        justify-content: center;
+        margin-right: 10px;
+    }
 
 </style>
 <body>
 <div class="container">
     <nav class="navbar" role="navigation" aria-label="main navigation">
-        <div class="navbar-brand">
-            <strong><p style="font-family: 'Montserrat', sans-serif;margin-top:18px; margin-right:20px; margin-left: 10px; "><a href="{% url 'schedule-index' %}" style="text-decorations:none; color:inherit;">LOGSTACK</a></p></strong>
+<!--        <div class="navbar-brand">-->
+        <strong class="logo"><p style="font-family: 'Montserrat', sans-serif; "><a href="{% url 'schedule-index' %}" style="text-decorations:none; color:inherit;">LOGSTACK</a></p></strong>
 <!--            <img src="{% static 'img/logstack.png' %}" width="122" height="104">-->
 
-            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false"
-               data-target="navbarBasicExample">
-                <span aria-hidden="true"></span>
-                <span aria-hidden="true"></span>
-                <span aria-hidden="true"></span>
-            </a>
-        </div>
+<!--            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false"-->
+<!--               data-target="navbarBasicExample">-->
+<!--                <span aria-hidden="true"></span>-->
+<!--                <span aria-hidden="true"></span>-->
+<!--                <span aria-hidden="true"></span>-->
+<!--            </a>-->
+<!--        </div>-->
 
         <div id="navbarBasicExample" class="navbar-menu">
             <div class="navbar-start">
@@ -101,7 +111,7 @@
             </div>
 
             <div class="navbar-end">
-                <div class="navbar-item">
+<!--                <div class="navbar-item">-->
                     <div class="buttons">
                         <!-- log in 안했을 시-->
                         <!--                    <a class="button is-light">-->
@@ -116,20 +126,20 @@
                             {{ request.user }}님 안녕하세요
                         </div>
 
-                        <a style="margin-top:5px;" class="button is-primary" href="{% url 'profile' %}">
+                        <a class="button is-primary" href="{% url 'profile' %}">
                             <strong>My Profile</strong>
                         </a>
-                        <a style="margin-top:5px;" class="button is-light" href="{% url 'work_log_write' %}">
+                        <a class="button is-light" href="{% url 'work_log_write' %}">
                             퇴근하기
                         </a>
-                        <a style="margin-top:5px;" class="button is-light" href="{% url 'logout' %}">
+                        <a class="button is-light" href="{% url 'logout' %}">
                             로그아웃
                         </a>
 
                         {% endif %}
                         <!-- end -->
                     </div>
-                </div>
+<!--                </div>-->
             </div>
         </div>
     </nav>
