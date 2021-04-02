@@ -3,8 +3,42 @@
 
 {% block content %}
 
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.1/main.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.1/main.css">
 <script src='http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery.min.js'></script>
+
 <script>
+
+var calendarEl = null;
+var calendar = null;
+
+var selected_team = "{{selected_team}}";
+
+function setDateInit(){
+var d = new Date();
+result_str = d.getFullYear() + "-" +("0" +  (d.getMonth() + 1)).slice(-2);
+document.getElementById('week_start_date').value = result_str;
+}
+
+function setDateBefore(){
+var d = new Date(document.getElementById('week_start_date').value);
+d.setMonth(d.getMonth() - 1);
+
+result_str = d.getFullYear() + "-" +("0" +  (d.getMonth() + 1)).slice(-2);
+document.getElementById('week_start_date').value = result_str;
+document.getElementById('week_start_date').dispatchEvent(new Event('change'));
+}
+
+function setDateAfter(){
+var d = new Date(document.getElementById('week_start_date').value);
+d.setMonth(d.getMonth() + 1);
+result_str = d.getFullYear() + "-" +("0" +  (d.getMonth() + 1)).slice(-2);
+document.getElementById('week_start_date').value = result_str;
+document.getElementById('week_start_date').dispatchEvent(new Event('change'));
+
+}
+
+
 
 var selected_team = '{{ team }}';
 var selected_member = '{{ member }}';
@@ -14,7 +48,6 @@ var user_select = document.getElementById('user_select');
 var team_select = document.getElementById('team_select');
 
 var team_id = team_select.options[team_select.selectedIndex].value;
-
 
 $.ajax({
 			type: 'GET',
@@ -69,13 +102,110 @@ $.ajax({
 	        }
         })
 }
+function init(){
+    setTeamSelect();
+    setDateInit();
+
+    calendarEl = document.getElementById('calendar');
+    calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: 'dayGridMonth',
+
+    });
+
+    calendar.render();
+
+
+    var date_select = document.getElementById('date_select');
+    var team_select = document.getElementById('team_select_div');
+
+    document.getElementsByClassName("fc-toolbar-chunk")[0].innerHTML = "";
+    document.getElementsByClassName("fc-toolbar-chunk")[0].appendChild(date_select);
+    document.getElementsByClassName("fc-toolbar-chunk")[2].innerHTML = "";
+    document.getElementsByClassName("fc-toolbar-chunk")[2].appendChild(team_select);
+
+}
+
+
+function setEventsByTeam(){
+    var date = document.getElementById('week_start_date').value;
+    var selected_team = document.getElementById('team_select').value;
+
+    $.ajax({
+            type: 'GET',
+            url: '/work_log/work_logs/team/' + selected_team + "/" + date.split('-')[0] + "/"+ date.split('-')[1],
+            async : false,
+            dataType: 'json',
+            success: function(data){
+
+            calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                  initialView: 'dayGridMonth',
+                  initialDate: date,
+                  events: data,
+            });
+
+            calendar.render();
+            }
+    })
+    var date_select = document.getElementById('date_select');
+    var team_select = document.getElementById('team_select_div');
+
+    document.getElementsByClassName("fc-toolbar-chunk")[0].innerHTML = "";
+    document.getElementsByClassName("fc-toolbar-chunk")[0].appendChild(date_select);
+    document.getElementsByClassName("fc-toolbar-chunk")[2].innerHTML = "";
+    document.getElementsByClassName("fc-toolbar-chunk")[2].appendChild(team_select);
+}
+
+function setEventsByUser(){
+    var date = document.getElementById('week_start_date').value;
+    var selected_user = document.getElementById('user_select').value;
+
+    $.ajax({
+            type: 'GET',
+            url: '/work_log/work_logs/user/' + selected_user + "/" + date.split('-')[0] + "/"+ date.split('-')[1],
+            async : false,
+            dataType: 'json',
+            success: function(data){
+
+            calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                  initialView: 'dayGridMonth',
+                  initialDate: date,
+                  events: data,
+            });
+
+            calendar.render();
+            }
+    })
+    var date_select = document.getElementById('date_select');
+    var team_select = document.getElementById('team_select_div');
+
+    document.getElementsByClassName("fc-toolbar-chunk")[0].innerHTML = "";
+    document.getElementsByClassName("fc-toolbar-chunk")[0].appendChild(date_select);
+    document.getElementsByClassName("fc-toolbar-chunk")[2].innerHTML = "";
+    document.getElementsByClassName("fc-toolbar-chunk")[2].appendChild(team_select);
+}
+
+
+function dateChange(){
+    setEventsByTeam();
+}
+
+function addAllEvents(){
+document.getElementById('week_start_date').addEventListener("change", dateChange);
+document.getElementById('team_select').addEventListener("change", dateChange);
+document.getElementById('user_select').addEventListener("change", setEventsByUser);
+}
 
 document.addEventListener('DOMContentLoaded', function() {
-setTeamSelect()
+    init();
+    addAllEvents();
 
 });
 
 </script>
+
+
 <div class="container">
     <br>
     <div class="hero is-primary is-small">
@@ -85,101 +215,50 @@ setTeamSelect()
             </p>
         </div>
     </div>
-    <div class="box">
-
-        <form method="POST" role="form">
-            {% csrf_token %}
-
-            <div class="columns is-gapless is-multiline">
-                <div class="column is-1">
-                    <label class="label">Team </label>
-                    <div class="select is-primary">
-                        <select name="team" id="team_select">
-                            <option>all</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="column">
-                    <label class="label">Staff </label>
-                    <div class="select is-primary">
-                        <select name="member" id="user_select">
-                            <option>직원 선택</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="column is-2">
-                    <div class="field">
-                        <label class="label">Start date </label>
-                        <div class="control">
-                            <input class="input is-primary" type="date" name="start_date" value="{{ start_date }}">
-                        </div>
-                    </div>
-                </div>
-                <div class="column is-2">
-                    <div class="field">
-                        <label class="label">End date </label>
-                        <div class="control">
-                            <input class="input is-primary" type="date" name="end_date" value="{{ end_date }}">
-                        </div>
-                    </div>
-                </div>
-                <div class="column is-2"></div>
-                <div class="column">
-                    <label class="label">Name </label>
-                    <div class="field has-addons">
-                        <div class="control">
-                            <input class="input" type="text" name="search" placeholder="직원 이름" value="{{ search }}">
-                        </div>
-                        <div class="control">
-                            <button class="button is-primary" type="submit">
-                                Search
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </form>
-
-    </div>
-
-    <div class="columns is-multiline">
-        {% for work_log in work_logs %}
-        <div class="column is-one-quarter">
-            <a href="{% url 'work_log_detail' work_log.pk %}">
-                <div class="box">
-                    <article class="media">
-                        <div class="media-content">
-                            <div class="content">
-                                <p>
-                                    <strong>{{ work_log.user }}</strong> - <small>{{ work_log.create_time|date}}</small>
-                                    <br>
-                                    <br>
-                                    {{ work_log.content }}
-                                </p>
-                            </div>
-                        </div>
-                    </article>
-                </div>
-            </a>
-        </div>
-        {% endfor %}
-    </div>
-    <hr>
-    <p class="has-text-centered">
-        Page {{ work_logs.number }} of {{ work_logs.paginator.num_pages }}.
-    </p>
     <br>
-    <div class="buttons is-centered">
+    <div id="date_select">
+        <div class="columns buttons has-addons">
+            <div class="column">
+                <p class="button" onclick="setDateBefore()">
+                    <span class="material-icons">
+                        arrow_back
+                    </span>
+                </p>
+            </div>
+            <div class="column">
+                <p class="button">
+                    <input id="week_start_date" class="input end_time" type="month">
+                </p>
+            </div>
+            <div class="column">
+                <p class="button" onclick="setDateAfter()">
+                    <span class="material-icons">
+                        arrow_forward
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div id="team_select_div" class="columns is-centered">
+        <div class="column">
+            <div class="select is-primary">
+                <select name="team" id="team_select">
+                    <option value="-1">team</option>
+                </select>
+            </div>
+            <div class="select is-primary">
+                <select name="member" id="user_select">
+                    <option value="-1">All</option>
+                </select>
+            </div>
+        </div>
+    </div>
 
-        {% if work_logs.has_previous %}
-        <a href="?page=1" class="button is-primary is-light">&laquo; first</a>
-        <a href="?page={{ work_logs.previous_page_number }}" class="button is-primary">previous</a>
-        {% endif %}
 
-        {% if work_logs.has_next %}
-        <a href="?page={{ work_logs.next_page_number }}" class="button is-primary">next</a>
-        <a href="?page={{ work_logs.paginator.num_pages }}" class="button is-primary is-light">last &raquo;</a>
-        {% endif %}
+    <div class="columns is-centered">
+        <div class="column">
+            <div id='calendar'></div>
+        </div>
     </div>
 </div>
 

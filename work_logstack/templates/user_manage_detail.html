@@ -3,6 +3,8 @@
 
 {% block content %}
 
+<div id="top"></div>
+
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.1/main.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.1/main.css">
 <script src='http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery.min.js'></script>
@@ -25,6 +27,8 @@ $.ajax({
                 work_log_date.innerText = targetDate;
 
                 work_log_content.innerText = data.content;
+                window.location.href = '#top';
+
         }
     })
 }
@@ -282,11 +286,11 @@ $(document).ready(function(){
                 </div>
                 <div class="column is-6">
 
-                    <div style="height:100%;" class="box">
+                    <div style="height:100%; overflow-y: scroll; height: 818px" class="box">
                         <p class="title is-4">Work Log</p>
                         <hr>
-                        <p class="subtitle is-4 work_log_date"></p>
-                        <p class="subtitle is-6 work_log_content"></p>
+                        <p class="subtitle is-4 work_log_date">{{ last_work_log.create_time|date:"Y-m-d" }}</p>
+                        <p class="subtitle is-6 work_log_content">{{ last_work_log.content }}</p>
                     </div>
                 </div>
             </div>

@@ -338,8 +338,10 @@ class ProfileViewSet(viewsets.ModelViewSet):
 
 def check_manager(request):
     if request.user.is_authenticated:
+        profile = Profile.objects.get(user=request.user)
         return {
-            'team_manager': TeamManager.objects.filter(user=request.user).exists()
+            'team_manager': TeamManager.objects.filter(user=request.user).exists(),
+            'name': profile.name
         }
     else:
         return {
@@ -362,19 +364,19 @@ def manage_list(request):
         team_members = Profile.objects.filter(team=team)
 
         if request.method == "POST":
-            member = request.POST.get('member')
+            # member = request.POST.get('member')
             search = request.POST.get('search')
 
             result = team_members
-            if member != 'all':
-                result = team_members.filter(name=member)
+            # if member != 'all':
+            #     result = team_members.filter(name=member)
             result = result.filter(name__icontains=search)
 
             context = {
                 'team': team,
                 'team_members': team_members,
                 'result': result,
-                'member': member,
+                # 'member': member,
                 'search': search,
             }
         else:
@@ -382,7 +384,7 @@ def manage_list(request):
                 'team': team,
                 'team_members': team_members,
                 'result': team_members,
-                'member': "",
+                # 'member': "",
                 'search': "",
             }
         return render(request, 'user_manage.html', context)
@@ -404,16 +406,18 @@ def manage_detail(request, pk):
 
         work_start_date = ""
         work_end_date = ""
-        # work_hours = WorkHour.objects.filter(user=member.user)
+        work_log = WorkLog.objects.filter(user=member.user)
 
         if request.method == "POST":
             work_start_date = request.POST.get('work_start_date')
             work_end_date = request.POST.get('work_end_date')
 
-            # if work_start_date:
-            #     work_hours = work_hours.filter(date__gte=work_start_date)
-            # if work_end_date:
-            #     work_hours = work_hours.filter(date__lte=work_end_date)
+            if work_start_date:
+                work_log = work_log.filter(create_time__date__gte=work_start_date)
+            if work_end_date:
+                work_log = work_log.filter(create_time__date__lte=work_end_date)
+
+        last_work_log = work_log.order_by('-create_time').first()
 
         context = {
             'member': member,
@@ -422,7 +426,8 @@ def manage_detail(request, pk):
             'positions': positions,
             'work_start_date': work_start_date,
             'work_end_date': work_end_date,
-            'profile': MemberInfoForm(instance=member)
+            'profile': MemberInfoForm(instance=member),
+            'last_work_log': last_work_log,
         }
         return render(request, 'user_manage_detail.html', context)
     else:
@@ -538,7 +543,7 @@ def calc_work_hours(request):
             work_hour_dict['end_time'] = end_time
             work_hours_list.append(work_hour_dict)
 
-        result['total_working_time'] = round(total_working_time/3600, 1)
+        result['total_working_time'] = str(round(total_working_time/3600, 1)) + ' 시간 근무'
         result['work_hours_list'] = work_hours_list
 
         return JsonResponse(result, safe=False)

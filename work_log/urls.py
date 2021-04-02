@@ -9,6 +9,9 @@ from .views import (
     work_hour_edit,
     work_hour_check,
     work_log_written,
+    work_logs_by_team,
+    work_logs_by_user,
+    work_logs_summary_team,
 )
 
 urlpatterns = [
@@ -21,4 +24,7 @@ urlpatterns = [
     path('detail/<int:pk>/', work_log_detail, name='work_log_detail'),
     path('work_hour_check/', work_hour_check, name='work_hour_check'),
     path('work_hour_edit/<int:pk>/', work_hour_edit, name='work_hour_edit'),
+    path('work_logs/user/<user_id>/<year>/<month>', work_logs_by_user, name='work_logs_by_user'),
+    path('work_logs/team/<team_id>/<year>/<month>', work_logs_by_team, name='work_logs_by_team'),
+    path('work_logs/summary/', work_logs_summary_team, name='work_logs_summary_team'),
 ]

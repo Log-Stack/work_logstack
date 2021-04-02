@@ -1,10 +1,11 @@
+from dateutil.relativedelta import relativedelta
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template import loader
 
 from django.utils import timezone
-import datetime
+from datetime import datetime
 
 from django.contrib.auth.models import User
 
@@ -194,4 +195,76 @@ def work_log_list(request):
     return render(request, 'work_log_list.html', context)
 
 
+@login_required
+def work_logs_by_team(request, team_id, year, month):
+    result = []
+    if team_id is -1:
+        return JsonResponse([], safe=False)
 
+    users = Profile.objects.filter(team=team_id)
+    for user in users:
+        work_logs = WorkLog.objects\
+            .filter(user=user.user_id, create_time__date__year=year, create_time__date__month=month)\
+            .order_by('user_id')
+        for item in list(work_logs):
+            work_logs_pk = str(item.pk)
+            name = str(user.name)
+            create_date = str(item.create_time.date())
+            result.append(
+                {'url': '/work_log/detail/'+str(work_logs_pk)+'/',
+                 'title': name,
+                 'start': create_date,
+                 'end': create_date,
+                 })
+    return JsonResponse(result, safe=False)
+
+
+@login_required
+def work_logs_by_user(request, user_id, year, month):
+    result = []
+    user = User.objects.get(id=user_id)
+    work_logs = WorkLog.objects.filter(user=user, create_time__date__year=year, create_time__date__month=month)
+    user_profile = Profile.objects.get(user=user)
+    for item in list(work_logs):
+        work_logs_pk = str(item.pk)
+        name = str(user_profile.name)
+        create_date = str(item.create_time.date())
+        result.append(
+            {'url': '/work_log/detail/' + str(work_logs_pk) + '/',
+             'title': name,
+             'start': create_date,
+             'end': create_date,
+             })
+    return JsonResponse(result, safe=False)
+
+
+@login_required
+def work_logs_summary_team(request):
+    result = []
+    # team_id = request.GET.get('team', None)
+    # year = int(request.GET.get('year', None))
+    # month = int(request.GET.get('month', None))
+
+    # test
+    team_id = 1
+    year = 2021
+    month = 3
+
+    day_start = datetime(year, month, 1).strftime('%Y-%m-%d')
+    day_end = (datetime(year, month, 1) + relativedelta(months=2)).strftime('%Y-%m-%d')
+
+    users = Profile.objects.filter(team=team_id).values_list('user_id', flat=True)
+    work_logs = WorkLog.objects.filter(user__in=users, create_time__date__range=[day_start, day_end])
+
+    work_dates = set()
+    for work_log in work_logs:
+        work_dates.add(work_log.create_time.date())
+
+    for work_date in work_dates:
+        work_log_count = WorkLog.objects.filter(user__in=users, create_time__date=work_date).count()
+
+        result.append({
+            'date': work_date.strftime('%Y-%m-%d'),
+            'work_log_count': work_log_count,
+        })
+    return JsonResponse(result, safe=False)
