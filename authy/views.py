@@ -42,7 +42,7 @@ def login(request):
             if profile[0].name == None:
                 return redirect('editprofile')
 
-            if is_manager:
+            if is_manager or user.is_superuser:
                 return redirect('schedule-index')
             else:
                 return redirect('work_hour_check')
@@ -340,7 +340,7 @@ def check_manager(request):
     if request.user.is_authenticated:
         profile = Profile.objects.get(user=request.user)
         return {
-            'team_manager': TeamManager.objects.filter(user=request.user).exists(),
+            'team_manager': TeamManager.objects.filter(user=request.user).exists() or request.user.is_superuser,
             'name': profile.name
         }
     else:
@@ -359,32 +359,62 @@ def manage_list(request):
     user = request.user
     profile = Profile.objects.get(user=user)
     team_manager = TeamManager.objects.filter(team=profile.team).filter(user=user).first()
-    if team_manager:
-        team = team_manager.team
-        team_members = Profile.objects.filter(team=team)
+
+    if user.is_superuser:
+        team_name = 'all'
+        teams = Team.objects.all()
+        team_members = Profile.objects.all()
 
         if request.method == "POST":
-            # member = request.POST.get('member')
+            search = request.POST.get('search')
+            team_name = request.POST.get('team_name')
+
+            if team_name != 'all':
+                team = Team.objects.get(name=team_name)
+                team_members = team_members.filter(team=team)
+
+            result = team_members
+            result = result.filter(name__icontains=search)
+
+            context = {
+                'teams': teams,
+                'team': team_name,
+                'result': result,
+                'search': search,
+            }
+        else:
+            context = {
+                'teams': teams,
+                'team': team_name,
+                'result': team_members,
+                'search': "",
+            }
+        return render(request, 'user_manage.html', context)
+
+    elif team_manager:
+        superusers = User.objects.filter(is_superuser=True)
+        superuser_ids = []
+        for superuser in superusers.values():
+            superuser_ids.append(superuser['id'])
+
+        team = team_manager.team
+        team_members = Profile.objects.filter(team=team).exclude(user__in=superuser_ids)
+
+        if request.method == "POST":
             search = request.POST.get('search')
 
             result = team_members
-            # if member != 'all':
-            #     result = team_members.filter(name=member)
             result = result.filter(name__icontains=search)
 
             context = {
                 'team': team,
-                'team_members': team_members,
                 'result': result,
-                # 'member': member,
                 'search': search,
             }
         else:
             context = {
                 'team': team,
-                'team_members': team_members,
                 'result': team_members,
-                # 'member': "",
                 'search': "",
             }
         return render(request, 'user_manage.html', context)
@@ -397,7 +427,7 @@ def manage_detail(request, pk):
     user = request.user
     profile = Profile.objects.get(user=user)
     team_manager = TeamManager.objects.filter(team=profile.team).filter(user=user).exists()
-    if team_manager:
+    if team_manager or user.is_superuser:
         member = Profile.objects.get(pk=pk)
         is_manager = TeamManager.objects.filter(user=member.user).exists()
 
@@ -439,7 +469,7 @@ def manage_delete(request, pk):
     user = request.user
     profile = Profile.objects.get(user=user)
     team_manager = TeamManager.objects.filter(team=profile.team).filter(user=user).first()
-    if team_manager:
+    if team_manager or user.is_superuser:
         member = Profile.objects.get(pk=pk)
         if member.currently_employed:
             member.currently_employed = False
@@ -456,7 +486,7 @@ def manage_permit(request, pk):
     user = request.user
     profile = Profile.objects.get(user=user)
     team_manager = TeamManager.objects.filter(team=profile.team).filter(user=user).first()
-    if team_manager:
+    if team_manager or user.is_superuser:
         member = Profile.objects.get(pk=pk)
         is_manager = TeamManager.objects.filter(user=member.user).exists()
 
@@ -476,7 +506,7 @@ def manage_position(request, pk, position_name):
     user = request.user
     profile = Profile.objects.get(user=user)
     team_manager = TeamManager.objects.filter(team=profile.team).filter(user=user).first()
-    if team_manager:
+    if team_manager or user.is_superuser:
         member = Profile.objects.get(pk=pk)
         position = Position.objects.get(name=position_name)
         member.position = position
@@ -490,7 +520,7 @@ def manage_team(request, pk, team_name):
     user = request.user
     profile = Profile.objects.get(user=user)
     team_manager = TeamManager.objects.filter(team=profile.team).filter(user=user).first()
-    if team_manager:
+    if team_manager or user.is_superuser:
         member = Profile.objects.get(pk=pk)
         is_manager = TeamManager.objects.filter(user=member.user).exists()
         if is_manager:
@@ -512,7 +542,7 @@ def calc_work_hours(request):
     end_date = request.GET.get('end')
     profile = Profile.objects.get(user=user)
     team_manager = TeamManager.objects.filter(team=profile.team).filter(user=user).first()
-    if team_manager:
+    if team_manager or user.is_superuser:
         result = {}
         total_working_time = 0
         work_hours_list = []
@@ -555,7 +585,7 @@ def send_work_log(request, member_pk, date):
     user = request.user
     profile = Profile.objects.get(user=user)
     team_manager = TeamManager.objects.filter(team=profile.team).filter(user=user).first()
-    if team_manager:
+    if team_manager or user.is_superuser:
         member = Profile.objects.get(pk=member_pk)
         work_log = WorkLog.objects.filter(user=member.user).filter(create_time__date=date).first()
         if work_log:
@@ -578,7 +608,7 @@ def manage_delete_real(request, pk):
     profile = Profile.objects.get(user=user)
     team_manager = TeamManager.objects.filter(team=profile.team).filter(user=user).first()
     member = Profile.objects.get(pk=pk)
-    if team_manager:
+    if team_manager or user.is_superuser:
         if request.method == "POST":
             member_user = User.objects.get(pk=member.user.pk)
             member_user.delete()

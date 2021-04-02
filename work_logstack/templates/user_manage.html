@@ -6,8 +6,11 @@
     <br>
     <div class="hero is-primary is-small">
         <div class="hero-body">
-            <p class="title">
-                User Manage - {{ team }} 팀
+             <p class="title">
+                User Manage
+                {% if team != 'all' %}
+                - {{ team }} 팀
+                {% endif %}
             </p>
         </div>
     </div>
@@ -16,19 +19,19 @@
             {% csrf_token %}
 
             <div class="columns is-mobile">
-<!--                <div class="column">-->
-<!--                    <div class="select is-primary">-->
-<!--                        <select name="member">-->
-<!--                            <option>all</option>-->
-<!--                            {% for team_member in team_members %}-->
-<!--                            <option {% if team_member.name == member %}selected="selected" {% endif %}>-->
-<!--                                {{ team_member.name }}-->
-<!--                            </option>-->
-<!--                            {% endfor %}-->
-<!--                        </select>-->
-<!--                    </div>-->
-<!--                </div>-->
-                <div class="column is-3 is-offset-9">
+                <div class="column is-3 is-offset-9" style="display:flex; flex-direction:row;">
+                    {% if user.is_superuser %}
+                        <div class="select is-primary">
+                            <select name="team_name">
+                                <option>all</option>
+                                {% for team_item in teams %}
+                                <option {% if team_item.name == team %}selected="selected" {% endif %}>
+                                    {{ team_item.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    {% endif %}
                     <div class="field has-addons">
                         <div class="control">
                             <input class="input" type="text" placeholder="직원 이름" name="search" value="{{ search }}">
