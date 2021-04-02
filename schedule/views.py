@@ -70,7 +70,7 @@ def schedule_day_user_work_time(request):
         )
     events = []
     users = Profile.objects.filter(team=team_id).values_list('user_id', flat=True)
-    work_times = Schedule.objects.filter(user__in=users, date=selected_date)
+    work_times = Schedule.objects.filter(user__in=users, date=selected_date, work_type=1)
 
     for item in work_times.values_list("user_id", "date", "start", "end"):
         events.append({

@@ -13,6 +13,8 @@
 var selected_date = "{{selected_date}}";
 var selected_team = "{{selected_team}}";
 
+var calendarEl = null;
+
 function setDateInit(){
 var d = new Date(selected_date);
 result_str = d.getFullYear() + "-" +("0" +  (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
@@ -25,6 +27,7 @@ d.setDate(d.getDate() - 1);
 
 result_str = d.getFullYear() + "-" +("0" +  (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
 document.getElementById('week_start_date').value = result_str;
+document.getElementById('week_start_date').dispatchEvent(new Event('change'));
 }
 
 function setDateAfter(){
@@ -32,83 +35,59 @@ var d = new Date(document.getElementById('week_start_date').value);
 d.setDate(d.getDate() + 1);
 result_str = d.getFullYear() + "-" +("0" +  (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
 document.getElementById('week_start_date').value = result_str;
+document.getElementById('week_start_date').dispatchEvent(new Event('change'));
+
 }
 
 function dateChange(){
-    var date = document.getElementById('week_start_date').value;
-
+    setEvents();
 }
 
 function addAllEvents(){
 document.getElementById('week_start_date').addEventListener("change", dateChange);
 }
 
-function init(){
-    setDateInit();
-    addAllEvents();
-}
-
 function setEvents(){
+    var date = document.getElementById('week_start_date').value;
     $.ajax({
             type: 'GET',
             url: '/schedule/day/api/',
             data : {
-                'team_id' : 1,
-                'selected_date' : selected_date,
+                'team_id' : selected_team,
+                'selected_date' : date,
             },
+            async : false,
             dataType: 'json',
             success: function(data){
-            var calendarEl = document.getElementById('calendar');
 
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 timeZone: 'UTC',
                 initialView: 'resourceTimeGridDay',
-                initialDate: selected_date,
+                initialDate: date,
                 resources: data.resources,
                 events: data.event,
             });
             calendar.render();
             }
     })
+    var date_select = document.getElementById('date_select');
+
+    document.getElementsByClassName("fc-toolbar-chunk")[0].innerHTML = "";
+    document.getElementsByClassName("fc-toolbar-chunk")[0].appendChild(date_select);
+    document.getElementsByClassName("fc-toolbar-chunk")[2].innerHTML = "";
+}
+
+
+function init(){
+    setDateInit();
+    addAllEvents();
+    calendarEl = document.getElementById('calendar');
+    setEvents();
 }
 
 
 
-
 window.addEventListener('DOMContentLoaded', init);
-
-
-
-document.addEventListener('DOMContentLoaded', function() {
-
-  var calendarEl = document.getElementById('calendar');
-
-  var calendar = new FullCalendar.Calendar(calendarEl, {
-    timeZone: 'UTC',
-    initialView: 'resourceTimeGridDay',
-    initialDate: selected_date,
-    resources: [
-      { id: 'a', title: 'Room A' },
-      { id: 'b', title: 'Room B'},
-      { id: 'c', title: 'Room C' },
-      { id: '4', title: 'dsad' },
-      { id: '5', title: 'ㅅㄷㄴ' },
-      { id: 'd', title: 'Room D' }
-    ],
-    events: [
-    {"resourceId":"b","title":"event 3","start":"2021-04-02T12:00:00+00:00","end":"2021-04-03T06:00:00+00:00", "color" : '#0096c6'},
-    {"resourceId":"c","title":"event 4","start":"2021-04-02T07:30:00+00:00","end":"2021-04-02T09:30:00+00:00", "color" : '#0096c6'},
-    {"resourceId":"d","title":"event 5","start":"2021-04-02T10:00:00+00:00","end":"2021-04-02T15:00:00+00:00", "color" : '#0096c6'},
-    {"resourceId":"a","title":"event 2","start":"2021-04-02T09:00:00+00:00","end":"2021-04-02T14:00:00+00:00", "color" : '#0096c6'},
-    {"resourceId":"5","title":"event 2","start":"2021-04-02T09:00:00+00:00","end":"2021-04-02T14:00:00+00:00", "color" : '#0096c6'},
-    {"resourceId": "4", "title": "test1_authy", "start": "2021-04-04T17:06:00+00:00", "end": "2021-04-04T17:06:00+00:00", "color": "#fa3d00"}
-    ]
-
-  });
-
-  calendar.render();
-});
-
 
 
 
@@ -143,29 +122,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 <div class="box">
 
-                    <div class="columns is-centered">
-                        <div class="column is-4 title is-3">
-                            <div class="buttons has-addons">
+                    <div id="date_select">
+                        <div class="columns buttons has-addons">
+                            <div class="column">
                                 <p class="button" onclick="setDateBefore()">
-                            <span class="material-icons">
-                                arrow_back
-                            </span>
+                                <span class="material-icons">
+                                    arrow_back
+                                </span>
                                 </p>
+                            </div>
+                            <div class="column">
                                 <p class="button">
                                     <input id="week_start_date" class="input end_time" type="date">
                                 </p>
+                            </div>
+                            <div class="column">
                                 <p class="button" onclick="setDateAfter()">
-                            <span class="material-icons">
-                                arrow_forward
-                            </span>
+                                <span class="material-icons">
+                                    arrow_forward
+                                </span>
                                 </p>
                             </div>
-                        </div>
-                        <div class="column is-4">
-
-
-                        </div>
-                        <div class="column is-4">
                         </div>
                     </div>
                 </div>
