@@ -44,6 +44,7 @@ urlpatterns = [
 
     # 팀원 관리
     path('manage_list/', manage_list, name='manage_list'),
+    # path('manage_list/<int:pk>', super_manage_list, name='super_manage_list'),
     path('manage_detail/<int:pk>/', manage_detail, name='manage_detail'),
     path('manage_delete/<int:pk>/', manage_delete, name='manage_delete'),
     path('manage_permit/<int:pk>/', manage_permit, name='manage_permit'),
