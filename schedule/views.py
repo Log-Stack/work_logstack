@@ -59,8 +59,11 @@ def schedule_day_user_work_time(request):
 
     selected_date = datetime.strptime(date, "%Y-%m-%d").strftime("%Y-%m-%d")
 
-    team = Team.objects.get(id=team_id)
+    if team_id == '-1':
+        # team을 선택하지 않았을때 출력
+        return JsonResponse([], safe=False)
 
+    team = Team.objects.get(id=team_id)
     profiles = Profile.objects.filter(team=team)
 
     resources = []

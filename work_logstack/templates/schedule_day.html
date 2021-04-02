@@ -39,16 +39,42 @@ document.getElementById('week_start_date').dispatchEvent(new Event('change'));
 
 }
 
+
+function setTeamSelect(){
+var team_select = document.getElementById('team_select');
+
+$.ajax({
+			type: 'GET',
+			url: '/authy/api/teams/',
+			dataType: 'json',
+
+			success: function(data){
+			    for(let i = 1;i<=team_select.options.length;i++){
+                    team_select.remove(1);
+			    }
+                for(let i = 0;i<data.length;i++){
+                var temp = document.createElement("option");
+                temp.value = data[i].id
+                temp.text = data[i].name
+                team_select.add(temp);
+                }
+	        }
+        })
+}
+
+
 function dateChange(){
     setEvents();
 }
 
 function addAllEvents(){
 document.getElementById('week_start_date').addEventListener("change", dateChange);
+document.getElementById('team_select').addEventListener("change", dateChange);
 }
 
 function setEvents(){
     var date = document.getElementById('week_start_date').value;
+    var selected_team = document.getElementById('team_select').value;
     $.ajax({
             type: 'GET',
             url: '/schedule/day/api/',
@@ -71,10 +97,12 @@ function setEvents(){
             }
     })
     var date_select = document.getElementById('date_select');
+    var team_select = document.getElementById('team_select_div');
 
     document.getElementsByClassName("fc-toolbar-chunk")[0].innerHTML = "";
     document.getElementsByClassName("fc-toolbar-chunk")[0].appendChild(date_select);
     document.getElementsByClassName("fc-toolbar-chunk")[2].innerHTML = "";
+    document.getElementsByClassName("fc-toolbar-chunk")[2].appendChild(team_select);
 }
 
 
@@ -83,6 +111,7 @@ function init(){
     addAllEvents();
     calendarEl = document.getElementById('calendar');
     setEvents();
+    setTeamSelect();
 }
 
 
@@ -145,6 +174,11 @@ window.addEventListener('DOMContentLoaded', init);
                             </div>
                         </div>
                     </div>
+                </div>
+                <div id="team_select_div" class="select is-primary">
+                    <select id="team_select">
+                        <option value="-1">team</option>
+                    </select>
                 </div>
                 <div class="box">
                     <div id="calendar"></div>
