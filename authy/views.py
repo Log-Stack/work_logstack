@@ -339,7 +339,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
 
 def check_manager(request):
     if request.user.is_authenticated:
-        profile = Profile.objects.get(user=request.user)
+        profile = Profile.objects.get_or_create(user=request.user)[0]
         return {
             'team_manager': TeamManager.objects.filter(user=request.user).exists() or request.user.is_superuser,
             'name': profile.name
@@ -549,42 +549,40 @@ def calc_work_hours(request):
     end_date = request.GET.get('end')
     profile = Profile.objects.get(user=user)
     team_manager = TeamManager.objects.filter(team=profile.team).filter(user=user).first()
-    if team_manager or user.is_superuser:
-        result = {}
-        total_working_time = 0
-        work_hours_list = []
-        member = Profile.objects.get(pk=member_pk)
-        work_hours = WorkHour.objects.filter(user=member.user)
+    result = {}
+    total_working_time = 0
+    work_hours_list = []
+    member = Profile.objects.get(pk=member_pk)
+    work_hours = WorkHour.objects.filter(user=member.user)
 
-        if start_date:
-            work_hours = work_hours.filter(date__gte=start_date)
-        if end_date:
-            work_hours = work_hours.filter(date__lte=end_date)
+    if start_date:
+        work_hours = work_hours.filter(date__gte=start_date)
+    if end_date:
+        work_hours = work_hours.filter(date__lte=end_date)
 
-        for work_hour in work_hours.values():
-            work_hour_dict = {}
-            work_hour_dict['date'] = work_hour['date']
-            s_t = work_hour['start_time']
-            arranged_start_time = datetime.datetime(s_t.year, s_t.month, s_t.day, s_t.hour, 10*(s_t.minute // 10))
-            start_time = arranged_start_time.strftime("%H:%M")
-            e_t = work_hour['end_time']
-            if e_t:
-                arranged_end_time = datetime.datetime(e_t.year, e_t.month, e_t.day, e_t.hour, 10 * (e_t.minute // 10))
-                end_time = arranged_end_time.strftime("%H:%M")
-                total_working_time += (arranged_end_time - arranged_start_time).seconds
-            else:
-                arranged_end_time = e_t
-                end_time = ''
+    for work_hour in work_hours.values():
+        work_hour_dict = {}
+        work_hour_dict['date'] = work_hour['date']
+        s_t = work_hour['start_time']
+        arranged_start_time = datetime.datetime(s_t.year, s_t.month, s_t.day, s_t.hour, 10*(s_t.minute // 10))
+        start_time = arranged_start_time.strftime("%H:%M")
+        e_t = work_hour['end_time']
+        if e_t:
+            arranged_end_time = datetime.datetime(e_t.year, e_t.month, e_t.day, e_t.hour, 10 * (e_t.minute // 10))
+            end_time = arranged_end_time.strftime("%H:%M")
+            total_working_time += (arranged_end_time - arranged_start_time).seconds
+        else:
+            arranged_end_time = e_t
+            end_time = ''
 
-            work_hour_dict['start_time'] = start_time
-            work_hour_dict['end_time'] = end_time
-            work_hours_list.append(work_hour_dict)
+        work_hour_dict['start_time'] = start_time
+        work_hour_dict['end_time'] = end_time
+        work_hours_list.append(work_hour_dict)
 
-        result['total_working_time'] = str(round(total_working_time/3600, 1)) + ' 시간 근무'
-        result['work_hours_list'] = work_hours_list
+    result['total_working_time'] = str(round(total_working_time/3600, 1)) + ' 시간 근무'
+    result['work_hours_list'] = work_hours_list
 
-        return JsonResponse(result, safe=False)
-    return JsonResponse("fail", safe=False)
+    return JsonResponse(result, safe=False)
 
 
 @login_required
@@ -592,21 +590,19 @@ def send_work_log(request, member_pk, date):
     user = request.user
     profile = Profile.objects.get(user=user)
     team_manager = TeamManager.objects.filter(team=profile.team).filter(user=user).first()
-    if team_manager or user.is_superuser:
-        member = Profile.objects.get(pk=member_pk)
-        work_log = WorkLog.objects.filter(user=member.user).filter(create_time__date=date).first()
-        if work_log:
-            result = {
-                'content': work_log.content,
-                'create_time': work_log.create_time.strftime("%H:%M"),
-            }
-        else:
-            result = {
-                'content': '',
-                'create_time': '',
-            }
-        return JsonResponse(result, safe=False)
-    return JsonResponse("fail", safe=False)
+    member = Profile.objects.get(pk=member_pk)
+    work_log = WorkLog.objects.filter(user=member.user).filter(create_time__date=date).first()
+    if work_log:
+        result = {
+            'content': work_log.content,
+            'create_time': work_log.create_time.strftime("%H:%M"),
+        }
+    else:
+        result = {
+            'content': '',
+            'create_time': '',
+        }
+    return JsonResponse(result, safe=False)
 
 
 @login_required

@@ -13,14 +13,15 @@ class Schedule(models.Model):
     end = models.TimeField(null=True)
     work_type = models.IntegerField(choices=WORK_TYPES)
 
-    def __str__(self):
-        user_profile = Profile.objects.get(user=self.user)
-        result = user_profile.name + " | " + self.date.strftime("%Y-%m-%d")
-        if self.start is not None and self.end is not None:
-            result += (" | " + self.start.strftime("%H:%M") + " : " + self.end.strftime("%H:%M"))
-        else:
-            result += " | " + self.WORK_TYPES[self.work_type][1]
-        return result
+    # def __str__(self):
+    #    user_profile = Profile.objects.get(user=self.user)
+    #    result = user_profile.name
+    #    if self.start is not None and self.end is not None:
+    #        result += (" | " + self.date.strftime("%Y-%m-%d") + " | " + self.start.strftime("%H:%M") + " : " + self.end.strftime("%H:%M"))
+    #    else:
+    #        result += " | " + self.WORK_TYPES[self.work_type][1]
+    #
+    #    return result
 
 
 class ScheduleApproved(models.Model):
