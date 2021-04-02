@@ -129,9 +129,11 @@
                         <a class="button is-primary" href="{% url 'profile' %}">
                             <strong>My Profile</strong>
                         </a>
+                        {% if not team_manager %}
                         <a class="button is-light" href="{% url 'work_log_write' %}">
                             퇴근하기
                         </a>
+                        {% endif %}
                         <a class="button is-light" href="{% url 'logout' %}">
                             로그아웃
                         </a>
