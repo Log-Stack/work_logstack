@@ -1,12 +1,132 @@
 {% extends 'base.html' %}
 {% block content %}
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.1/main.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.1/main.css">
+<script src='http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery.min.js'></script>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script>
+
+function getWorkLogContent(targetDate){
+var work_log_date = document.getElementsByClassName('work_log_date')[0];
+var work_log_content = document.getElementsByClassName('work_log_content')[0];
+
+$.ajax({
+                type: 'GET',
+                url: '/authy/send_work_log/{{ profile.pk }}/' + targetDate,
+                dataType: 'json',
+                data : {
+                    date : targetDate,
+                },
+                success: function(data){
+                work_log_date.innerText = targetDate;
+
+                work_log_content.innerText = data.content;
+        }
+    })
+}
+
+
+function getWorkCalendar(){
+var work_start_date = document.getElementsByName('work_start_date');
+var work_end_date = document.getElementsByName('work_end_date');
+
+$.ajax({
+                type: 'GET',
+                url: '/authy/calc_work_hours',
+                dataType: 'json',
+                data : {
+                    member_pk : {{ profile.pk }},
+                    start : work_start_date[0].value,
+                    end : work_end_date[0].value,
+                },
+                success: function(data){
+                document.getElementsByClassName("total_time")[0].innerText= data.total_working_time;
+                var color_list = ['#0096c6', '#ff6939', '#fa3d00', '#6937a1',  '#003458'];
+
+                var titles = Array();
+			    for (var i = 0 ; i < data.work_hours_list.length; i++){
+                    titles.push({'title' : data.work_hours_list[i].start_time, 'start': data.work_hours_list[i].date, 'end' : data.work_hours_list[i].date, "color": color_list[0] });
+                    titles.push({'title' : data.work_hours_list[i].end_time, 'start': data.work_hours_list[i].date, 'end' : data.work_hours_list[i].date, "color": color_list[4] });
+			    }
+
+                var calendarEl = document.getElementById('calendar');
+                var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                events : titles,
+                dateClick: function(info) {
+                    getWorkLogContent(info.dateStr)
+                },
+                });
+
+                calendar.render();
+        }
+    })
+}
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    getWorkCalendar()
+
+
+});
+
+$(document).ready(function(){
+
+    var current_team = document.getElementById('current_team');
+
+    $('#edit_team').change(function(){
+        var team =  $('#edit_team').val();
+
+        $.ajax({
+          type: 'GET',
+          url: '/authy/manage_team/{{ profile.pk }}/' + team,
+          dataType: 'json',
+          success: function(data){
+			    if (data === 'success'){
+			        current_team.innerText = '팀: ' + team
+			    } else {
+			        window.location.href='{% url 'schedule-index' %}'
+			    }
+            }
+        });
+    });
+});
+
+
+
+$(document).ready(function(){
+
+    var current_position = document.getElementById('current_position');
+
+    $('#edit_position').change(function(){
+        var position =  $('#edit_position').val();
+
+        $.ajax({
+          type: 'GET',
+          url: '/authy/manage_position/{{ profile.pk }}/' + position,
+          dataType: 'json',
+          success: function(data){
+			    if (data === 'success'){
+			        current_position.innerText = '직급: ' + position
+			    } else {
+			        window.location.href='{% url 'schedule-index' %}'
+			    }
+            }
+        });
+    });
+});
+
+</script>
+
     <style>
-    .info_body{
-          padding-top:40px;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-    }
+<!--    .info_body{-->
+<!--          padding-top:40px;-->
+<!--          display: flex;-->
+<!--          justify-content: center;-->
+<!--          align-items: center;-->
+<!--    }-->
+
     </style>
 
 <!--탭 메뉴-->
@@ -20,17 +140,125 @@
         </div>
     </div>
     <div class="tabs">
-  <ul>
-    <li><a href="{% url 'search' %}">by Name</a></li>
-    <li><a href="{% url 'searchall' %}">All Staffs</a></li>
-  </ul>
+      <ul>
+        <li><a href="{% url 'search' %}">by Name</a></li>
+        <li><a href="{% url 'searchall' %}">All Staffs</a></li>
+      </ul>
+    </div>
 </div>
 
 <!--프로필 디테일 메뉴-->
-<div class="info_body">
+<div class="container">
+ <div class="card">
+        <div class="card-content">
+            <div class="columns">
+                <div class="column is-6">
+            <div class="media">
+                <div class="media-content">
+                    <p class="title is-4">
+                        <span class="material-icons" style="margin: 0.5rem; vertical-align: middle;">person</span><span style="vertical-align: middle;">
+                        {{ profile.name }}
+                        </span>
+                        &nbsp;
+                        &nbsp;
+                    </p>
+                        <div class="content">
+
+
+                                <ul>
+
+                                    <li id="current_team">
+                                        팀: {% if profile.team %}{{ profile.team }}{% else %}  {% endif %}
+                                    </li>
+                                    <li id="current_position">
+                                        직급: {% if profile.position %}{{ profile.position }}{% else %} {% endif %}
+                                    </li>
+                                    <li>
+                                        이메일: {{ profile.email_address }}
+                                    </li>
+                                    <li>
+                                        전화번호: {% if profile.phone_number %} {{ profile.phone_number }}{% else %} {% endif %}
+                                    </li>전
+                                    <li>
+                                        입사일:
+                                        {% if profile.start_date %}
+                                        {{ profile.start_date }}
+                                        {% else %}
+                                        {% endif %}
+                                    </li>
+                                    <li>
+                                        생년월일: {% if profile.birth_day %}{{ profile.birth_day }}{% else %} {% endif %}
+                                    </li>
+                                </ul>
+                        </div>
+                </div>
+
+                <div class="media-right">
+                    <figure class="image is-128x128">
+                        <img src="
+                        {% if profile.picture %}
+                        {{ profile.picture.url }}
+                        {% else %}
+                        https://bulma.io/images/placeholders/128x128.png
+                        {% endif %}">
+                    </figure>
+                </div>
+            </div>
 
 
 
+            <div class="media">
+                <div class="media-content">
+                        <form method="POST" role="form">
+                            {% csrf_token %}
+                            <div class="columns">
+                                <div class="column is-4">
+                                    <div class="field">
+                                        <label class="label">Start date</label>
+                                        <div class="control">
+                                            <input class="input is-primary" type="date" name="work_start_date" value="{{ work_start_date }}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="column is-4">
+                                    <div class="field">
+                                        <label class="label">End date</label>
+                                        <div class="control">
+                                            <input class="input is-primary" type="date" name="work_end_date" value="{{ work_end_date }}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="column">
+                                    <div class="field">
+                                        <label class="label" style="visibility: hidden;">검색</label>
+                                        <div class="control">
+                                            <button class="button is-primary" type="submit">Search</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    <div style="margin-top: 1rem;" class="box notification is-primary">
+                        <div class="title total_time has-text-centered"></div>
+                    </div>
+                </div>
+            </div>
+                </div>
+                <div class="column is-6">
+
+                    <div style="height:100%;" class="box">
+                        <p class="title is-4">Work Log</p>
+                        <hr>
+                        <p class="subtitle is-4 work_log_date"></p>
+                        <p class="subtitle is-6 work_log_content"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <div class="box">
+        <div id='calendar'></div>
+    </div>
 </div>
 </div>
 {% endblock %}

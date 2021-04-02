@@ -153,14 +153,7 @@ def CreateTeamView(request):
     return render(request, 'team_create.html', context)
 
 
-# @login_required
-# def UserDetailView(request, user_id):
-#     profile = get_object_or_404(Profile, user_id=user_id)
-#     context = {
-#         'profile': profile
-#     }
-#
-#     return render(request,'user_search_result.html',context)
+
 
 @login_required
 def ProfileView(request):
@@ -298,13 +291,20 @@ def SearchSelectView(request):
 
 
 @login_required
-def UserDetailView(request, user_id):
-    profile = get_object_or_404(Profile, user_id=user_id)
+def UserDetailView(request, pk):
+    profile = get_object_or_404(Profile, user_id=pk)
+
+    if request.method == "POST":
+        work_start_date = request.POST.get('work_start_date')
+        work_end_date = request.POST.get('work_end_date')
+
     context = {
-        'profile': profile
+        'profile': profile,
+        # 'work_start_date': work_start_date,
+        # 'work_end_date': work_end_date,
     }
 
-    return render(request,'user_search_result.html',context)
+    return render(request,'user_search_result.html', context)
 
 
 # api view

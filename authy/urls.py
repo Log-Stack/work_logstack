@@ -33,7 +33,7 @@ urlpatterns = [
     path('search',UserSearchView,name='search'),
     path('search/all/',SearchAllView, name='searchall'),
     path('search/select',SearchSelectView, name='searchselect'),
-    path('search/select/<int:user_id>', UserDetailView, name='userdetail'),
+    path('search/select/<int:pk>', UserDetailView, name='userdetail'),
 
 
 
