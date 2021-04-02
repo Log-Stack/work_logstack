@@ -120,12 +120,11 @@ $(document).ready(function(){
 </script>
 
     <style>
-<!--    .info_body{-->
-<!--          padding-top:40px;-->
-<!--          display: flex;-->
-<!--          justify-content: center;-->
-<!--          align-items: center;-->
-<!--    }-->
+    .log_box {
+        overflow-y: scroll;
+        overflow-x: hidden;
+        height:450px;
+    }
 
     </style>
 
@@ -178,7 +177,7 @@ $(document).ready(function(){
                                     </li>
                                     <li>
                                         전화번호: {% if profile.phone_number %} {{ profile.phone_number }}{% else %} {% endif %}
-                                    </li>전
+                                    </li>
                                     <li>
                                         입사일:
                                         {% if profile.start_date %}
@@ -246,7 +245,7 @@ $(document).ready(function(){
                 </div>
                 <div class="column is-6">
 
-                    <div style="height:100%;" class="box">
+                    <div class="log_box">
                         <p class="title is-4">Work Log</p>
                         <hr>
                         <p class="subtitle is-4 work_log_date"></p>
