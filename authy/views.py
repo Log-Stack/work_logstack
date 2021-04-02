@@ -404,16 +404,18 @@ def manage_detail(request, pk):
 
         work_start_date = ""
         work_end_date = ""
-        # work_hours = WorkHour.objects.filter(user=member.user)
+        work_log = WorkLog.objects.filter(user=member.user)
 
         if request.method == "POST":
             work_start_date = request.POST.get('work_start_date')
             work_end_date = request.POST.get('work_end_date')
 
-            # if work_start_date:
-            #     work_hours = work_hours.filter(date__gte=work_start_date)
-            # if work_end_date:
-            #     work_hours = work_hours.filter(date__lte=work_end_date)
+            if work_start_date:
+                work_log = work_log.filter(create_time__date__gte=work_start_date)
+            if work_end_date:
+                work_log = work_log.filter(create_time__date__lte=work_end_date)
+
+        last_work_log = work_log.order_by('-create_time').first()
 
         context = {
             'member': member,
@@ -422,7 +424,8 @@ def manage_detail(request, pk):
             'positions': positions,
             'work_start_date': work_start_date,
             'work_end_date': work_end_date,
-            'profile': MemberInfoForm(instance=member)
+            'profile': MemberInfoForm(instance=member),
+            'last_work_log': last_work_log,
         }
         return render(request, 'user_manage_detail.html', context)
     else:
