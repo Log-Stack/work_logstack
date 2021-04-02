@@ -78,7 +78,7 @@ setTeamSelect()
 </script>
 <div class="container">
     <br>
-    <div class="hero is-primary is-small">
+    <div class="hero is-dark is-small">
         <div class="hero-body">
             <p class="title">
                 Work Log List
@@ -93,7 +93,7 @@ setTeamSelect()
             <div class="columns is-gapless is-multiline">
                 <div class="column is-1">
                     <label class="label">Team </label>
-                    <div class="select is-primary">
+                    <div class="select is-dark">
                         <select name="team" id="team_select">
                             <option>all</option>
                         </select>
@@ -101,7 +101,7 @@ setTeamSelect()
                 </div>
                 <div class="column">
                     <label class="label">Staff </label>
-                    <div class="select is-primary">
+                    <div class="select is-dark">
                         <select name="member" id="user_select">
                             <option>직원 선택</option>
                         </select>
@@ -111,7 +111,7 @@ setTeamSelect()
                     <div class="field">
                         <label class="label">Start date </label>
                         <div class="control">
-                            <input class="input is-primary" type="date" name="start_date" value="{{ start_date }}">
+                            <input class="input is-dark" type="date" name="start_date" value="{{ start_date }}">
                         </div>
                     </div>
                 </div>
@@ -119,7 +119,7 @@ setTeamSelect()
                     <div class="field">
                         <label class="label">End date </label>
                         <div class="control">
-                            <input class="input is-primary" type="date" name="end_date" value="{{ end_date }}">
+                            <input class="input is-dark" type="date" name="end_date" value="{{ end_date }}">
                         </div>
                     </div>
                 </div>
@@ -131,7 +131,7 @@ setTeamSelect()
                             <input class="input" type="text" name="search" placeholder="직원 이름" value="{{ search }}">
                         </div>
                         <div class="control">
-                            <button class="button is-primary" type="submit">
+                            <button class="button is-dark" type="submit">
                                 Search
                             </button>
                         </div>
@@ -172,13 +172,13 @@ setTeamSelect()
     <div class="buttons is-centered">
 
         {% if work_logs.has_previous %}
-        <a href="?page=1" class="button is-primary is-light">&laquo; first</a>
-        <a href="?page={{ work_logs.previous_page_number }}" class="button is-primary">previous</a>
+        <a href="?page=1" class="button is-dark is-light">&laquo; first</a>
+        <a href="?page={{ work_logs.previous_page_number }}" class="button is-dark">previous</a>
         {% endif %}
 
         {% if work_logs.has_next %}
-        <a href="?page={{ work_logs.next_page_number }}" class="button is-primary">next</a>
-        <a href="?page={{ work_logs.paginator.num_pages }}" class="button is-primary is-light">last &raquo;</a>
+        <a href="?page={{ work_logs.next_page_number }}" class="button is-dark">next</a>
+        <a href="?page={{ work_logs.paginator.num_pages }}" class="button is-dark is-light">last &raquo;</a>
         {% endif %}
     </div>
 </div>
