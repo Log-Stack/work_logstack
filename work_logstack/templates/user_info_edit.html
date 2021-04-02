@@ -62,7 +62,9 @@
                             </div>
                             <label for="name">Name</label><br>
 
-                            <input class="input" type="text" id="name" name="name" value="{{ profile.name }}"><br><br>
+                            <input class="input" type="text" id="name" name="name" value="{% if profile.name %}{{ profile.name }}{% else %}{% endif %}">
+
+                            <br><br>
 
 
                             <label for="birth_day">Birth Date</label><br>
@@ -75,8 +77,8 @@
                                    value="{{ profile.email_address }}"><br><br>
 
                             <label for="phone_number">Mobile</label><br>
-                            <input class="input" type="text" id="phone_number" name="phone_number"
-                                   value="{{ profile.phone_number }}"><br><br>
+                            <input class="input" type="text" id="phone_number" name="phone_number" value="{% if profile.phone_number %}{{ profile.phone_number }}{% else %}{% endif %}">
+                            <br><br>
 
                             <label for="start_date">Start Date</label><br>
                             <input class="input" type="date" id="start_date" name="start_date"
