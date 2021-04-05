@@ -417,7 +417,7 @@ def schedule_summary_team(request):
     day_end = (datetime(year, month, 1) + relativedelta(months=2)).strftime('%Y-%m-%d')
 
     users = Profile.objects.filter(team=team_id).values_list('user_id', flat=True)
-    schedule = Schedule.objects.filter(user__in=users, date__range=[day_start, day_end]).order_by('date')
+    schedule = Schedule.objects.filter(user__in=users, date__range=[day_start, day_end], work_type__in=[1, 2]).order_by('date')
     for work_date in schedule.values_list('date', flat=True).distinct():
         worker_count = Schedule.objects.annotate(num_work_types=Count('work_type')).filter(user__in=users,
                                                                                            date=work_date,
