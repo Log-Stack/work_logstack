@@ -44,7 +44,10 @@ def login(request):
                 return redirect('editprofile')
 
             if is_manager or user.is_superuser:
-                return redirect('schedule-index')
+                if profile[0].name == None:
+                    return redirect('editprofile')
+                else:
+                    return redirect('schedule-index')
             else:
                 return redirect('work_hour_check')
     else:
