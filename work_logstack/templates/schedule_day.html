@@ -55,6 +55,7 @@ $.ajax({
                 for(let i = 0;i<data.length;i++){
                 var temp = document.createElement("option");
                 temp.value = data[i].id
+                temp.value = data[i].id
                 temp.text = data[i].name
                 if(data[i].id == selected_team){
                     temp.selected = true;
@@ -137,7 +138,7 @@ window.addEventListener('DOMContentLoaded', init);
 </script>
 <div class="container">
     <br>
-    <div class="hero is-primary is-small">
+    <div class="hero is-dark is-small">
         <div class="hero-body">
             <p class="title">
                 Day Schedule
@@ -178,7 +179,7 @@ window.addEventListener('DOMContentLoaded', init);
                         </div>
                     </div>
                 </div>
-                <div id="team_select_div" class="select is-primary">
+                <div id="team_select_div" class="select is-dark">
                     <select id="team_select">
                         <option value="-1">team</option>
                     </select>
