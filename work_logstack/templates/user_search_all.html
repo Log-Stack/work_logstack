@@ -77,7 +77,10 @@
                                     <div class="media-content">
                                       <div class="content">
                                         <p>
-                                          <strong>{{ user.name }}</strong><br> <small>@{{ user.team }}</small>
+                                          <strong>{% if user.name != None %}{{ user.name }}
+                                          {% else %}
+                                          이름 미입력
+                                          {% endif %}</strong><br> <small>@{{ user.team }}</small>
                                         </p>
                                       </div>
 

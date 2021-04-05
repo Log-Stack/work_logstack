@@ -19,10 +19,10 @@
             {% csrf_token %}
 
             <div class="columns is-mobile">
-                <div class="column is-3 is-offset-9" style="display:flex; flex-direction:row;">
+                <div class="column is-4 is-offset-8" style="display:flex; flex-direction:row; ">
                     {% if user.is_superuser %}
-                        <div class="select is-primary">
-                            <select name="team_name">
+                        <div class="select is-dark">
+                            <select name="team_name" style="margin-right:5px;">
                                 <option>all</option>
                                 {% for team_item in teams %}
                                 <option {% if team_item.name == team %}selected="selected" {% endif %}>
@@ -57,17 +57,30 @@
                         <div class="media-content">
                             <div class="content">
                                 <p>
-                                    <strong>{{ team_member.name }}</strong> -
+                                    <strong>{% if team_member.name != None %}
+                                        {{ team_member.name }}
+                                    {% else %}
+                                        이름 미입력
+                                    {% endif %}</strong> -
                                     <small>
                                         {% if team_member.currently_employed %}
+                                            {% if team_member.position != None %}
                                             {{ team_member.position }}
+                                            {% else %}
+                                            직급 미설정
+                                            {% endif %}
+
                                         {% else %}
                                             퇴사
                                         {% endif %}
                                     </small>
                                 </p>
-                                <p><i class="material-icons" style="vertical-align: middle;">email</i>: {{ team_member.email_address }}</p>
-                                <p><i class="material-icons" style="vertical-align: middle;">phone</i>: {{ team_member.phone_number }}</p>
+                                <p><i class="material-icons" style="vertical-align: middle;">email</i>:{% if team_member.email_address %}
+                                    {{ team_member.email_address }}
+                                {% else %}
+                                    이메일 미입력
+                                {% endif %}</p>
+                                <p><i class="material-icons" style="vertical-align: middle;">phone</i>: {% if team_member.phone_number %}{{ team_member.phone_number }}{% else %}전화번호 미입력{% endif %}</p>
                             </div>
                         </div>
                         <figure class="media-right">

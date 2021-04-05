@@ -98,6 +98,9 @@
                         <a class="navbar-item" href="{% url 'createteam' %}">
                             Create Team
                         </a>
+                        <a class="navbar-item" href="{% url 'createposition' %}">
+                            Create Position
+                        </a>
                         <a class="navbar-item" href="{% url 'createuser' %}">
                             Create Staff Account
                         </a>
@@ -123,14 +126,19 @@
                         {% if user.is_authenticated %}
 
                         <div style="margin-right:20px;">
-                            {{ name }}님 안녕하세요
+                            {% if name != None %}
+                            {{ name }}
+                            {% else %}
+                            팀원
+                            {% endif %}
+                            님 안녕하세요
                         </div>
 
                         <a class="button is-light" href="{% url 'profile' %}">
                             <strong>My Profile</strong>
                         </a>
                         {% if not team_manager %}
-                        <a href="{% url 'work_log_write' %}">
+                        <a class="button is-light" href="{% url 'work_log_write' %}">
                             퇴근하기
                         </a>
                         {% endif %}

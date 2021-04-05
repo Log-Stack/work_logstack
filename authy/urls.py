@@ -22,6 +22,7 @@ urlpatterns = [
 
     # 팀장
     path('create/team',CreateTeamView, name='createteam'),
+    path('create/position', CreatePositionView, name='createposition'),
     path('create/user', CreateUserView, name='createuser'),
     path('edit/profile/<int:pk>/', EditProfileData, name='editprofile_manage'),
 

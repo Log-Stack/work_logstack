@@ -149,17 +149,19 @@ $(document).ready(function(){
                         </span>
                         &nbsp;
                         &nbsp;
-                        {% if is_manager %}
-                            <a href="{% url 'manage_permit' member.pk %}" class="button is-dark">매니저 권한 없애기</a>
-                        {% else %}
-                            <a href="{% url 'manage_permit' member.pk %}" class="button is-dark">매니저 권한 주기</a>
+                        {% if not is_super %}
+                            {% if is_manager %}
+                                <a href="{% url 'manage_permit' member.pk %}" class="button is-dark">매니저 권한 없애기</a>
+                            {% else %}
+                                <a href="{% url 'manage_permit' member.pk %}" class="button is-dark">매니저 권한 주기</a>
+                            {% endif %}
+                            {% if member.currently_employed %}
+                                <a href="{% url 'manage_delete' member.pk %}" class="button is-dark is-light">퇴사 처리</a>
+                            {% else %}
+                                <a href="{% url 'manage_delete' member.pk %}" class="button is-dark is-light">복귀 처리</a>
+                            {% endif %}
+                            <a href="{% url 'manage_delete_real' member.pk %}" class="button is-dark is-light">삭제</a>
                         {% endif %}
-                        {% if member.currently_employed %}
-                            <a href="{% url 'manage_delete' member.pk %}" class="button is-dark is-light">퇴사 처리</a>
-                        {% else %}
-                            <a href="{% url 'manage_delete' member.pk %}" class="button is-dark is-light">복귀 처리</a>
-                        {% endif %}
-                        <a href="{% url 'manage_delete_real' member.pk %}" class="button is-dark is-light">삭제</a>
                     </p>
                     <div class="content">
 

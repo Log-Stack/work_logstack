@@ -16,7 +16,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from authy.forms import TeamCreateForm, UserCreateForm, ProfileForm, SignupForm, ChangePasswordForm, \
-    CustomAuthenticationForm, MemberInfoForm
+    CustomAuthenticationForm, MemberInfoForm, PositionCreateForm
 from authy.models import Team, Profile
 from authy.serializers import TeamSerializer, ProfileSerializer
 from django.contrib.auth.forms import AuthenticationForm
@@ -153,6 +153,29 @@ def CreateTeamView(request):
 
     return render(request, 'team_create.html', context)
 
+
+@login_required
+def CreatePositionView(request):
+    positions = list(Position.objects.all().values_list('name', flat=True))
+    if request.method == 'POST':
+        form = PositionCreateForm(request.POST)
+        if form.is_valid():
+            obj = form.save(commit=False)
+            obj.name = form.cleaned_data.get('name')
+            obj.save()
+            print("ok")
+            return redirect('index')
+        else:
+            print("not ok")
+    else:
+        form = PositionCreateForm()
+
+    context = {
+        'form': form,
+        'positions': positions,
+    }
+
+    return render(request, 'position_create.html', context)
 
 
 
@@ -437,6 +460,7 @@ def manage_detail(request, pk):
     if team_manager or user.is_superuser:
         member = Profile.objects.get(pk=pk)
         is_manager = TeamManager.objects.filter(user=member.user).exists()
+        is_super = User.objects.filter(id=member.user.pk, is_superuser=True).exists()
 
         teams = Team.objects.all()
         positions = Position.objects.all()
@@ -458,6 +482,7 @@ def manage_detail(request, pk):
 
         context = {
             'member': member,
+            'is_super': is_super,
             'is_manager': is_manager,
             'teams': teams,
             'positions': positions,

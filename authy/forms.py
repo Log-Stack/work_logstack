@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
 
-from authy.models import Team, Profile
+from authy.models import Team, Profile, Position
 from django.contrib.auth.forms import AuthenticationForm
 
 
@@ -20,10 +20,10 @@ class MemberInfoForm(forms.ModelForm):
         model = Profile
         fields = ['birth_day', 'phone_number', 'email_address', 'start_date']
         widgets = {
-            'email_address': forms.TextInput(attrs={'type': "text", 'class': 'input is-primary'}),
-            'phone_number': forms.TextInput(attrs={'type': "text", 'class': 'input is-primary'}),
-            'start_date': forms.DateInput(attrs={'type': "date", 'class': 'input is-primary'}),
-            'birth_day': forms.DateInput(attrs={'type': "date", 'class': 'input is-primary'}),
+            'email_address': forms.TextInput(attrs={'type': "text", 'class': 'input is-dark'}),
+            'phone_number': forms.TextInput(attrs={'type': "text", 'class': 'input is-dark'}),
+            'start_date': forms.DateInput(attrs={'type': "date", 'class': 'input is-dark'}),
+            'birth_day': forms.DateInput(attrs={'type': "date", 'class': 'input is-dark'}),
         }
 
 
@@ -33,6 +33,12 @@ class MemberInfoForm(forms.ModelForm):
 class TeamCreateForm(forms.ModelForm):
     class Meta:
         model = Team
+        fields = ('name',)
+
+
+class PositionCreateForm(forms.ModelForm):
+    class Meta:
+        model = Position
         fields = ('name',)
 
 
