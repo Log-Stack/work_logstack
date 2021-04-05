@@ -145,7 +145,11 @@ $(document).ready(function(){
                 <div class="media-content">
                     <p class="title is-4">
                         <span class="material-icons" style="margin: 0.5rem; vertical-align: middle;">person</span><span style="vertical-align: middle;">
+                        {% if member.name != None %}
                         {{ member.name }}
+                        {% else %}
+                        이름 미입력
+                        {% endif %}
                         </span>
                         &nbsp;
                         &nbsp;

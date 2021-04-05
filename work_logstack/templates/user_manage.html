@@ -60,7 +60,7 @@
                                     <strong>{% if team_member.name != None %}
                                         {{ team_member.name }}
                                     {% else %}
-                                        이름 미입력
+                                        {{ team_member.user }}
                                     {% endif %}</strong> -
                                     <small>
                                         {% if team_member.currently_employed %}

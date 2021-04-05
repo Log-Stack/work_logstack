@@ -288,7 +288,7 @@ function editSchedule(){
     if(button.value == 0){
         setModifyScheduleCalendar();
         button.value = 1;
-        button.classList.remove('is-primary');
+        button.classList.remove('is-dark');
         button.classList.add('is-danger');
         button.innerText = 'Stop';
     }
@@ -296,7 +296,7 @@ function editSchedule(){
         checkScheduleMode();
         button.value = 0;
         button.classList.remove('is-danger');
-        button.classList.add('is-primary');
+        button.classList.add('is-dark');
         button.innerText = 'Edit';
 
     }
