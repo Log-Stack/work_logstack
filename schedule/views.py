@@ -452,3 +452,15 @@ def schedule_summary_team(request):
                        "color": COLORS[1]})
 
     return JsonResponse(result, safe=False)
+
+
+@login_required
+def schedule_todo(request, user_id, date):
+    user = request.user.id
+
+    template = loader.get_template('schedule_todo.html')
+
+    context = {
+    }
+
+    return HttpResponse(template.render(context, request))
