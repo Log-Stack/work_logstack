@@ -264,14 +264,14 @@ def register_schedule_day(request, year, month, day):
 
             if is_approved:  # do create
                 for type_local, start_local, end_local in zip(work_types, start_times, end_times):
-                    schedule = Schedule.objects.create(user=user, date=week_start_date, start=start_local,
+                    schedule, schedule_created = Schedule.objects.get_or_create(user=user, date=week_start_date, start=start_local,
                                                        end=end_local, work_type=type_local)
                     week_start_date += relativedelta(days=1)
             else:  # do update
                 approved.approved_type = ScheduleApproved.APPROVED_TYPES[0][0]
                 approved.save()
                 for type_local, start_local, end_local in zip(work_types, start_times, end_times):
-                    schedule = Schedule.objects.get(user=user, date=week_start_date)
+                    schedule, schedule_created = Schedule.objects.get_or_create(user=user, date=week_start_date)
                     schedule.work_type = type_local
                     schedule.start = start_local
                     schedule.end = end_local
