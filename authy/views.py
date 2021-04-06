@@ -36,6 +36,7 @@ def login(request):
         return redirect('schedule-index')
     if request.method == "POST":
         form = CustomAuthenticationForm(request, request.POST)
+
         if form.is_valid():
             auth_login(request, form.get_user())
             is_manager = TeamManager.objects.filter(user=form.get_user()).exists()
@@ -313,18 +314,18 @@ def UserSearchView(request):
 def SearchAllView(request):
     teams = Team.objects.all().order_by('name')
     # profile = Profile.objects.position_order()
-    profile = Profile.objects.all().order_by('position','name')
+    profile = Profile.objects.all().order_by('position', 'name')
     teams_exists = []
 
     for team in teams:
-        if len(profile.filter(team=team.pk))!=0:
+        if len(profile.filter(team=team.pk)) != 0:
             teams_exists.append(team)
 
     context = {
         'users': profile,
-        'teams' : teams_exists,
+        'teams': teams_exists,
     }
-    return render(request,'user_search_all.html', context)
+    return render(request, 'user_search_all.html', context)
 
 
 @login_required
