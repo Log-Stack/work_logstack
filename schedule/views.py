@@ -58,29 +58,41 @@ def schedule_day_user_work_time(request):
     date = request.GET.get('selected_date')
 
     selected_date = datetime.strptime(date, "%Y-%m-%d").strftime("%Y-%m-%d")
+    if team_id == '-1':  # 전체 검색
+        users = Profile.objects.filter().values_list('user_id', flat=True)
+    else:
+        users = Profile.objects.filter(team=team_id).values_list('user_id', flat=True)
 
-    if team_id == '-1':
-        # team을 선택하지 않았을때 출력
-        return JsonResponse([], safe=False)
-
-    team = Team.objects.get(id=team_id)
-    profiles = Profile.objects.filter(team=team)
+    if team_id == '-1':  # 전체 검색
+        work_users = Schedule.objects.filter(user__in=users, date=selected_date, work_type=1).values_list('user_id')
+        profiles = Profile.objects.filter(user__in=work_users)
+    else:
+        profiles = Profile.objects.filter(user__in=users)
 
     resources = []
     for item in profiles.values_list("user_id", "name"):
         resources.append(
             {'id': str(item[0]), 'title': item[1]}
         )
-    events = []
-    users = Profile.objects.filter(team=team_id).values_list('user_id', flat=True)
-    work_times = Schedule.objects.filter(user__in=users, date=selected_date, work_type=1)
 
+    work_times = Schedule.objects.filter(user__in=users, date=selected_date, work_type=1)
+    events = []
     for item in work_times.values_list("user_id", "date", "start", "end"):
         events.append({
             'resourceId': str(item[0]),
             'title': Profile.objects.get(user=item[0]).name,
             'start': str(item[1]) + "T" + item[2].isoformat(timespec='seconds') + "+00:00",
             'end': str(item[1]) + "T" + item[3].isoformat(timespec='seconds') + "+00:00",
+            'color': COLORS[item[0] % len(COLORS)],
+        })
+
+    vacation_times = Schedule.objects.filter(user__in=users, date=selected_date, work_type=2)
+    for item in vacation_times.values_list("user_id", "date", "start", "end"):
+        events.append({
+            'resourceId': str(item[0]),
+            'title': "휴가",
+            'start': str(item[1]),
+            'end': str(item[1]),
             'color': COLORS[item[0] % len(COLORS)],
         })
     result = {"resources": resources, 'event': events}
@@ -350,31 +362,37 @@ def schedule_list_edit(request):
     user_profile = Profile.objects.get(user=user)
 
     schedule_list = list(schedule)
-    result = []
+
+    events = []
     for item in schedule_list:
         name = str(user_profile.name)
         title = ""
         if item.work_type == 1:
             start = str(item.start.strftime("%H:%M"))
             end = str(item.end.strftime("%H:%M"))
-            title = name + " | " + start + " ~ " + end
+            title = name + " | " + start + " : " + end
             color = COLORS[item.user.id % len(COLORS)]
         elif item.work_type == 2:
-            title = name + " | " "휴가중"
+            title = name + " | " "휴가"
             color = COLORS[5]
-        result.append({'title': title, 'start': item.date.strftime('%Y-%m-%d'),
+        else:
+            continue
+        events.append({'title': title, 'start': item.date.strftime('%Y-%m-%d'),
                        'end': item.date.strftime('%Y-%m-%d'),
                        "color": color})
-
-    return JsonResponse(result, safe=False)
+    return JsonResponse({"name" : user_profile.name, "team":user_profile.team.name, "events":events}, safe=False)
 
 
 @login_required
 def schedule_list_team(request, team_id, year, month):
     result = []
-    users = Profile.objects.filter(team=team_id).values_list('user_id', flat=True)
     day_start = datetime(year, month, 1).strftime('%Y-%m-%d')
     day_end = (datetime(year, month, 1) + relativedelta(months=2)).strftime('%Y-%m-%d')
+
+    if int(team_id) is -1:
+        users = Profile.objects.filter().values_list('user_id', flat=True)
+    else:
+        users = Profile.objects.filter(team=team_id).values_list('user_id', flat=True)
 
     work_schedule = Schedule.objects.filter(user__in=users, date__range=[day_start, day_end], work_type=1) \
         .order_by('date')
@@ -409,14 +427,17 @@ def schedule_list_team(request, team_id, year, month):
 @login_required
 def schedule_summary_team(request):
     result = []
-    team_id = request.GET.get('team', None)
+    team_id = int(request.GET.get('team', None))  # if team_id is -1 => summary by All Users
     year = int(request.GET.get('year', None))
     month = int(request.GET.get('month', None))
 
     day_start = datetime(year, month, 1).strftime('%Y-%m-%d')
     day_end = (datetime(year, month, 1) + relativedelta(months=2)).strftime('%Y-%m-%d')
+    if team_id is -1:
+        users = Profile.objects.filter().values_list('user_id', flat=True)
+    else:
+        users = Profile.objects.filter(team=team_id).values_list('user_id', flat=True)
 
-    users = Profile.objects.filter(team=team_id).values_list('user_id', flat=True)
     schedule = Schedule.objects.filter(user__in=users, date__range=[day_start, day_end]).order_by('date')
     for work_date in schedule.values_list('date', flat=True).distinct():
         worker_count = Schedule.objects.annotate(num_work_types=Count('work_type')).filter(user__in=users,

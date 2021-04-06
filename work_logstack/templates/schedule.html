@@ -15,7 +15,6 @@ var calendar = null;
 
 function goDetailSchedule(date){
 var date = new Date(date.split("T")[0]);
-date.setDate(date.getDate() + 1);
 var team_id = document.getElementById('team_select').value;
 
 var url = '/schedule/day/' + team_id + "/" +
@@ -23,7 +22,8 @@ var url = '/schedule/day/' + team_id + "/" +
             ("0" +(date.getMonth()+1)).slice(-2)+ "-" +
             ("0" + (date.getDate())).slice(-2);
 
-location.href = url;
+window.open(url,'test','width=1000, height=1100, toolbar=no, menubar=no, scrollbars=no, resizable=yes');
+
 }
 
 
@@ -74,10 +74,11 @@ else if(user_id != '-1'){
                   info.el.style.cursor = 'default';
                 },
                 dateClick: function(info){
-                    alert(info.dateStr);
+                    goDetailSchedule(info.dateStr);
                 },
                 navLinks: true,
                 navLinkDayClick: function(date, jsEvent) {
+                    date.setDate(date.getDate() + 1);
                     goDetailSchedule(date.toISOString());
                   },
                 });
@@ -111,10 +112,11 @@ $.ajax({
               info.el.style.cursor = 'default';
             },
             dateClick: function(info){
-                alert(info.dateStr);
+                goDetailSchedule(info.dateStr);
             },
             navLinks: true,
             navLinkDayClick: function(date, jsEvent) {
+                date.setDate(date.getDate() + 1);
                 goDetailSchedule(date.toISOString());
               },
             });
@@ -150,9 +152,10 @@ $.ajax({
             eventOrder: 'color',
             navLinks: true,
             dateClick: function(info){
-                alert(info.dateStr);
+                goDetailSchedule(info.dateStr);
             },
             navLinkDayClick: function(date, jsEvent) {
+                date.setDate(date.getDate() + 1);
                 goDetailSchedule(date.toISOString());
               },
             });
@@ -222,6 +225,22 @@ $.ajax({
                 temp.text = data[i].name
                 user_select.add(temp);
                 }
+	        },
+	        error:function(data){
+	            var len = user_select.options.length;
+			    for(let i = 0;i<=len;i++){
+                    user_select.remove(0);
+			    }
+
+                var temp = document.createElement("option");
+                temp.value = '-2';
+                temp.text = 'Summary';
+                user_select.add(temp);
+
+                var temp = document.createElement("option");
+                temp.value = -1;
+                temp.text = 'All';
+                user_select.add(temp);
 	        }
         })
 }
@@ -229,8 +248,9 @@ $.ajax({
 function setSelectMoveToCalendar(){
     selector = document.getElementsByClassName("select_team_user");
     button = document.getElementsByClassName("edit_button");
+    var button_month = document.getElementsByClassName("fc-toolbar-chunk")[2];
     document.getElementsByClassName("fc-toolbar-chunk")[1].appendChild(selector[0]);
-    document.getElementsByClassName("fc-toolbar-chunk")[2].appendChild(button[0]);
+    button_month.insertBefore(button[0], button_month.firstChild);
 }
 
 function setModifyScheduleCalendar(){
@@ -246,7 +266,7 @@ function setModifyScheduleCalendar(){
                 var calendarEl = document.getElementById('calendar');
                 var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
-                events : data,
+                events : data.events,
                 eventMouseEnter: function(info) {
                   var eventObj = info.event;
                   info.el.style.cursor = 'default';
@@ -261,6 +281,12 @@ function setModifyScheduleCalendar(){
                 });
 
                 calendar.render();
+
+                var user_select = document.getElementById('user_select');
+                var team_select = document.getElementById('team_select');
+
+                team_select.options[team_select.selectedIndex].innerText = data.team;
+                user_select.options[user_select.selectedIndex].innerText = data.name;
                 }
     });
 }
@@ -273,29 +299,34 @@ function checkScheduleMode(){
     else if(user_select.value == -1){
         getEventByTeamAllUsers();
     }
-    else if(team_select.value == 'team'){
-        calendarEl = document.getElementById('calendar');
-        calendar = new FullCalendar.Calendar(calendarEl, {
-              initialView: 'dayGridMonth',
-        });
-        calendar.render();
+    else if(team_select.value == -1 ){
+        getEventByTeamSummary();
     }
     else if(user_select.value != null){
         getEventByUser();
     }
-    else{
-        calendarEl = document.getElementById('calendar');
-        calendar = new FullCalendar.Calendar(calendarEl, {
-              initialView: 'dayGridMonth',
-        });
-        calendar.render();
-    }
 }
+
+
+
+var before_team = null;
+var before_user = null;
 
 function editSchedule(){
     var button = document.getElementsByClassName("edit_button")[0];
+    var user_select = document.getElementById('user_select');
+    var team_select = document.getElementById('team_select');
+
     if(button.value == 0){
+
+        before_team = team_select.options[team_select.selectedIndex].innerText;
+        before_user = user_select.options[user_select.selectedIndex].innerText;
+
         setModifyScheduleCalendar();
+
+        user_select.disabled = true;
+        team_select.disabled = true;
+
         button.value = 1;
         button.classList.remove('is-dark');
         button.classList.add('is-danger');
@@ -303,6 +334,15 @@ function editSchedule(){
     }
     else{
         checkScheduleMode();
+
+        user_select.disabled = false;
+        team_select.disabled = false;
+
+        team_select.options[team_select.selectedIndex].innerText = before_team;
+        user_select.options[user_select.selectedIndex].innerText = before_user;
+
+
+
         button.value = 0;
         button.classList.remove('is-danger');
         button.classList.add('is-dark');
@@ -321,6 +361,8 @@ function init(){
         calendar.render();
 
         setTeamSelect();
+        setUserSelect();
+        getEventByTeamSummary();
         setSelectMoveToCalendar();
         document.getElementsByClassName("edit_button")[0].addEventListener('click', editSchedule);;
 
@@ -349,7 +391,7 @@ window.addEventListener('DOMContentLoaded', init);
             <div class="select_team_user" style="margin-right:700px;">
                 <div class="select is-dark">
                     <select id="team_select">
-                        <option value="-1">team</option>
+                        <option value="-1" selected>team</option>
                     </select>
                 </div>
                 <div class="select is-dark">
