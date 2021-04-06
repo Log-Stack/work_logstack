@@ -251,6 +251,7 @@ def register_schedule_day(request, year, month, day):
     work_types = []
     start_times = []
     end_times = []
+
     if request.method == 'POST':
         form = NewScheduleDayForm(request.POST)
         if form.is_valid():
@@ -264,21 +265,32 @@ def register_schedule_day(request, year, month, day):
 
             if is_approved:  # do create
                 for type_local, start_local, end_local in zip(work_types, start_times, end_times):
-                    schedule, schedule_created = Schedule.objects.get_or_create(user=user, date=week_start_date, start=start_local,
-                                                       end=end_local, work_type=type_local)
+                    schedule, schedule_created = Schedule.objects.get_or_create(user=user, date=week_start_date,
+                                                                                start=start_local,
+                                                                                end=end_local, work_type=type_local)
                     week_start_date += relativedelta(days=1)
             else:  # do update
                 approved.approved_type = ScheduleApproved.APPROVED_TYPES[0][0]
                 approved.save()
                 for type_local, start_local, end_local in zip(work_types, start_times, end_times):
-                    schedule, schedule_created = Schedule.objects.get_or_create(user=user, date=week_start_date)
-                    schedule.work_type = type_local
-                    schedule.start = start_local
-                    schedule.end = end_local
-                    schedule.save()
+                    if Schedule.objects.filter(user=user, date=week_start_date).exists():
+                        schedule = Schedule.objects.get(user=user, date=week_start_date)
+                        schedule.work_type = type_local
+                        schedule.start = start_local
+                        schedule.end = end_local
+                        schedule.save()
+                    else:
+                        Schedule.objects.get_or_create(user=user, date=week_start_date,
+                                                       start=start_local,
+                                                       end=end_local, work_type=type_local)
                     week_start_date += relativedelta(days=1)
 
-            return redirect('schedule-register-day', year, month, day)
+            temp = request.POST.get('temp')
+
+            if temp == "work_hour_check":
+                return redirect('work_hour_check')
+            else:
+                return redirect('schedule-register-day', year, month, day)
     else:
         user = request.user
 
@@ -286,10 +298,17 @@ def register_schedule_day(request, year, month, day):
 
         template = loader.get_template('schedule_register_day.html')
         form = NewScheduleDayForm()
+
+        if request.headers['Referer'].split('/')[-2] == "work_hour_check":
+            temp = 'work_hour_check'
+        else:
+            temp = 'schedule-register-day'
+
         context = {
             'user': user,
             'selected_date': selected_date,
-            'forms': form
+            'forms': form,
+            'temp': temp,
         }
 
         return HttpResponse(template.render(context, request))
@@ -356,7 +375,7 @@ def schedule_list_user(request, user_id, year, month):
 
         result.append({'title': title, 'start': item.date.strftime('%Y-%m-%d'),
                        'end': item.date.strftime('%Y-%m-%d'),
-                       "color": color,  'url': url})
+                       "color": color, 'url': url})
 
     return JsonResponse(result, safe=False)
 
@@ -393,7 +412,7 @@ def schedule_list_edit(request):
         events.append({'title': title, 'start': item.date.strftime('%Y-%m-%d'),
                        'end': item.date.strftime('%Y-%m-%d'),
                        "color": color})
-    return JsonResponse({"name" : user_profile.name, "team":user_profile.team.name, "events":events}, safe=False)
+    return JsonResponse({"name": user_profile.name, "team": user_profile.team.name, "events": events}, safe=False)
 
 
 @login_required
@@ -417,7 +436,7 @@ def schedule_list_team(request, team_id, year, month):
         result.append({'title': name + " | " + start + " ~ " + end, 'start': item.date.strftime('%Y-%m-%d'),
                        'end': item.date.strftime('%Y-%m-%d'),
                        "color": COLORS[item.user.id % len(COLORS)],
-                       'url':  url})
+                       'url': url})
 
     vacation_schedule = Schedule.objects.filter(user__in=users, date__range=[day_start, day_end], work_type=2) \
         .values("date").distinct()

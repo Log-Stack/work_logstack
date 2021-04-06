@@ -206,13 +206,13 @@ window.addEventListener('DOMContentLoaded', init);
 
                     <div class="columns is-centered">
                         <div class="column is-4 title is-3">
-                            <div class="buttons has-addons">
+                            <div class="field has-addons">
                                 <p class="button" onclick="setDateBefore()">
                             <span class="material-icons">
                                 arrow_back
                             </span>
                                 </p>
-                                <p class="button">
+                                <p class="control">
                                     {{ forms.week_start_date }}
                                 </p>
                                 <p class="button" onclick="setDateAfter()">
@@ -226,6 +226,13 @@ window.addEventListener('DOMContentLoaded', init);
 
 
                         </div>
+
+                        <div class="field">
+                            <div class="control">
+                                <input type="hidden" name="temp" value="{{ temp }}">
+                            </div>
+                        </div>
+
                         <div class="column is-4">
                             <button type="submit" class="button is-dark is-fullwidth">근무 수정</button>
                         </div>

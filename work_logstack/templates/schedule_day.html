@@ -156,26 +156,20 @@ window.addEventListener('DOMContentLoaded', init);
                 <div class="box">
 
                     <div id="date_select">
-                        <div class="columns buttons has-addons">
-                            <div class="column">
-                                <p class="button" onclick="setDateBefore()">
-                                <span class="material-icons">
-                                    arrow_back
-                                </span>
-                                </p>
-                            </div>
-                            <div class="column">
-                                <p class="button">
-                                    <input id="week_start_date" class="input end_time" type="date">
-                                </p>
-                            </div>
-                            <div class="column">
-                                <p class="button" onclick="setDateAfter()">
-                                <span class="material-icons">
-                                    arrow_forward
-                                </span>
-                                </p>
-                            </div>
+                        <div class="field has-addons">
+                            <p class="button" onclick="setDateBefore()">
+                            <span class="material-icons">
+                                arrow_back
+                            </span>
+                            </p>
+                            <p class="control">
+                                <input id="week_start_date" class="input end_time" type="date">
+                            </p>
+                            <p class="button" onclick="setDateAfter()">
+                            <span class="material-icons">
+                                arrow_forward
+                            </span>
+                            </p>
                         </div>
                     </div>
                 </div>
