@@ -142,6 +142,14 @@ function setEventsByTeam(){
                   initialView: 'dayGridMonth',
                   initialDate: date,
                   events: data,
+                  eventClick: function(info) {
+                        info.jsEvent.preventDefault();
+                        if (info.event.url) {
+                              var popupX = (window.screen.width / 2) - (1000 / 2);
+                              var popupY= (window.screen.height /2) - (1000 / 2);
+                              window.open(info.event.url, 'detailPage', 'status=no, height=1000, width=1000, left='+ popupX + ', top='+ popupY + ', screenX='+ popupX + ', screenY= '+ popupY);
+                              }
+                  }
             });
 
             calendar.render();
@@ -172,6 +180,14 @@ function setEventsByUser(){
                   initialView: 'dayGridMonth',
                   initialDate: date,
                   events: data,
+                  eventClick: function(info) {
+                        info.jsEvent.preventDefault();
+                        if (info.event.url) {
+                              var popupX = (window.screen.width / 2) - (1000 / 2);
+                              var popupY= (window.screen.height /2) - (1000 / 2);
+                              window.open(info.event.url, 'detailPage', 'status=no, height=1000, width=1000, left='+ popupX + ', top='+ popupY + ', screenX='+ popupX + ', screenY= '+ popupY);
+                              }
+                  }
             });
 
             calendar.render();
@@ -217,27 +233,46 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
     <br>
     <div id="date_select">
-        <div class="columns buttons has-addons">
-            <div class="column">
-                <p class="button" onclick="setDateBefore()">
+        <div class="field has-addons">
+            <p class="control">
+                <button class="button" onclick="setDateBefore()">
                     <span class="material-icons">
                         arrow_back
                     </span>
-                </p>
-            </div>
-            <div class="column">
-                <p class="button">
-                    <input id="week_start_date" class="input end_time" type="month">
-                </p>
-            </div>
-            <div class="column">
-                <p class="button" onclick="setDateAfter()">
+                </button>
+            </p>
+            <p class="control">
+                <input id="week_start_date" class="input end_time" type="month">
+            </p>
+            <p class="control">
+                <button class="button" onclick="setDateAfter()">
                     <span class="material-icons">
                         arrow_forward
                     </span>
-                </p>
-            </div>
+                </button>
+            </p>
         </div>
+<!--        <div class="columns buttons has-addons">-->
+<!--            <div class="column">-->
+<!--                <p class="button" onclick="setDateBefore()">-->
+<!--                    <span class="material-icons">-->
+<!--                        arrow_back-->
+<!--                    </span>-->
+<!--                </p>-->
+<!--            </div>-->
+<!--            <div class="column">-->
+<!--                <p class="button">-->
+<!--                    <input id="week_start_date" class="input end_time" type="month">-->
+<!--                </p>-->
+<!--            </div>-->
+<!--            <div class="column">-->
+<!--                <p class="button" onclick="setDateAfter()">-->
+<!--                    <span class="material-icons">-->
+<!--                        arrow_forward-->
+<!--                    </span>-->
+<!--                </p>-->
+<!--            </div>-->
+<!--        </div>-->
     </div>
     <div id="team_select_div" class="columns is-centered">
         <div class="column">

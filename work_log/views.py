@@ -206,10 +206,12 @@ def work_log_list(request):
 @login_required
 def work_logs_by_team(request, team_id, year, month):
     result = []
-    if team_id is -1:
-        return JsonResponse([], safe=False)
+    if team_id == '-1':
+        print('sdafsdafdf')
+        users = Profile.objects.all()
+    else:
+        users = Profile.objects.filter(team=team_id)
 
-    users = Profile.objects.filter(team=team_id)
     for user in users:
         work_logs = WorkLog.objects\
             .filter(user=user.user_id, create_time__date__year=year, create_time__date__month=month)\

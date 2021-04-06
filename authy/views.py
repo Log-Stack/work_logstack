@@ -343,6 +343,7 @@ class TeamViewSet(viewsets.ModelViewSet):
 
 @api_view(['GET'])
 def TeamMates(request, team):
+    print(team)
     if request.method == 'GET':
         queryset = Profile.objects.filter(team=team)
         serializer = ProfileSerializer(queryset, many=True)
