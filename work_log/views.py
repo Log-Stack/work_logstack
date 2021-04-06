@@ -12,8 +12,11 @@ from django.contrib.auth.models import User
 from .models import WorkHour, WorkLog
 from .forms import WorkLogForm, WorkHourForm
 from authy.models import Team, TeamManager, Profile, Position
-from schedule.models import Schedule, ScheduleApproved
+from schedule.models import Schedule, ScheduleApproved, ToDo
+from schedule.forms import ToDoForm
 from django.core.paginator import Paginator
+
+COLORS = ['#0096c6', '#ff6939', '#fa3d00', '#6937a1', '#003458', '#008000']
 
 
 @login_required
@@ -44,12 +47,23 @@ def work_hour_check(request):
     year = datetime.now().year
     month = datetime.now().month
     day = datetime.now().day
+    form = None
+    if schedule:
+        to_do = get_object_or_404(ToDo, schedule=schedule)
+        if request.method == "POST":
+            form = ToDoForm(request.POST, instance=to_do)
+            if form.is_valid():
+                form.save()
+        else:
+            form = ToDoForm(instance=to_do)
+
     context = {
         'work_hour': work_hour,
         'schedule': schedule,
         'year': year,
         'month': month,
         'day': day,
+        'form': form,
     }
     return render(request, 'work_hour_check.html', context)
 
@@ -207,24 +221,24 @@ def work_log_list(request):
 def work_logs_by_team(request, team_id, year, month):
     result = []
     if team_id == '-1':
-        print('sdafsdafdf')
         users = Profile.objects.all()
     else:
         users = Profile.objects.filter(team=team_id)
 
     for user in users:
-        work_logs = WorkLog.objects\
-            .filter(user=user.user_id, create_time__date__year=year, create_time__date__month=month)\
+        work_logs = WorkLog.objects \
+            .filter(user=user.user_id, create_time__date__year=year, create_time__date__month=month) \
             .order_by('user_id')
         for item in list(work_logs):
             work_logs_pk = str(item.pk)
             name = str(user.name)
             create_date = str(item.create_time.date())
             result.append(
-                {'url': '/work_log/detail/'+str(work_logs_pk)+'/',
+                {'url': '/work_log/detail/' + str(work_logs_pk) + '/',
                  'title': name,
                  'start': create_date,
                  'end': create_date,
+                 'color': COLORS[user.id % len(COLORS)]
                  })
     return JsonResponse(result, safe=False)
 
@@ -244,6 +258,7 @@ def work_logs_by_user(request, user_id, year, month):
              'title': name,
              'start': create_date,
              'end': create_date,
+             'color': COLORS[user_id % len(COLORS)]
              })
     return JsonResponse(result, safe=False)
 

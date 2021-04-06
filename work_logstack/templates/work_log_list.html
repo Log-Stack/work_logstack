@@ -70,6 +70,17 @@ $.ajax({
 
 
                 }
+	        },
+	        error:function(data){
+	            var len = user_select.options.length;
+			    for(let i = 0;i<=len;i++){
+                    user_select.remove(0);
+			    }
+
+                var temp = document.createElement("option");
+                temp.value = -1;
+                temp.text = 'All';
+                user_select.add(temp);
 	        }
         })
 }
@@ -97,7 +108,6 @@ $.ajax({
                 }
 
                 team_select.add(temp);
-                setUserSelect();
                 }
 	        }
         })
@@ -123,6 +133,7 @@ function init(){
     document.getElementsByClassName("fc-toolbar-chunk")[2].innerHTML = "";
     document.getElementsByClassName("fc-toolbar-chunk")[2].appendChild(team_select);
 
+    dateChange();
 }
 
 
@@ -207,10 +218,20 @@ function dateChange(){
     setEventsByTeam();
 }
 
+function userChange(){
+    var selected_user = document.getElementById('user_select').value;
+    if(selected_user == '-1'){
+        dateChange()
+    }
+    else{
+        setEventsByUser();
+    }
+}
+
 function addAllEvents(){
 document.getElementById('week_start_date').addEventListener("change", dateChange);
 document.getElementById('team_select').addEventListener("change", dateChange);
-document.getElementById('user_select').addEventListener("change", setEventsByUser);
+document.getElementById('user_select').addEventListener("change", userChange);
 }
 
 document.addEventListener('DOMContentLoaded', function() {

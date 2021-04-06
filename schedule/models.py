@@ -35,7 +35,7 @@ class ScheduleApproved(models.Model):
 
 
 class ToDo(models.Model):
-    schedule = models.ForeignKey(Schedule, on_delete=models.CASCADE)
+    schedule = models.OneToOneField(Schedule, on_delete=models.CASCADE)
     contents = models.TextField(default="작성된 ToDo가 없습니다")
 
     def __str__(self):
