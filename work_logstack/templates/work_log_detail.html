@@ -7,43 +7,41 @@
         <div class="hero is-dark is-small">
             <div class="hero-body">
                 <p class="title">
-                    <a href="{% url 'work_log_list' %}" class="button is-dark"><i class="material-icons">arrow_back_ios_new</i></a>
-                    Work Log Detail
+                    <a href="{% url 'work_log_list' %}" class="button is-dark"><i style="margin-bottom: 0.5rem;" class="material-icons">arrow_back_ios_new</i></a>
+                    {{ profile.name }} 님의 Work Log
                 </p>
             </div>
         </div>
         
         <div class="card">
-            <header class="card-header">
-                <p class="card-header-title">
-                    Writer: {{ work_log.user.username }}
-                </p>
-                <p class="card-header-title">
-                    Date: {{ work_hour.date }}
-                </p>
-                <p class="card-header-title">
-                    Working Time: {{ work_hour.start_time|time }} ~ {{ work_hour.end_time|time }}
-                </p>
-            </header>
+<!--            <header class="card-header">-->
+<!--                <p class="card-header-title">-->
+<!--                    Date: {{ work_hour.start_time|date }}-->
+<!--                </p>-->
+<!--                <p class="card-header-title">-->
+<!--                    Working Time: {{ work_hour.start_time|time }} ~ {{ work_hour.end_time|time }}-->
+<!--                </p>-->
+<!--            </header>-->
             <div class="card-content">
                 <div class="content">
-                    <p>
-                        {{ work_log.content }}
-                    </p>
                     <br>
+                    <br>
+                    <p>{{ work_log.content }}</p>
+                    <br>
+                    <hr>
+                    <time>
+                    Working Time: {{ work_hour.start_time|time }} ~ {{ work_hour.end_time|time }}
+                    </time><br/>
                     <time datetime="{{ work_log.create_time }}">Create Time: {{ work_log.create_time }}</time><br>
                     {% if work_log.is_updated %}
-                        <time datetime="{{ work_log.update_time }}">Update Time: {{ work_log.update_time }}</time>
+                        <time datetime="{{ work_log.update_time }}">Update Time: {{ work_log.update_time }}</time><br>
                     {% endif %}
-                </div>
-                <div class="content">
-                    <div class="field is-grouped">
                     {% if work_log.user == request.user %}
+                        <br>
                         <div class="control">
                             <a href="{% url 'work_log_edit' work_log.pk %}" class="button is-dark">Edit</a>
                         </div>
                     {% endif %}
-                    </div>
                 </div>
             </div>
         </div>
