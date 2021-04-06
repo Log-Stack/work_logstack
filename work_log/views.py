@@ -41,9 +41,15 @@ def work_hour_check(request):
     user = request.user
     work_hour = WorkHour.objects.filter(user=user).filter(date=timezone.now().date()).first()
     schedule = Schedule.objects.filter(user=user).filter(date=timezone.now().date()).first()
+    year = datetime.now().year
+    month = datetime.now().month
+    day = datetime.now().day
     context = {
         'work_hour': work_hour,
         'schedule': schedule,
+        'year': year,
+        'month': month,
+        'day': day,
     }
     return render(request, 'work_hour_check.html', context)
 
@@ -129,9 +135,11 @@ def work_log_edit(request, pk):
 def work_log_detail(request, pk):
     work_log = get_object_or_404(WorkLog, pk=pk)
     user = work_log.user
+    profile = Profile.objects.get(user=user)
     date = work_log.create_time.date()
     work_hour = WorkHour.objects.filter(user=user).filter(date=date).first()
     context = {
+        'profile': profile,
         'work_log': work_log,
         'work_hour': work_hour
     }

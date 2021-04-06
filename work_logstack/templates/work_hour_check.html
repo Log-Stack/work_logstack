@@ -50,8 +50,9 @@
         </div>
     </div>
     {% else %}
-        <div class="box">
-            <p class="has-text-centered"><strong>예정된 업무가 없습니다.</strong></p>
+        <div class="box has-text-centered">
+            <p><strong>예정된 업무가 없습니다.</strong></p>
+            <a style="margin-top: 1rem;" href="{% url 'schedule-register-day' year month day %}" class="button is-dark is-rounded">스케줄 등록하러가기</a>
         </div>
     {% endif %}
 
