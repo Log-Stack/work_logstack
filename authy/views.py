@@ -221,7 +221,7 @@ def EditProfileView(request):
             user.email = form.cleaned_data.get('email_address')
             user.save()
             obj.save()
-            return redirect('index')
+            return redirect('profile')
         else:
             print("not ok")
             print(form.errors)
@@ -248,7 +248,7 @@ def ChangePWView(request):
             user.set_password(new_password)
             user.save()
             update_session_auth_hash(request, user)
-            return redirect('changepwdone')
+            return redirect('profile')
     else:
         form = ChangePasswordForm(instance=user)
 

@@ -1,3 +1,4 @@
+from django.contrib.auth.views import LoginView
 from django.urls import path, include
 from rest_framework import routers
 
@@ -16,12 +17,13 @@ router.register(r'profiles', views.ProfileViewSet)
 
 
 urlpatterns = [
+    # path('', LoginView.as_view(), name='login'),
     path('', views.login, name='login'),
     path('logout/', authViews.LogoutView.as_view(template_name='logged_out.html'), name='logout'),
-   	path('index/', index, name='index'),
+    path('index/', index, name='index'),
 
     # 팀장
-    path('create/team',CreateTeamView, name='createteam'),
+    path('create/team', CreateTeamView, name='createteam'),
     path('create/position', CreatePositionView, name='createposition'),
     path('create/user', CreateUserView, name='createuser'),
     path('edit/profile/<int:pk>/', EditProfileData, name='editprofile_manage'),
@@ -30,18 +32,16 @@ urlpatterns = [
     path('profile', ProfileView, name='profile'),
     path('profile/edit', EditProfileView, name='editprofile'),
     path('profile/changepw', ChangePWView, name='changepw'),
-    path('profile/changepw/done',ChangePWDoneView, name='changepwdone'),
-    path('search',UserSearchView,name='search'),
-    path('search/all/',SearchAllView, name='searchall'),
-    path('search/select',SearchSelectView, name='searchselect'),
+    path('profile/changepw/done', ChangePWDoneView, name='changepwdone'),
+    path('search', UserSearchView, name='search'),
+    path('search/all/', SearchAllView, name='searchall'),
+    path('search/select', SearchSelectView, name='searchselect'),
     path('search/select/<int:pk>', UserDetailView, name='userdetail'),
-
-
 
     # api
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('api/', include(router.urls)),
-    path('byteam/<int:team>',views.TeamMates),
+    path('byteam/<int:team>', views.TeamMates),
 
     # 팀원 관리
     path('manage_list/', manage_list, name='manage_list'),
@@ -58,4 +58,3 @@ urlpatterns = [
     path('send_work_log/<int:member_pk>/<str:date>', send_work_log, name='send_work_log'),
 
 ]
-
