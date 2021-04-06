@@ -2,41 +2,64 @@
 <html lang="en">
 <head>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+    {% if self_view %}
+    <script src='http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery.min.js'></script>
     <script>
-        var todo_context = null;
-        var todo_context_div = null;
         var todo_context_textarea = null;
-        var todo_context_textarea_div = null;
-        var todo_edit = null;
-        var todo_edit_cancel = null;
-
-
-
-
+        var todo_save = null;
 
         function getElements(){
-            todo_edit = document.getElementById("todo_edit");
-            todo_edit_cancel = document.getElementById("todo_edit_cancel");
-            todo_context = document.getElementById("todo_context");
-            todo_context_div = document.getElementById("todo_context_div");
+            todo_save = document.getElementById("todo_save");
             todo_context_textarea = document.getElementById("todo_context_textarea");
-            todo_context_textarea_div = document.getElementById("todo_context_textarea_div");
         }
 
-        function changeEditMode(){
-            todo_context_div.style.display = "none";
-            todo_context_textarea_div.style.display = "block";
+        function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
         }
 
-        function changeViewMode(){
-            todo_context_div.style.display = "block";
-            todo_context_textarea_div.style.display = "none";
-            todo_edit.innerText = "Edit";
+        var csrftoken = getCookie('csrftoken');
+
+        function csrfSafeMethod(method) {
+            // these HTTP methods do not require CSRF protection
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+
+
+        function doSave(){
+            $.ajax({
+                type: 'POST',
+                url: '/schedule/todo/' + '1' + '/' + '2021-04-05',
+                dataType: 'json',
+                data:{
+                    context : todo_context_textarea.value,
+                },
+                success: function(data){
+                    window.location.reload();
+                }
+            })
         }
 
         function setEventListener(){
-            todo_edit.addEventListener("click", changeEditMode);
-            todo_edit_cancel.addEventListener("click", changeViewMode);
+            todo_save.addEventListener("click", doSave);
         }
 
         function init(){
@@ -47,7 +70,10 @@
 
         window.addEventListener('DOMContentLoaded', init);
     </script>
+    {% endif %}
+
 </head>
+
 
 <body>
 <div class="container">
@@ -56,13 +82,16 @@
             <div class="columns">
                 <div class="column is-7">
                     <p class="title">
-                        To Do - 권진호 - 2020.12.12
+                        To Do - {{name}} - {{date}}
                     </p>
                 </div>
                 <div class="column is-5 has-text-right">
+                    {% if self_view %}
+                        <button type="submit" class="button is-Light" id="todo_save">Save</button>
+                    {% else %}
+                        <button class="button is-Light" id="todo_close">Close</button>
+                    {% endif %}
                     <div>
-                        <button class="button is-light" style="display:none;" id="todo_edit_cancel">Edit</button>
-                        <button class="button is-Light" id="todo_edit">Edit</button>
                     </div>
                 </div>
 
@@ -71,16 +100,12 @@
     </div>
     <br>
     <div class="box" style="height:84vh;" id="todo_context_div">
-        <div class="context" id="todo_context">
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-            dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
-            ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat
-            nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
-            anim id est laborum.
-        </div>
-    </div>
-    <div class="box" style="height:84vh; display:none;" id="todo_context_textarea_div">
-        <textarea style="height:100%;" class="textarea is-dark" id="todo_context_textarea"></textarea>
+            {% if self_view %}
+                {% csrf_token %}
+                <textarea style="height:100%;" class="textarea is-dark" id="todo_context_textarea">{{context}}</textarea>
+            {% else %}
+                <div class="context" id="todo_context">{{context}}</div>
+            {% endif %}
     </div>
 </div>
 

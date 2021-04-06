@@ -24,5 +24,5 @@ urlpatterns = [
     path('list/team/<int:team_id>/<int:year>/<int:month>', schedule_list_team, name='schedule-list-team'),
     path('list/summary/', schedule_summary_team, name='schedule-summary-team'),
 
-    path('todo/<user_id>/<date>', schedule_todo, name='schedule-summary-team'),
+    path('todo/<int:user_id>/<date>', schedule_todo, name='schedule-summary-team'),
 ]

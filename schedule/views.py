@@ -11,7 +11,7 @@ from django.template import loader
 from django.contrib.auth.models import User
 from authy.models import Profile, TeamManager, Team
 from .forms import NewScheduleWeekForm, NewScheduleDayForm
-from .models import Schedule, ScheduleApproved
+from .models import Schedule, ScheduleApproved, ToDo
 
 COLORS = ['#0096c6', '#ff6939', '#fa3d00', '#6937a1', '#003458', '#008000']
 
@@ -417,7 +417,8 @@ def schedule_summary_team(request):
     day_end = (datetime(year, month, 1) + relativedelta(months=2)).strftime('%Y-%m-%d')
 
     users = Profile.objects.filter(team=team_id).values_list('user_id', flat=True)
-    schedule = Schedule.objects.filter(user__in=users, date__range=[day_start, day_end], work_type__in=[1, 2]).order_by('date')
+    schedule = Schedule.objects.filter(user__in=users, date__range=[day_start, day_end], work_type__in=[1, 2]).order_by(
+        'date')
     for work_date in schedule.values_list('date', flat=True).distinct():
         worker_count = Schedule.objects.annotate(num_work_types=Count('work_type')).filter(user__in=users,
                                                                                            date=work_date,
@@ -456,11 +457,31 @@ def schedule_summary_team(request):
 
 @login_required
 def schedule_todo(request, user_id, date):
-    user = request.user.id
+    self_view = False
+    if request.user.id is user_id:
+        self_view = True
 
-    template = loader.get_template('schedule_todo.html')
+    if request.method == "GET":
+        template = loader.get_template('schedule_todo.html')
 
-    context = {
-    }
+        user = Profile.objects.get(user_id=user_id)
+        schedule = Schedule.objects.get(user_id=user_id, date=date)
+        todo, flag = ToDo.objects.get_or_create(schedule=schedule)
 
-    return HttpResponse(template.render(context, request))
+        context = {
+            'self_view': self_view,
+            'name': user.name,
+            'date': date,
+            'context': todo.contents,
+        }
+
+        return HttpResponse(template.render(context, request))
+
+    elif request.method == "POST":
+        context = request.POST.get("context")
+        schedule = Schedule.objects.get(user_id=request.user, date=date)
+        todo, flag = ToDo.objects.get_or_create(schedule=schedule)
+        todo.contents = context
+        todo.save()
+
+        return JsonResponse({"result": True}, safe=False)
