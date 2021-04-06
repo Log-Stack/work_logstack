@@ -1,5 +1,5 @@
 from django import forms
-from .models import Schedule
+from .models import Schedule, ToDo
 
 from django.forms import ClearableFileInput
 

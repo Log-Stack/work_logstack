@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+    {% if self_view %}
+    <script src='http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery.min.js'></script>
+    <script>
+        var todo_context_textarea = null;
+        var todo_save = null;
+
+        function getElements(){
+            todo_save = document.getElementById("todo_save");
+            todo_context_textarea = document.getElementById("todo_context_textarea");
+        }
+
+        function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+        }
+
+        var csrftoken = getCookie('csrftoken');
+
+        function csrfSafeMethod(method) {
+            // these HTTP methods do not require CSRF protection
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+
+
+        function doSave(){
+            $.ajax({
+                type: 'POST',
+                url: '/schedule/todo/' + '1' + '/' + '2021-04-05',
+                dataType: 'json',
+                data:{
+                    context : todo_context_textarea.value,
+                },
+                success: function(data){
+                    window.location.reload();
+                }
+            })
+        }
+
+        function setEventListener(){
+            todo_save.addEventListener("click", doSave);
+        }
+
+        function init(){
+            getElements();
+            setEventListener();
+        };
+
+
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+    {% endif %}
+
+</head>
+
+
+<body>
+<div class="container">
+    <div class="hero is-dark is-small">
+        <div class="hero-body">
+            <div class="columns">
+                <div class="column is-7">
+                    <p class="title">
+                        To Do - {{name}} - {{date}}
+                    </p>
+                </div>
+                <div class="column is-5 has-text-right">
+                    {% if self_view %}
+                        <button type="submit" class="button is-Light" id="todo_save">Save</button>
+                    {% else %}
+                        <button class="button is-Light" id="todo_close">Close</button>
+                    {% endif %}
+                    <div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="box" style="height:84vh;" id="todo_context_div">
+            {% if self_view %}
+                {% csrf_token %}
+                <textarea style="height:100%;" class="textarea is-dark" id="todo_context_textarea">{{context}}</textarea>
+            {% else %}
+                <div class="context" id="todo_context">{{context}}</div>
+            {% endif %}
+    </div>
+</div>
+
+</body>
+</html>
