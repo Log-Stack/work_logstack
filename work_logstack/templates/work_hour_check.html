@@ -14,41 +14,72 @@
         </div>
     </div>
     {% if schedule.work_type == 1 %}
-    <div class="columns">
-        <div class="column has-text-centered">
-            <div class="box">
-                <p class="has-text-centered"><strong>예정된 업무 시간</strong></p>
-                <p class="card-header-title">
-                    Start Time: {{ schedule.start }}
-                </p>
-                <p class="card-header-title">
-                    End Time: {{ schedule.end }}
-                </p>
-            </div>
-        </div>
-        <div class="column has-text-centered">
-            <div class="box">
-                {% if work_hour %}
-                    <p class="has-text-centered"><strong>Working Time</strong></p>
+        <div class="columns">
+            <div class="column has-text-centered">
+                <div class="box">
+                    <p class="has-text-centered"><strong>예정된 업무 시간</strong></p>
                     <p class="card-header-title">
-                        Start Time: {{ work_hour.start_time|time }}
+                        Start Time: {{ schedule.start }}
                     </p>
-                    {% if work_hour.end_time %}
+                    <p class="card-header-title">
+                        End Time: {{ schedule.end }}
+                    </p>
+                </div>
+            </div>
+            <div class="column has-text-centered">
+                <div class="box">
+                    {% if work_hour %}
+                        <p class="has-text-centered"><strong>Working Time</strong></p>
                         <p class="card-header-title">
-                            End Time: {{ work_hour.end_time|time }}
+                            Start Time: {{ work_hour.start_time|time }}
                         </p>
+                        {% if work_hour.end_time %}
+                            <p class="card-header-title">
+                                End Time: {{ work_hour.end_time|time }}
+                            </p>
+                        {% else %}
+                            <p class="card-header-title">
+                                퇴근 전입니다.
+                            </p>
+                        {% endif %}
                     {% else %}
-                        <p class="card-header-title">
-                            퇴근 전입니다.
-                        </p>
+                        <p class="has-text-centered"><strong>업무 시작 버튼을 눌러주세요!</strong></p>
+                        <a style="margin: 1.15rem" href="{% url 'start_working' %}" class="button is-dark is-large is-rounded">업무 시작!</a>
                     {% endif %}
-                {% else %}
-                    <p class="has-text-centered"><strong>업무 시작 버튼을 눌러주세요!</strong></p>
-                    <a style="margin: 1.15rem" href="{% url 'start_working' %}" class="button is-dark is-large is-rounded">업무 시작!</a>
-                {% endif %}
+                </div>
             </div>
         </div>
-    </div>
+        <div class="card">
+            <div class="card-content">
+
+                <form method="post" role="form">
+                    {% csrf_token %}
+
+                    <div class="content">
+                        <div class="field">
+                            <label class="label">To Do</label>
+                            <div class="control">
+                                {{ form.contents }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content">
+                        <div class="field is-grouped">
+                            <div class="control">
+                                <button type="submit" class="button is-dark">Submit</button>
+                            </div>
+                            <div class="control">
+                                <button type="reset" class="button is-dark is-light">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+
     {% else %}
         <div class="box has-text-centered">
             <p><strong>예정된 업무가 없습니다.</strong></p>

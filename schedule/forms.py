@@ -94,3 +94,12 @@ class NewScheduleDayForm(forms.ModelForm):
                   'end',
 
                   )
+
+
+class ToDoForm(forms.ModelForm):
+    contents = forms.CharField(
+        widget=forms.Textarea(attrs={'class': 'textarea is-dark', 'placeholder': 'Work Log input'}))
+
+    class Meta:
+        model = ToDo
+        fields = ['contents', ]

@@ -12,7 +12,8 @@ from django.contrib.auth.models import User
 from .models import WorkHour, WorkLog
 from .forms import WorkLogForm, WorkHourForm
 from authy.models import Team, TeamManager, Profile, Position
-from schedule.models import Schedule, ScheduleApproved
+from schedule.models import Schedule, ScheduleApproved, ToDo
+from schedule.forms import ToDoForm
 from django.core.paginator import Paginator
 
 
@@ -44,12 +45,23 @@ def work_hour_check(request):
     year = datetime.now().year
     month = datetime.now().month
     day = datetime.now().day
+    form = None
+    if schedule:
+        to_do = get_object_or_404(ToDo, schedule=schedule)
+        if request.method == "POST":
+            form = ToDoForm(request.POST, instance=to_do)
+            if form.is_valid():
+                form.save()
+        else:
+            form = ToDoForm(instance=to_do)
+
     context = {
         'work_hour': work_hour,
         'schedule': schedule,
         'year': year,
         'month': month,
         'day': day,
+        'form': form,
     }
     return render(request, 'work_hour_check.html', context)
 
