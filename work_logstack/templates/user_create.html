@@ -43,7 +43,7 @@
                 <h3 class="title is-3">Create Staff Account</h3>
 
                 <div class="field">
-                    <p class="control has-icons-left">
+                    <p class="control">
                         <label class="label is-medium">Username</label>
                         {{ form.username }}
                         <span class="icon is-small is-left">
@@ -77,7 +77,7 @@
                 <div class="select is-dark" style="margin-bottom:20px;">
 
                     <select name="team">
-                        <option>all</option>
+
                         {% for team in teams %}
                         <option>{{ team }}</option>
                         {% endfor %}
@@ -88,7 +88,7 @@
                 <div class="select is-dark" style="margin-bottom:20px;">
 
                     <select name="position">
-                        <option>all</option>
+
                         {% for position in positions %}
                         <option>{{ position }}</option>
                         {% endfor %}
