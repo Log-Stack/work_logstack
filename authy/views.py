@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
+from django.db import models
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.urls import reverse_lazy
@@ -26,6 +27,7 @@ from authy.models import TeamManager, Position
 from work_log.models import WorkHour, WorkLog
 from django.utils import timezone
 import datetime
+
 
 
 
@@ -143,7 +145,7 @@ def CreateTeamView(request):
             obj.name = form.cleaned_data.get('name')
             obj.save()
             print("ok")
-            return redirect('index')
+            return redirect('createteam')
         else:
             print("not ok")
     else:
@@ -167,7 +169,7 @@ def CreatePositionView(request):
             obj.name = form.cleaned_data.get('name')
             obj.save()
             print("ok")
-            return redirect('index')
+            return redirect('createposition')
         else:
             print("not ok")
     else:
@@ -290,11 +292,28 @@ def UserSearchView(request):
     return HttpResponse(template.render(context, request))
 
 
+# from django.db import models
+#
+# class PositionManager(models.Manager):
+#     def position_order(self, *args, **kwargs):
+#         qs = self.get_queryset().filter(*args, **kwargs)
+#         qs = qs.annotate(custom_order=
+#         models.Case(
+#             models.When(name='대표', then=models.Value(0)),
+#             models.When(name='팀장', then=models.Value(1)),
+#             models.When(name='팀원', then=models.Value(2)),
+#             default=models.Value(3),
+#             output_field=models.IntegerField(), )
+#         ).order_by('custom_order'
+#                    )
+#         return qs
+
 
 @login_required
 def SearchAllView(request):
     teams = Team.objects.all().order_by('name')
-    profile = Profile.objects.all().order_by('name')
+    # profile = Profile.objects.position_order()
+    profile = Profile.objects.all().order_by('position','name')
     teams_exists = []
 
     for team in teams:
