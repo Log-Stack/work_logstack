@@ -8,6 +8,11 @@ from django.contrib.auth.forms import AuthenticationForm
 
 
 class CustomAuthenticationForm(AuthenticationForm):
+
+    # password = forms.CharField(widget=forms.PasswordInput(
+    #     attrs={
+    #         'type': "password", ,
+    #     }))
     def confirm_login_allowed(self, user):
         profile = Profile.objects.get(user=user)
         if not profile.currently_employed:
@@ -50,6 +55,18 @@ class UserCreateForm(forms.ModelForm):
 
 class ProfileForm(forms.ModelForm):
     picture = forms.ImageField(required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(ProfileForm, self).__init__(*args, **kwargs)
+        # Making location required
+        self.fields['picture'].required = True
+        self.fields['name'].required = True
+        self.fields['birth_day'].required = True
+        self.fields['phone_number'].required = True
+        self.fields['email_address'].required = True
+        self.fields['start_date'].required = True
+
+
 
     class Meta:
         model = Profile
