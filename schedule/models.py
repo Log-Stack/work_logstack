@@ -22,7 +22,7 @@ class Schedule(models.Model):
         return result
 
     def schedule_created(sender, instance, *args, **kwargs):
-        todo = ToDo(schedule=instance)
+        todo, todo_created = ToDo.objects.get_or_create(schedule=instance)
         todo.save()
 
 

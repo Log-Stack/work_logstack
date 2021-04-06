@@ -184,24 +184,6 @@ function init(){
 
 window.addEventListener('DOMContentLoaded', init);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 </script>
 <div class="container">
     <br>
@@ -213,7 +195,7 @@ window.addEventListener('DOMContentLoaded', init);
         </div>
     </div>
     <br>
-    <form method="post" action="" role="form">
+    <form method="post" action="" role="form" onsubmit="location.reload();">
         {% csrf_token %}
 
 
@@ -245,7 +227,7 @@ window.addEventListener('DOMContentLoaded', init);
 
                         </div>
                         <div class="column is-4">
-                            <button type="submit" class="button is-dark is-fullwidth">근무 신청</button>
+                            <button type="submit" class="button is-dark is-fullwidth">근무 수정</button>
                         </div>
                     </div>
                 </div>

@@ -278,7 +278,7 @@ def register_schedule_day(request, year, month, day):
                     schedule.save()
                     week_start_date += relativedelta(days=1)
 
-            return redirect('schedule-index')
+            return redirect('schedule-register-day', year, month, day)
     else:
         user = request.user
 
