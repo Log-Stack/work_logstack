@@ -73,6 +73,9 @@ else if(user_id != '-1'){
                   var eventObj = info.event;
                   info.el.style.cursor = 'default';
                 },
+                dateClick: function(info){
+                    alert(info.dateStr);
+                },
                 navLinks: true,
                 navLinkDayClick: function(date, jsEvent) {
                     goDetailSchedule(date.toISOString());
@@ -106,6 +109,9 @@ $.ajax({
             eventMouseEnter: function(info) {
               var eventObj = info.event;
               info.el.style.cursor = 'default';
+            },
+            dateClick: function(info){
+                alert(info.dateStr);
             },
             navLinks: true,
             navLinkDayClick: function(date, jsEvent) {
@@ -143,6 +149,9 @@ $.ajax({
             events : data,
             eventOrder: 'color',
             navLinks: true,
+            dateClick: function(info){
+                alert(info.dateStr);
+            },
             navLinkDayClick: function(date, jsEvent) {
                 goDetailSchedule(date.toISOString());
               },
@@ -340,7 +349,7 @@ window.addEventListener('DOMContentLoaded', init);
             <div class="select_team_user" style="margin-right:700px;">
                 <div class="select is-dark">
                     <select id="team_select">
-                        <option>team</option>
+                        <option value="-1">team</option>
                     </select>
                 </div>
                 <div class="select is-dark">
