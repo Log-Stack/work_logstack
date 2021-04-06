@@ -258,7 +258,7 @@ def work_logs_by_user(request, user_id, year, month):
              'title': name,
              'start': create_date,
              'end': create_date,
-             'color': COLORS[user_id % len(COLORS)]
+             'color': COLORS[user.id % len(COLORS)],
              })
     return JsonResponse(result, safe=False)
 

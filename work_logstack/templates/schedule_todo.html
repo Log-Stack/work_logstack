@@ -47,7 +47,7 @@
         function doSave(){
             $.ajax({
                 type: 'POST',
-                url: '/schedule/todo/' + '1' + '/' + '2021-04-05',
+                url: '/schedule/todo/' + {{id}} + '/' + {{date}},
                 dataType: 'json',
                 data:{
                     context : todo_context_textarea.value,
@@ -89,7 +89,7 @@
                     {% if self_view %}
                         <button type="submit" class="button is-Light" id="todo_save">Save</button>
                     {% else %}
-                        <button class="button is-Light" id="todo_close">Close</button>
+                        <button class="button is-Light" id="todo_close" onclick="window.close()">Close</button>
                     {% endif %}
                     <div>
                     </div>

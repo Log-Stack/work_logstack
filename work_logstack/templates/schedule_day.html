@@ -95,6 +95,14 @@ function setEvents(){
                 initialView: 'resourceTimeGridDay',
                 initialDate: date,
                 resources: data.resources,
+                eventClick: function(info){
+                    var eventObj = info.event;
+
+                    if (eventObj.url) {
+                        window.open(eventObj.url,'in_schedule_day','width=1000, height=1100, toolbar=no, menubar=no, scrollbars=no, resizable=yes');
+                      info.jsEvent.preventDefault();
+                    }
+                },
                 events: data.event,
             });
             calendar.render();

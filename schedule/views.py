@@ -78,12 +78,15 @@ def schedule_day_user_work_time(request):
     work_times = Schedule.objects.filter(user__in=users, date=selected_date, work_type=1)
     events = []
     for item in work_times.values_list("user_id", "date", "start", "end"):
+        url = "/schedule/todo/" + str(item[0]) + "/" + item[1].strftime('%Y-%m-%d')
         events.append({
             'resourceId': str(item[0]),
             'title': Profile.objects.get(user=item[0]).name,
             'start': str(item[1]) + "T" + item[2].isoformat(timespec='seconds') + "+00:00",
             'end': str(item[1]) + "T" + item[3].isoformat(timespec='seconds') + "+00:00",
             'color': COLORS[item[0] % len(COLORS)],
+            'url': url,
+
         })
 
     vacation_times = Schedule.objects.filter(user__in=users, date=selected_date, work_type=2)
@@ -421,7 +424,7 @@ def schedule_list_team(request, team_id, year, month):
     day_start = datetime(year, month, 1).strftime('%Y-%m-%d')
     day_end = (datetime(year, month, 1) + relativedelta(months=2)).strftime('%Y-%m-%d')
 
-    if int(team_id) is -1:
+    if int(team_id) == -1:
         users = Profile.objects.filter().values_list('user_id', flat=True)
     else:
         users = Profile.objects.filter(team=team_id).values_list('user_id', flat=True)
@@ -466,12 +469,12 @@ def schedule_summary_team(request):
 
     day_start = datetime(year, month, 1).strftime('%Y-%m-%d')
     day_end = (datetime(year, month, 1) + relativedelta(months=2)).strftime('%Y-%m-%d')
-    if team_id is -1:
+    if team_id == -1:
         users = Profile.objects.filter().values_list('user_id', flat=True)
     else:
         users = Profile.objects.filter(team=team_id).values_list('user_id', flat=True)
 
-    schedule = Schedule.objects.filter(user__in=users, date__range=[day_start, day_end]).order_by('date')
+    schedule = Schedule.objects.filter(user__in=users, date__range=[day_start, day_end], work_type__in=[1,2]).order_by('date')
     for work_date in schedule.values_list('date', flat=True).distinct():
         worker_count = Schedule.objects.annotate(num_work_types=Count('work_type')).filter(user__in=users,
                                                                                            date=work_date,
@@ -524,6 +527,7 @@ def schedule_todo(request, user_id, date):
         context = {
             'self_view': self_view,
             'name': user.name,
+            'id': user_id,
             'date': date,
             'context': todo.contents,
         }
@@ -532,7 +536,8 @@ def schedule_todo(request, user_id, date):
 
     elif request.method == "POST":
         context = request.POST.get("context")
-        schedule = Schedule.objects.get(user_id=request.user, date=date)
+        print(date)
+        schedule = Schedule.objects.get(user_id=request.user.id, date=date)
         todo, flag = ToDo.objects.get_or_create(schedule=schedule)
         todo.contents = context
         todo.save()
