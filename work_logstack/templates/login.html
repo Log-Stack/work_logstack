@@ -7,8 +7,10 @@
     <title>Title</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/inko@1.1.1/inko.min.js"></script>
 <link rel="preconnect" href="https://fonts.gstatic.com">
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100&display=swap" rel="stylesheet">
+
 
 <style>
 
@@ -84,6 +86,7 @@
             {% csrf_token %}
             {{ form.username }}
             {{ form.password }}
+            <p id="typing-alert" style="color: red;"></p>
             {% if form.errors %}
             <div class="row">
                 <div class="col s12">
@@ -98,4 +101,31 @@
     </div>
 </div>
 </body>
+<script>
+    var password = document.getElementById('id_password');
+    var login = document.getElementById('login-form');
+    var typing = document.getElementById('typing-alert');
+
+
+<!--    var inko = new Inko();-->
+<!--    console.log(inko.ko2en('안녕'));-->
+    password.addEventListener("keydown",e=>
+    {
+        if (e.keyCode == 229){
+            typing.innerHTML="한글 입력 중입니다.";
+            typing.style.marginBottom = '10px';
+        }
+        else{
+            typing.innerHTML="";
+        }
+<!--        if (e.key === "ㅁ"){-->
+<!--            e.key = "a";-->
+<!--            console.log("same");-->
+<!--            console.log(e.key);-->
+<!--            console.log(e);a-->
+<!--        }-->
+    }
+    )
+    console.log("ok");
+</script>
 </html>

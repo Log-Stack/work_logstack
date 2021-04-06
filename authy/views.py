@@ -36,6 +36,7 @@ def login(request):
         return redirect('schedule-index')
     if request.method == "POST":
         form = CustomAuthenticationForm(request, request.POST)
+
         if form.is_valid():
             auth_login(request, form.get_user())
             is_manager = TeamManager.objects.filter(user=form.get_user()).exists()

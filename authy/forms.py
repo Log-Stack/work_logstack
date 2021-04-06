@@ -67,7 +67,6 @@ class ProfileForm(forms.ModelForm):
         self.fields['start_date'].required = True
 
 
-
     class Meta:
         model = Profile
         fields = ['picture', 'name', 'birth_day', 'phone_number', 'email_address', 'start_date']
