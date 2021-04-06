@@ -342,8 +342,21 @@ def schedule_list_user(request, user_id, year, month):
             start = "00:00"
             end = "00:00"
         work_type = item.work_type
-        result.append(
-            {'name': name, 'date': date, 'start': start, 'end': end, 'work_type': work_type, 'color': user.id % 5})
+        title = ""
+        color = ""
+        if work_type == 1:
+            title = name + " | " + start + " : " + end
+            color = COLORS[item.user.id % len(COLORS)]
+        elif work_type == 2:
+            title = name + " | 휴가"
+            color = COLORS[5]
+        else:
+            continue
+        url = "/schedule/todo/" + str(item.user.id) + "/" + item.date.strftime('%Y-%m-%d')
+
+        result.append({'title': title, 'start': item.date.strftime('%Y-%m-%d'),
+                       'end': item.date.strftime('%Y-%m-%d'),
+                       "color": color,  'url': url})
 
     return JsonResponse(result, safe=False)
 
@@ -400,10 +413,11 @@ def schedule_list_team(request, team_id, year, month):
         name = Profile.objects.get(user=item.user.id).name
         start = str(item.start.strftime("%H:%M"))
         end = str(item.end.strftime("%H:%M"))
-
+        url = "/schedule/todo/" + str(item.user.id) + "/" + item.date.strftime('%Y-%m-%d')
         result.append({'title': name + " | " + start + " ~ " + end, 'start': item.date.strftime('%Y-%m-%d'),
                        'end': item.date.strftime('%Y-%m-%d'),
-                       "color": COLORS[item.user.id % len(COLORS)]})
+                       "color": COLORS[item.user.id % len(COLORS)],
+                       'url':  url})
 
     vacation_schedule = Schedule.objects.filter(user__in=users, date__range=[day_start, day_end], work_type=2) \
         .values("date").distinct()

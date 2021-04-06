@@ -14,6 +14,7 @@ var calendar = null;
 
 
 function goDetailSchedule(date){
+console.log(date);
 var date = new Date(date.split("T")[0]);
 var team_id = document.getElementById('team_select').value;
 
@@ -26,6 +27,22 @@ window.open(url,'test','width=1000, height=1100, toolbar=no, menubar=no, scrollb
 
 }
 
+function goTodo(data){
+    var eventObj = info.data;
+    alert("test");
+    if (eventObj.url) {
+      alert(
+        'Clicked ' + eventObj.title + '.\n' +
+        'Will open ' + eventObj.url + ' in a new tab'
+      );
+
+      window.open(eventObj.url, 'test','width=1000, height=1100, toolbar=no, menubar=no, scrollbars=no, resizable=yes');
+
+      info.jsEvent.preventDefault(); // prevents browser from following link in current tab.
+    } else {
+      alert('Clicked ' + eventObj.title);
+    }
+}
 
 function getEventByUser(){
 var user_select = document.getElementById('user_select');
@@ -42,33 +59,18 @@ else if(user_id != '-1'){
                 dataType: 'json',
 
                 success: function(data){
-
-                var color_list = ['#0096c6', '#ff6939', '#fa3d00', '#6937a1',  '#003458'];
-
-                var titles = Array();
-                for (var i = 0 ; i < data.length; i++){
-                    var title = ""
-                    var start = data[i].date
-                    var end = data[i].date
-                    var color = ""
-                    if (data[i].work_type == 1){
-                        title = data[i].name + " | " +  data[i].start + " : " + data[i].end;
-                        color = color_list[data[i].color];
-                    }
-                    else if(data[i].work_type == 2){
-                        title = data[i].name + " | " + "휴가";
-                        color = '#008000';
-                    }
-                    else if(data[i].work_type == 0){
-                        continue;
-                    }
-                    titles.push({'title' : title, 'start': start, 'end' : end, "color": color });
-                }
-
                 var calendarEl = document.getElementById('calendar');
                 var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
-                events : titles,
+                eventClick: function(info){
+                    var eventObj = info.event;
+
+                    if (eventObj.url) {
+                        window.open(eventObj.url,'test','width=1000, height=1100, toolbar=no, menubar=no, scrollbars=no, resizable=yes');
+                      info.jsEvent.preventDefault(); // prevents browser from following link in current tab.
+                    }
+                },
+                events : data,
                 eventMouseEnter: function(info) {
                   var eventObj = info.event;
                   info.el.style.cursor = 'default';
@@ -106,6 +108,14 @@ $.ajax({
             var calendarEl = document.getElementById('calendar');
             var calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
+            eventClick: function(info){
+                var eventObj = info.event;
+
+                if (eventObj.url) {
+                    window.open(eventObj.url,'test','width=1000, height=1100, toolbar=no, menubar=no, scrollbars=no, resizable=yes');
+                  info.jsEvent.preventDefault(); // prevents browser from following link in current tab.
+                }
+            },
             events : data,
             eventMouseEnter: function(info) {
               var eventObj = info.event;
@@ -271,13 +281,23 @@ function setModifyScheduleCalendar(){
                   var eventObj = info.event;
                   info.el.style.cursor = 'default';
                 },
+                eventClick: function(info){
+                    goTodo(info);
+                },
                 navLinks: true,
                 navLinkDayClick: function(date, jsEvent) {
                     var year = date.getFullYear();
                     var month = ("0" + (1 + date.getMonth())).slice(-2);
                     var day = ("0" + date.getDate()).slice(-2);
-                    location.href="/schedule/register/day/" + year + "/" + month + "/" + day;
+                    var url="/schedule/register/day/" + year + "/" + month + "/" + day;
+
+                    window.open(url,'test','width=1000, height=1100, toolbar=no, menubar=no, scrollbars=no, resizable=yes');
                   },
+                dateClick: function(info){
+                    var url="/schedule/register/day/" + info.dateStr.split('-')[0] + "/" + info.dateStr.split('-')[1] + "/" + info.dateStr.split('-')[2];
+
+                    window.open(url,'test','width=1000, height=1100, toolbar=no, menubar=no, scrollbars=no, resizable=yes');
+                },
                 });
 
                 calendar.render();
