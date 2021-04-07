@@ -26,24 +26,26 @@
 
             </div>
         </div>
-
-<article class="media" style="display:block; padding:30px;">
-  <input class="input" type="text" placeholder="제목을 입력해주세요." style="margin-bottom:20px;">
-  <div class="media-content">
-    <div class="field">
-      <p class="control">
-        <textarea class="textarea" style="height:500px; margin-bottom:35px;" placeholder="내용을 작성해주세요."></textarea>
-      </p>
-    </div>
-    <nav class="level">
-      <div class="level-left">
-        <div class="level-item">
-          <a class="button is-dark">Submit</a>
+<form method="post" role="form">
+    {% csrf_token %}
+    <article class="media" style="display:block; padding:30px;">
+      <input class="input" type="text" name="title" placeholder="제목을 입력해주세요." style="margin-bottom:20px;">
+      <div class="media-content">
+        <div class="field">
+          <p class="control">
+            <textarea class="textarea" name="body" style="height:500px; margin-bottom:35px;" placeholder="내용을 작성해주세요."></textarea>
+          </p>
         </div>
+        <nav class="level">
+          <div class="level-left">
+            <div class="level-item">
+              <a class="button is-dark" type="submit">Submit</a>
+            </div>
+          </div>
+        </nav>
       </div>
-    </nav>
-  </div>
-</article>
+    </article>
+</form>
 
 </body>
 </html>
