@@ -23,10 +23,8 @@
 <!--            </header>-->
             <div class="card-content">
                 <div class="content">
-                    <br>
-                    <br>
-                    <p>{{ work_log.content }}</p>
-                    <br>
+
+                    <pre>{{ work_log.content }}</pre>
                     <hr>
                     <time>
                     Working Time: {{ work_hour.start_time|time }} ~ {{ work_hour.end_time|time }}
