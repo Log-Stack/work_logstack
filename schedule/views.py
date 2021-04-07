@@ -256,8 +256,6 @@ def register_schedule_day(request, year, month, day):
     start_times = []
     end_times = []
 
-    contents = ""
-
     if request.method == 'POST':
         form = NewScheduleDayForm(request.POST)
         if form.is_valid():
@@ -522,6 +520,14 @@ def schedule_summary_team(request):
                            'end': day['birth_day'].strftime('%Y-%m-%d'),
                            "color": COLORS[1]})
 
+        events = Event.objects.filter(date__range=[day_start, day_end]).values()
+        for event in events:
+            print(event['title'])
+            result.append({'title': '일정 | ' + event['title'],
+                           'start': event['date'].strftime('%Y-%m-%d'),
+                           'end': event['date'].strftime('%Y-%m-%d'),
+                           "color": '#fecb76', 'url':'/schedule/event/edit/' + str(event['id']) + '/' ,})
+
     return JsonResponse(result, safe=False)
 
 
@@ -550,7 +556,6 @@ def schedule_todo(request, user_id, date):
 
     elif request.method == "POST":
         context = request.POST.get("context")
-        print(date)
         schedule = Schedule.objects.get(user_id=request.user.id, date=date)
         todo, flag = ToDo.objects.get_or_create(schedule=schedule)
         todo.contents = context
@@ -560,12 +565,63 @@ def schedule_todo(request, user_id, date):
 
 
 @login_required
-def schedule_event(request):
+def schedule_event_add(request):
+    if request.method == "GET":
+        form = EventForm()
+        context = {
+            'form': form,
+        }
 
-    forms = EventForm()
+        return render(request, 'schedule_event_add.html', context)
 
-    context = {
-        'form': forms,
-    }
+    if request.method == "POST":
+        form = EventForm(request.POST)
+        if form.is_valid():
+            user_id = request.user.id
+            title = form.cleaned_data.get('title')
+            date = form.cleaned_data.get('date')
+            start = form.cleaned_data.get('start')
+            end =  form.cleaned_data.get('end')
+            content =  form.cleaned_data.get('content')
 
-    return render(request, 'schedule_event.html', context)
+            user = User.objects.get(pk=user_id)
+
+            Event.objects.get_or_create(user=user, title=title, date=date, start=start, end=end, context=content)
+
+        return render(request, 'schedule_event_add.html', {'form':EventForm()})
+
+
+@login_required
+def schedule_event_edit(request, event_id):
+    self_view = False
+
+    if request.method == "GET":
+        template = loader.get_template('schedule_event_edit.html')
+
+        event = Event.objects.get(pk=event_id)
+
+        if request.user.id is event.user.id:
+            self_view = True
+
+        context = {
+            'event_id' : event_id,
+            'self_view': self_view,
+            'title': event.title,
+            'date': event.date.strftime("%Y-%m-%d"),
+            'start': event.start.strftime("%H:%M"),
+            'end': event.end.strftime("%H:%M"),
+            'content': event.context,
+        }
+
+        return HttpResponse(template.render(context, request))
+
+    elif request.method == "POST":
+        event = Event.objects.get(pk=event_id)
+        event.title = request.POST.get('title')
+        event.start = request.POST.get('start')
+        event.end = request.POST.get('end')
+        event.date = request.POST.get('date')
+        event.context = request.POST.get('content')
+        event.save()
+
+        return JsonResponse({"result": True}, safe=False)

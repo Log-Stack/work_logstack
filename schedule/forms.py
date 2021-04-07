@@ -119,13 +119,13 @@ class ToDoForm(forms.ModelForm):
 
 class EventForm(forms.ModelForm):
     title = forms.CharField(widget=forms.Textarea(
-            attrs={'class': 'textarea is-dark', 'placeholder': 'Event Title input'}))
-    date = forms.CharField(widget=forms.DateInput(attrs={'class': "Event_Date", 'type': "date"}))
-    start = forms.TimeField(widget=forms.TimeInput(attrs={'class': "Event_Start", 'type': "time"}))
-    end = forms.TimeField(widget=forms.TimeInput(attrs={'class': "Event_End", 'type': "time"}))
-    context = forms.CharField(widget=forms.Textarea(
-            attrs={'class': 'textarea is-dark', 'placeholder': 'Event Content input', 'style': "height:100%"}))
+            attrs={'class': 'textarea is-dark', 'placeholder': '일정 제목', 'style': "height:50px"}))
+    date = forms.CharField(widget=forms.DateInput(attrs={'class': "input Event_Date", 'type': "date"}))
+    start = forms.TimeField(widget=forms.TimeInput(attrs={'class': "input Event_Start", 'type': "time"}))
+    end = forms.TimeField(widget=forms.TimeInput(attrs={'class': "input Event_End", 'type': "time"}))
+    content = forms.CharField(widget=forms.Textarea(
+            attrs={'class': 'textarea is-dark', 'placeholder': '일정 설명', 'style': "height:100%"}))
 
     class Meta:
         model = Event
-        fields = ['title', 'date', 'start', 'end', 'context', ]
+        fields = ['title', 'date', 'start', 'end', 'content', ]

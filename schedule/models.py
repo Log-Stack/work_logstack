@@ -50,5 +50,8 @@ class Event(models.Model):
     title = models.CharField(max_length=50)
     context = models.TextField(default="내용이 없습니다")
 
+    def __str__(self):
+        return str(self.user) + " | " + self.date.strftime("%Y-%m-%d") + " | " + self.title
+
 
 post_save.connect(Schedule.schedule_created, sender=Schedule)
