@@ -1,5 +1,5 @@
 from django import forms
-from .models import Schedule, ToDo
+from .models import Schedule, ToDo, Event
 
 from django.forms import ClearableFileInput
 
@@ -115,3 +115,17 @@ class ToDoForm(forms.ModelForm):
     class Meta:
         model = ToDo
         fields = ['contents', ]
+
+
+class EventForm(forms.ModelForm):
+    title = forms.CharField(widget=forms.Textarea(
+            attrs={'class': 'textarea is-dark', 'placeholder': 'Event Title input'}))
+    date = forms.CharField(widget=forms.DateInput(attrs={'class': "Event_Date", 'type': "date"}))
+    start = forms.TimeField(widget=forms.TimeInput(attrs={'class': "Event_Start", 'type': "time"}))
+    end = forms.TimeField(widget=forms.TimeInput(attrs={'class': "Event_End", 'type': "time"}))
+    context = forms.CharField(widget=forms.Textarea(
+            attrs={'class': 'textarea is-dark', 'placeholder': 'Event Content input', 'style': "height:100%"}))
+
+    class Meta:
+        model = Event
+        fields = ['title', 'date', 'start', 'end', 'context', ]

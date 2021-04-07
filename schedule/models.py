@@ -42,4 +42,13 @@ class ToDo(models.Model):
         return str(self.schedule.user) + " | " + self.schedule.date.strftime("%Y-%m-%d")
 
 
+class Event(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    date = models.DateField()
+    start = models.TimeField()
+    end = models.TimeField()
+    title = models.CharField(max_length=50)
+    context = models.TextField(default="내용이 없습니다")
+
+
 post_save.connect(Schedule.schedule_created, sender=Schedule)

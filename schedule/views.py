@@ -5,13 +5,13 @@ from dateutil.relativedelta import relativedelta
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Max, Min
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.template import loader
 
 from django.contrib.auth.models import User
 from authy.models import Profile, TeamManager, Team
-from .forms import NewScheduleWeekForm, NewScheduleDayForm
-from .models import Schedule, ScheduleApproved, ToDo
+from .forms import NewScheduleWeekForm, NewScheduleDayForm, EventForm
+from .models import Schedule, ScheduleApproved, ToDo, Event
 
 COLORS = ['#0096c6', '#ff6939', '#fa3d00', '#6937a1', '#003458', '#008000']
 
@@ -77,16 +77,17 @@ def schedule_day_user_work_time(request):
 
     work_times = Schedule.objects.filter(user__in=users, date=selected_date, work_type=1)
     events = []
-    for item in work_times.values_list("user_id", "date", "start", "end"):
-        url = "/schedule/todo/" + str(item[0]) + "/" + item[1].strftime('%Y-%m-%d')
-        events.append({
-            'resourceId': str(item[0]),
-            'title': Profile.objects.get(user=item[0]).name,
-            'start': str(item[1]) + "T" + item[2].isoformat(timespec='seconds') + "+00:00",
-            'end': str(item[1]) + "T" + item[3].isoformat(timespec='seconds') + "+00:00",
-            'color': COLORS[item[0] % len(COLORS)],
-            'url': url,
 
+    for item in work_times:
+        url = "/schedule/todo/" + str(item.user.id) + "/" + item.date.strftime('%Y-%m-%d')
+        events.append({
+            'resourceId': str(item.user.id),
+            'title': Profile.objects.get(user=item.user).name,
+            'start': item.date.strftime('%Y-%m-%d') + "T" + item.start.isoformat(timespec='seconds') + "+00:00",
+            'end': item.date.strftime('%Y-%m-%d') + "T" + item.end.isoformat(timespec='seconds') + "+00:00",
+            'color': COLORS[item.user.id % len(COLORS)],
+            'url': url,
+            'description': ToDo.objects.get(schedule=item).contents,
         })
 
     vacation_times = Schedule.objects.filter(user__in=users, date=selected_date, work_type=2)
@@ -485,7 +486,8 @@ def schedule_summary_team(request):
     else:
         users = Profile.objects.filter(team=team_id).values_list('user_id', flat=True)
 
-    schedule = Schedule.objects.filter(user__in=users, date__range=[day_start, day_end], work_type__in=[1,2]).order_by('date')
+    schedule = Schedule.objects.filter(user__in=users, date__range=[day_start, day_end], work_type__in=[1, 2]).order_by(
+        'date')
     for work_date in schedule.values_list('date', flat=True).distinct():
         worker_count = Schedule.objects.annotate(num_work_types=Count('work_type')).filter(user__in=users,
                                                                                            date=work_date,
@@ -512,12 +514,13 @@ def schedule_summary_team(request):
         result.append({'title': "휴가 인원 : " + str(vacation_count) + "명", 'start': work_date.strftime('%Y-%m-%d'),
                        'end': work_date.strftime('%Y-%m-%d'), 'color': COLORS[2]})
 
-    birthday_users = Profile.objects.filter(team=team_id, birth_day__range=[day_start, day_end]).values()
-    for day in list(birthday_users):
-        result.append({'title': day['name'] + "님의 생일을 축하합니다!",
-                       'start': day['birth_day'].strftime('%Y-%m-%d'),
-                       'end': day['birth_day'].strftime('%Y-%m-%d'),
-                       "color": COLORS[1]})
+    if team_id == -1:
+        birthday_users = Profile.objects.filter(birth_day__range=[day_start, day_end]).values()
+        for day in list(birthday_users):
+            result.append({'title': day['name'] + "님의 생일을 축하합니다!",
+                           'start': day['birth_day'].strftime('%Y-%m-%d'),
+                           'end': day['birth_day'].strftime('%Y-%m-%d'),
+                           "color": COLORS[1]})
 
     return JsonResponse(result, safe=False)
 
@@ -554,3 +557,15 @@ def schedule_todo(request, user_id, date):
         todo.save()
 
         return JsonResponse({"result": True}, safe=False)
+
+
+@login_required
+def schedule_event(request):
+
+    forms = EventForm()
+
+    context = {
+        'form': forms,
+    }
+
+    return render(request, 'schedule_event.html', context)

@@ -14,7 +14,6 @@ var calendar = null;
 
 
 function goDetailSchedule(date){
-console.log(date);
 var date = new Date(date.split("T")[0]);
 var team_id = document.getElementById('team_select').value;
 
@@ -29,7 +28,6 @@ window.open(url,'test','width=1000, height=1300, toolbar=no, menubar=no, scrollb
 
 function goTodo(data){
     var eventObj = info.data;
-    alert("test");
     if (eventObj.url) {
       alert(
         'Clicked ' + eventObj.title + '.\n' +
@@ -265,6 +263,7 @@ function setSelectMoveToCalendar(){
     document.getElementsByClassName("fc-toolbar-chunk")[1].classList.add('is-6');
     document.getElementsByClassName("fc-toolbar-chunk")[2].classList.add('column');
     document.getElementsByClassName("fc-toolbar-chunk")[2].classList.add('is-3');
+    document.getElementsByClassName("fc-toolbar-chunk")[2].classList.add('has-text-right');
 }
 
 function setModifyScheduleCalendar(){

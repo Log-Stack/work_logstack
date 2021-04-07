@@ -1,0 +1,43 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+</head>
+
+
+<body>
+<div class="container">
+    <div class="hero is-dark is-small">
+        <div class="hero-body">
+            <div class="columns">
+                <div class="column is-7">
+                    <p class="title">
+                        Event
+                    </p>
+                </div>
+                <div class="column is-5 has-text-right">
+                    {% if self_view %}
+                        <button type="submit" class="button is-Light" id="todo_save">Save</button>
+                    {% else %}
+                        <button class="button is-Light" id="todo_close" onclick="window.close()">Close</button>
+                    {% endif %}
+                    <div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="box" style="height:84vh;" id="todo_context_div">
+                {% csrf_token %}
+            {% form.title %}
+
+    </div>
+</div>
+
+</body>
+</html>
