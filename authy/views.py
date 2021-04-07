@@ -102,7 +102,7 @@ def index(request):
 @login_required
 def CreateUserView(request):
     teams = list(Team.objects.all().values_list('name', flat=True))
-    positions = list(Position.objects.all().values_list('name', flat=True))
+    positions = list(Position.objects.all().values_list('name', flat=True).order_by('-pk'))
 
     if request.method == 'POST':
         form = SignupForm(request.POST)
