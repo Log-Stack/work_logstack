@@ -293,9 +293,7 @@ $(document).ready(function(){
                 <div class="column is-6">
 
                     <div style="height:100%; overflow-y: scroll; height: 818px" class="box">
-                        <p class="title is-4">Work Log</p>
-                        <hr>
-                        <p class="subtitle is-4 work_log_date">{{ last_work_log.create_time|date:"Y-m-d" }}</p>
+                        <p class="title is-4 work_log_date">{{ last_work_log.create_time|date:"Y-m-d" }}</p>                        <hr>
                         <p class="subtitle is-6 work_log_content">{{ last_work_log.content }}</p>
                     </div>
                 </div>
