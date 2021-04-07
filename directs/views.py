@@ -1,3 +1,13 @@
-from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
+from django.template import loader
 
-# Create your views here.
+
+@login_required
+def directs_list(request):
+
+    template = loader.get_template('directs_list.html')
+    context = {
+
+    }
+    return HttpResponse(template.render(context,request))
