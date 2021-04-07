@@ -9,6 +9,8 @@ from django.shortcuts import redirect
 from django.template import loader
 
 from django.contrib.auth.models import User
+from django.utils import timezone
+
 from authy.models import Profile, TeamManager, Team
 from .forms import NewScheduleWeekForm, NewScheduleDayForm
 from .models import Schedule, ScheduleApproved, ToDo
@@ -22,8 +24,29 @@ def index(request):
 
     template = loader.get_template('schedule.html')
 
+    year = datetime.now().year
+    month = datetime.now().month
+    day = datetime.now().day
+    schedule_exist = False
+    is_staff = True
+    schedule = Schedule.objects.filter(user=user, date=timezone.now().date())
+    if user.is_superuser:
+        is_staff = False
+    else:
+        profile = Profile.objects.get(user=user)
+        is_manager = TeamManager.objects.filter(team=profile.team, user=user).exists()
+        if is_manager:
+            is_staff = False
+    if schedule.exists():
+        schedule_exist = True
+
     context = {
         'user': user,
+        'schedule_exist': schedule_exist,
+        'is_staff': is_staff,
+        'year': year,
+        'month': month,
+        'day': day,
     }
 
     return HttpResponse(template.render(context, request))

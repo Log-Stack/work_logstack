@@ -404,6 +404,14 @@ window.addEventListener('DOMContentLoaded', init);
             </p>
         </div>
     </div>
+
+    {% if is_staff and not schedule_exist %}
+        <div class="box has-text-centered">
+            <p><strong>오늘 등록된 스케줄이 없습니다.</strong></p>
+            <a style="margin-top: 1rem;" href="{% url 'schedule-register-day' year month day %}" class="button is-dark is-rounded">스케줄 등록</a>
+        </div>
+    {% endif %}
+
     <div class="columns is-centered">
         <div class="column">
 

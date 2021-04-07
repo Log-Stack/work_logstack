@@ -24,6 +24,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login as auth_login
 
 from authy.models import TeamManager, Position
+from schedule.models import Schedule
 from work_log.models import WorkHour, WorkLog
 from django.utils import timezone
 import datetime
@@ -52,7 +53,11 @@ def login(request):
                 else:
                     return redirect('schedule-index')
             else:
-                return redirect('work_hour_check')
+                schedule = Schedule.objects.filter(user=request.user, date=timezone.now().date())
+                if schedule.exists():
+                    return redirect('work_hour_check')
+                else:
+                    return redirect('schedule-index')
     else:
         form = CustomAuthenticationForm()
     context = {"form": form}
