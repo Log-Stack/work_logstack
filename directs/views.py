@@ -11,3 +11,12 @@ def directs_list(request):
 
     }
     return HttpResponse(template.render(context,request))
+
+@login_required
+def directs_send(request):
+
+    template = loader.get_template('directs_send.html')
+    context = {
+
+    }
+    return HttpResponse(template.render(context,request))
