@@ -253,8 +253,18 @@ function setSelectMoveToCalendar(){
     selector = document.getElementsByClassName("select_team_user");
     button = document.getElementsByClassName("edit_button");
     var button_month = document.getElementsByClassName("fc-toolbar-chunk")[2];
+    document.getElementsByClassName("fc-header-toolbar fc-toolbar ")[0].classList.add('columns');
+
+
     document.getElementsByClassName("fc-toolbar-chunk")[1].appendChild(selector[0]);
     button_month.insertBefore(button[0], button_month.firstChild);
+
+    document.getElementsByClassName("fc-toolbar-chunk")[0].classList.add('column');
+    document.getElementsByClassName("fc-toolbar-chunk")[0].classList.add('is-3');
+    document.getElementsByClassName("fc-toolbar-chunk")[1].classList.add('column');
+    document.getElementsByClassName("fc-toolbar-chunk")[1].classList.add('is-6');
+    document.getElementsByClassName("fc-toolbar-chunk")[2].classList.add('column');
+    document.getElementsByClassName("fc-toolbar-chunk")[2].classList.add('is-3');
 }
 
 function setModifyScheduleCalendar(){
@@ -402,7 +412,7 @@ window.addEventListener('DOMContentLoaded', init);
     <div class="columns is-centered">
         <div class="column">
 
-            <div class="select_team_user" style="margin-right:700px;">
+            <div class="select_team_user">
                 <div class="select is-dark">
                     <select id="team_select">
                         <option value="-1" selected>team</option>
