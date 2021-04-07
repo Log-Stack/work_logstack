@@ -29,17 +29,20 @@
 
 <article class="media" style="display:block; padding:30px;">
 
-  <div class="title" style="margin-bottom:20px;"></div>
+  <div style=" margin-bottom:6px; padding:10px;">
+      <span><strong>제목입니다.</strong></span><br>
+      <span style="font-size:12px; color: #8e8e8e;">보낸 날짜 : date</span>
+  </div>
   <div class="media-content">
-    <div class="field">
+    <div class="field" style="height:500px; margin-bottom:35px; border: thin solid #EEEEEE; border-radius:10px; padding:10px;">
       <p class="control">
-        <textarea class="textarea" style="height:500px; margin-bottom:35px;" placeholder="내용을 작성해주세요."></textarea>
+        내용입니다.
       </p>
     </div>
     <nav class="level">
       <div class="level-left">
         <div class="level-item">
-          <a class="button is-dark">Reply</a>
+          <a href="{% url 'senddirect' %}" class="button is-dark">Reply</a>
         </div>
       </div>
     </nav>
