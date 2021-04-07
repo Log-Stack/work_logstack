@@ -1,0 +1,50 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100&display=swap" rel="stylesheet">
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css"
+      />
+
+<body>
+
+        <div class="hero is-dark is-small" >
+            <div class="hero-body" style="display:flex; flex-direction:row; ">
+                <a href="{% url 'directlist' %}" style="margin-right:20px; margin-top:7px;"><i style="font-color:white;" class="fas fa-chevron-left fa-1x"></i></a>
+                <p class="title" style="text-align:center; margin-right:20px;">
+                    READ MESSAGES
+
+                </p>
+
+            </div>
+        </div>
+
+<article class="media" style="display:block; padding:30px;">
+
+  <div class="title" style="margin-bottom:20px;"></div>
+  <div class="media-content">
+    <div class="field">
+      <p class="control">
+        <textarea class="textarea" style="height:500px; margin-bottom:35px;" placeholder="내용을 작성해주세요."></textarea>
+      </p>
+    </div>
+    <nav class="level">
+      <div class="level-left">
+        <div class="level-item">
+          <a class="button is-dark">Reply</a>
+        </div>
+      </div>
+    </nav>
+  </div>
+</article>
+
+</body>
+</html>
