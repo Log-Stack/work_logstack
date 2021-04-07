@@ -23,7 +23,7 @@ var url = '/schedule/day/' + team_id + "/" +
             ("0" +(date.getMonth()+1)).slice(-2)+ "-" +
             ("0" + (date.getDate())).slice(-2);
 
-window.open(url,'test','width=1000, height=1100, toolbar=no, menubar=no, scrollbars=no, resizable=yes');
+window.open(url,'test','width=1000, height=1300, toolbar=no, menubar=no, scrollbars=no, resizable=yes');
 
 }
 
@@ -71,10 +71,6 @@ else if(user_id != '-1'){
                     }
                 },
                 events : data,
-                eventMouseEnter: function(info) {
-                  var eventObj = info.event;
-                  info.el.style.cursor = 'default';
-                },
                 dateClick: function(info){
                     goDetailSchedule(info.dateStr);
                 },
@@ -117,10 +113,6 @@ $.ajax({
                 }
             },
             events : data,
-            eventMouseEnter: function(info) {
-              var eventObj = info.event;
-              info.el.style.cursor = 'default';
-            },
             dateClick: function(info){
                 goDetailSchedule(info.dateStr);
             },
@@ -173,6 +165,8 @@ $.ajax({
             calendar.render();
 	}
 })
+// day box hover 시 pointer cursor 변경
+$('.fc-daygrid-day-frame').hover(function(event_obj){this.style.cursor = 'pointer'})
 }
 
 function setTeamSelect(){
@@ -296,7 +290,7 @@ function setModifyScheduleCalendar(){
                 dateClick: function(info){
                     var url="/schedule/register/day/" + info.dateStr.split('-')[0] + "/" + info.dateStr.split('-')[1] + "/" + info.dateStr.split('-')[2];
 
-                    window.open(url,'test','width=1000, height=1100, toolbar=no, menubar=no, scrollbars=no, resizable=yes');
+                    window.open(url,'modified_day_schedule','width=1250, height=900, toolbar=no, menubar=no, scrollbars=no, resizable=yes');
                 },
                 });
 
@@ -350,7 +344,7 @@ function editSchedule(){
         button.value = 1;
         button.classList.remove('is-dark');
         button.classList.add('is-danger');
-        button.innerText = 'Stop';
+        button.innerText = 'View';
     }
     else{
         checkScheduleMode();

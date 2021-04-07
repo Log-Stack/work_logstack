@@ -10,37 +10,44 @@ class NewScheduleWeekForm(forms.ModelForm):
 
     sun_work_type = forms.ChoiceField(widget=forms.Select(attrs={'class': 'select is-success work_type'}),
                                       choices=Schedule.WORK_TYPES)
-    sun_start = forms.TimeField(widget=forms.TimeInput(attrs={'class': "input start_time", 'type': "time"}), required=False)
+    sun_start = forms.TimeField(widget=forms.TimeInput(attrs={'class': "input start_time", 'type': "time"}),
+                                required=False)
     sun_end = forms.TimeField(widget=forms.TimeInput(attrs={'class': "input end_time", 'type': "time"}), required=False)
 
     mon_work_type = forms.ChoiceField(widget=forms.Select(attrs={'class': 'select is-success work_type'}),
                                       choices=Schedule.WORK_TYPES)
-    mon_start = forms.TimeField(widget=forms.TimeInput(attrs={'class': "input start_time", 'type': "time"}), required=False)
+    mon_start = forms.TimeField(widget=forms.TimeInput(attrs={'class': "input start_time", 'type': "time"}),
+                                required=False)
     mon_end = forms.TimeField(widget=forms.TimeInput(attrs={'class': "input end_time", 'type': "time"}), required=False)
 
     tue_work_type = forms.ChoiceField(widget=forms.Select(attrs={'class': 'select is-success work_type'}),
                                       choices=Schedule.WORK_TYPES)
-    tue_start = forms.TimeField(widget=forms.TimeInput(attrs={'class': "input start_time", 'type': "time"}), required=False)
+    tue_start = forms.TimeField(widget=forms.TimeInput(attrs={'class': "input start_time", 'type': "time"}),
+                                required=False)
     tue_end = forms.TimeField(widget=forms.TimeInput(attrs={'class': "input end_time", 'type': "time"}), required=False)
 
     wed_work_type = forms.ChoiceField(widget=forms.Select(attrs={'class': 'select is-success work_type'}),
                                       choices=Schedule.WORK_TYPES)
-    wed_start = forms.TimeField(widget=forms.TimeInput(attrs={'class': "input start_time", 'type': "time"}), required=False)
+    wed_start = forms.TimeField(widget=forms.TimeInput(attrs={'class': "input start_time", 'type': "time"}),
+                                required=False)
     wed_end = forms.TimeField(widget=forms.TimeInput(attrs={'class': "input end_time", 'type': "time"}), required=False)
 
     thu_work_type = forms.ChoiceField(widget=forms.Select(attrs={'class': 'select is-success work_type'}),
                                       choices=Schedule.WORK_TYPES)
-    thu_start = forms.TimeField(widget=forms.TimeInput(attrs={'class': "input start_time", 'type': "time"}), required=False)
+    thu_start = forms.TimeField(widget=forms.TimeInput(attrs={'class': "input start_time", 'type': "time"}),
+                                required=False)
     thu_end = forms.TimeField(widget=forms.TimeInput(attrs={'class': "input end_time", 'type': "time"}), required=False)
 
     fri_work_type = forms.ChoiceField(widget=forms.Select(attrs={'class': 'select is-success work_type'}),
                                       choices=Schedule.WORK_TYPES)
-    fri_start = forms.TimeField(widget=forms.TimeInput(attrs={'class': "input start_time", 'type': "time"}), required=False)
+    fri_start = forms.TimeField(widget=forms.TimeInput(attrs={'class': "input start_time", 'type': "time"}),
+                                required=False)
     fri_end = forms.TimeField(widget=forms.TimeInput(attrs={'class': "input end_time", 'type': "time"}), required=False)
 
     sat_work_type = forms.ChoiceField(widget=forms.Select(attrs={'class': 'select is-success work_type'}),
                                       choices=Schedule.WORK_TYPES)
-    sat_start = forms.TimeField(widget=forms.TimeInput(attrs={'class': "input start_time", 'type': "time"}), required=False)
+    sat_start = forms.TimeField(widget=forms.TimeInput(attrs={'class': "input start_time", 'type': "time"}),
+                                required=False)
     sat_end = forms.TimeField(widget=forms.TimeInput(attrs={'class': "input end_time", 'type': "time"}), required=False)
 
     class Meta:
@@ -81,9 +88,13 @@ class NewScheduleDayForm(forms.ModelForm):
         widget=forms.DateInput(attrs={'class': "input", 'type': "date", 'id': 'week_start_date'}))
 
     work_type = forms.ChoiceField(widget=forms.Select(attrs={'class': 'select is-success work_type'}),
-                                      choices=Schedule.WORK_TYPES)
+                                  choices=Schedule.WORK_TYPES)
     start = forms.TimeField(widget=forms.TimeInput(attrs={'class': "input start_time", 'type': "time"}), required=False)
     end = forms.TimeField(widget=forms.TimeInput(attrs={'class': "input end_time", 'type': "time"}), required=False)
+
+    contents = forms.CharField(
+        widget=forms.Textarea(
+            attrs={'class': 'textarea is-dark', 'placeholder': 'Work Log input', 'style': "height:100%"}))
 
     class Meta:
         model = Schedule
@@ -93,6 +104,7 @@ class NewScheduleDayForm(forms.ModelForm):
                   'start',
                   'end',
 
+                  'contents',
                   )
 
 

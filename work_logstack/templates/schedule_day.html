@@ -1,10 +1,10 @@
-{% extends 'base.html' %}
-
 {% load static %}
 
 {% block content %}
-
-<link href='https://cdn.jsdelivr.net/npm/fullcalendar-scheduler@5.6.0/main.min.css' rel='stylesheet' />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href='https://cdn.jsdelivr.net/npm/fullcalendar-scheduler@5.6.0/main.min.css' rel='stylesheet'/>
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar-scheduler@5.6.0/main.min.js'></script>
 <script src='http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery.min.js'></script>
 
@@ -94,6 +94,7 @@ function setEvents(){
                 timeZone: 'UTC',
                 initialView: 'resourceTimeGridDay',
                 initialDate: date,
+                height: '96%',
                 resources: data.resources,
                 eventClick: function(info){
                     var eventObj = info.event;
@@ -143,9 +144,9 @@ window.addEventListener('DOMContentLoaded', init);
 
 
 
+
 </script>
 <div class="container">
-    <br>
     <div class="hero is-dark is-small">
         <div class="hero-body">
             <p class="title">
@@ -153,7 +154,6 @@ window.addEventListener('DOMContentLoaded', init);
             </p>
         </div>
     </div>
-    <br>
     <form method="post" action="" role="form">
         {% csrf_token %}
 
@@ -161,7 +161,7 @@ window.addEventListener('DOMContentLoaded', init);
         <div class="columns is-centered">
             <div class="column">
 
-                <div class="box">
+                <div class="box" style="height:92vh">
 
                     <div id="date_select">
                         <div class="field has-addons">
@@ -180,18 +180,17 @@ window.addEventListener('DOMContentLoaded', init);
                             </p>
                         </div>
                     </div>
-                </div>
-                <div id="team_select_div" class="select is-dark">
-                    <select id="team_select">
-                        <option value="-1">team</option>
-                    </select>
-                </div>
-                <div class="box">
-                    <div id="calendar"></div>
+                    <div id="team_select_div" class="select is-dark">
+                        <select id="team_select">
+                            <option value="-1">team</option>
+                        </select>
+                    </div>
+                    <div class="box">
+                        <div id="calendar"></div>
+                    </div>
                 </div>
             </div>
         </div>
-
     </form>
 </div>
 

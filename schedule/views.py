@@ -255,6 +255,8 @@ def register_schedule_day(request, year, month, day):
     start_times = []
     end_times = []
 
+    contents = ""
+
     if request.method == 'POST':
         form = NewScheduleDayForm(request.POST)
         if form.is_valid():
@@ -265,6 +267,8 @@ def register_schedule_day(request, year, month, day):
             work_types.append(form.cleaned_data.get('work_type'))
             start_times.append(form.cleaned_data.get('start'))
             end_times.append(form.cleaned_data.get('end'))
+
+            contents = form.cleaned_data.get('contents')
 
             if is_approved:  # do create
                 for type_local, start_local, end_local in zip(work_types, start_times, end_times):
@@ -282,6 +286,10 @@ def register_schedule_day(request, year, month, day):
                         schedule.start = start_local
                         schedule.end = end_local
                         schedule.save()
+
+                        todo = ToDo.objects.get(schedule=schedule)
+                        todo.contents = contents
+                        todo.save()
                     else:
                         Schedule.objects.get_or_create(user=user, date=week_start_date,
                                                        start=start_local,
@@ -301,6 +309,9 @@ def register_schedule_day(request, year, month, day):
 
         template = loader.get_template('schedule_register_day.html')
         form = NewScheduleDayForm()
+
+        schedule, schedule_created = Schedule.objects.get_or_create(user=user, date=selected_date)
+        form.fields['contents'].initial = ToDo.objects.get(schedule=schedule).contents
 
         if request.headers['Referer'].split('/')[-2] == "work_hour_check":
             temp = 'work_hour_check'

@@ -8,9 +8,9 @@ class Schedule(models.Model):
     # 근무, 휴가 ,(추가사항) 외근, ...
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     date = models.DateField()
-    start = models.TimeField(null=True)
-    end = models.TimeField(null=True)
-    work_type = models.IntegerField(choices=WORK_TYPES)
+    start = models.TimeField(null=True, default=None)
+    end = models.TimeField(null=True, default=None)
+    work_type = models.IntegerField(choices=WORK_TYPES, default=0)
 
     def __str__(self):
         result = str(self.user)
