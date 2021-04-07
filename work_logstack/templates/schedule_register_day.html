@@ -207,18 +207,22 @@ window.addEventListener('DOMContentLoaded', init);
                     <div class="columns is-centered">
                         <div class="column is-4 title is-3">
                             <div class="field has-addons">
-                                <p class="button" onclick="setDateBefore()">
-                            <span class="material-icons">
-                                arrow_back
-                            </span>
+                                <p class="control">
+                                    <button class="button" type="button" onclick="setDateBefore()">
+                                        <span class="material-icons">
+                                            arrow_back
+                                        </span>
+                                    </button>
                                 </p>
                                 <p class="control">
                                     {{ forms.week_start_date }}
                                 </p>
-                                <p class="button" onclick="setDateAfter()">
-                            <span class="material-icons">
-                                arrow_forward
-                            </span>
+                                <p class="control">
+                                    <button class="button" type="button" onclick="setDateAfter()">
+                                        <span class="material-icons">
+                                            arrow_forward
+                                        </span>
+                                    </button>
                                 </p>
                             </div>
                         </div>
