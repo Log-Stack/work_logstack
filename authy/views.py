@@ -469,7 +469,7 @@ def manage_list(request):
             superuser_ids.append(superuser['id'])
 
         team = team_manager.team
-        team_members = Profile.objects.filter(team=team).exclude(user__in=superuser_ids)
+        team_members = Profile.objects.filter(team=team).exclude(user__in=superuser_ids).order_by('position', 'name')
 
         if request.method == "POST":
             search = request.POST.get('search')
