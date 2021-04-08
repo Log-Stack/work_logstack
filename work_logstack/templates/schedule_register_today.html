@@ -1,9 +1,9 @@
+{% extends 'base.html' %}
+
 {% load static %}
 
 {% block content %}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-<link rel="preconnect" href="https://fonts.gstatic.com">
+
 <script src='http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery.min.js'></script>
 
 <script>
@@ -186,6 +186,7 @@ window.addEventListener('DOMContentLoaded', init);
 
 </script>
 <div class="container">
+    <br>
     <div class="hero is-dark is-small">
         <div class="hero-body">
             <p class="title">
@@ -230,12 +231,6 @@ window.addEventListener('DOMContentLoaded', init);
 
                         </div>
 
-                        <div class="field">
-                            <div class="control">
-                                <input type="hidden" name="temp" value="{{ temp }}">
-                            </div>
-                        </div>
-
                         <div class="column is-4">
                             <button type="submit" class="button is-dark is-fullwidth">근무 수정</button>
                         </div>
@@ -244,7 +239,7 @@ window.addEventListener('DOMContentLoaded', init);
                 <div class="box">
                     <div class="columns is-centered">
                         <div class="column is-2">
-                            <p class='title is-5 date'></p>
+                            <p class='title is-5 date'>3.21(일)</p>
                         </div>
                         <div class="column is-7">
                             <div class="columns is-centered">
@@ -276,9 +271,6 @@ window.addEventListener('DOMContentLoaded', init);
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="box" style="height:50vh">
-                   {{ forms.contents }}
                 </div>
             </div>
         </div>

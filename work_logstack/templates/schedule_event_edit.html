@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+    {% if self_view %}
+    <script src='http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery.min.js'></script>
+    <script>
+        var event_title = null;
+        var event_date = null;
+        var event_start = null;
+        var event_end = null;
+        var event_content = null;
+
+        var event_save = null;
+        var event_delete = null;
+
+        function getElements(){
+            event_save = document.getElementById("event_save");
+            event_delete = document.getElementById("event_delete");
+
+            event_title = document.getElementById("event_title");
+            event_date = document.getElementById("event_date");
+            event_start = document.getElementById("event_start");
+            event_end = document.getElementById("event_end");
+            event_content = document.getElementById("event_content");
+        }
+
+        function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+        }
+
+        var csrftoken = getCookie('csrftoken');
+
+        function csrfSafeMethod(method) {
+            // these HTTP methods do not require CSRF protection
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+
+
+        function doSave(){
+            $.ajax({
+                type: 'POST',
+                url: '/schedule/event/edit/' + {{event_id}} + '/',
+                dataType: 'json',
+                data:{
+                   title : event_title.value,
+                   date : event_date.value,
+                   start : event_start.value,
+                   end : event_end.value,
+                   content : event_content.value,
+                },
+                success: function(data){
+                    window.location.reload();
+                }
+            })
+        }
+
+        function setEventListener(){
+            event_save.addEventListener("click", doSave);
+        }
+
+        function init(){
+            getElements();
+            setEventListener();
+        };
+
+
+
+        function doDelete(){
+            $.ajax({
+                type: 'DELETE',
+                url: '/schedule/event/edit/' + {{event_id}} + '/',
+                dataType: 'json',
+                success: function(data){
+                    window.close();
+                }
+            })
+
+        }
+
+        function setEventListener(){
+            event_save.addEventListener("click", doSave);
+            event_delete.addEventListener("click", doDelete);
+        }
+
+        function init(){
+            getElements();
+            setEventListener();
+        };
+
+
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+    {% endif %}
+
+</head>
+<body>
+<div class="container">
+    <div class="hero is-dark is-small">
+        <div class="hero-body">
+            <div class="columns">
+                <div class="column is-6 has-text-left">
+                    <p class="title">
+                        일정
+                    </p>
+                </div>
+                <div class="column is-6 has-text-right">
+                    {% if self_view %}
+                        <button type="submit" class="button is-Light" id="event_delete">Delete</button>
+                        <button type="submit" class="button is-Light" id="event_save">Save</button>
+                    {% else %}
+                        <button class="button is-Light" id="todo_close" onclick="window.close()">Close</button>
+                    {% endif %}
+                    <div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <br>
+    <!-- 770 x 700-->
+    <div class="box" style="height:82vh;" id="todo_context_div">
+            {% if self_view %}
+                {% csrf_token %}
+                <input type="text" style="min-height:1em;" class="textarea is-dark" id="event_title" value="{{title}}">
+                <br>
+                <div class="columns">
+                    <div class="column is-3">
+                        <input type="date" class="input" id="event_date" value="{{date}}">
+                    </div>
+                    <div class="column is-4">
+                        <input type="time" class="input" id="event_start" value="{{start}}">
+                    </div>
+                    <div class="column is-1 has-text-centered">
+                        <p class="title is-3">-</p>
+                    </div>
+                    <div class="column is-4">
+                        <input type="time" class="input" id="event_end" value="{{end}}">
+                    </div>
+                </div>
+                <textarea style="height:77%;" class="textarea is-dark" id="event_content">{{content}}</textarea>
+            {% else %}
+                <p class="title is-2">{{title}}</p>
+                <p class="subtitle is-4">{{date}} | {{start}} ~ {{end}}</p>
+                <hr>
+                <div class="context" id="event_context" style="word-wrap: break-word;height:76%;OVERFLOW-X:auto;">{{content}}</div>
+            {% endif %}
+    </div>
+</div>
+
+</body>
+</html>

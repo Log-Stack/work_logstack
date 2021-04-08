@@ -23,7 +23,15 @@ var url = '/schedule/day/' + team_id + "/" +
             ("0" +(date.getMonth()+1)).slice(-2)+ "-" +
             ("0" + (date.getDate())).slice(-2);
 
-window.open(url,'test','width=1000, height=1100, toolbar=no, menubar=no, scrollbars=no, resizable=yes');
+window.open(url,'test','width=1000, height=1300, toolbar=no, menubar=no, scrollbars=no, resizable=yes');
+
+}
+
+
+function goEventCreate(){
+var url = '/schedule/event/add';
+
+window.open(url,'event_add','width=800, height=700, toolbar=no, menubar=no, scrollbars=no, resizable=yes');
 
 }
 
@@ -154,9 +162,13 @@ $.ajax({
             var calendarEl = document.getElementById('calendar');
             var calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
-            eventMouseEnter: function(info) {
-              var eventObj = info.event;
-              info.el.style.cursor = 'default';
+            eventClick: function(info){
+                var eventObj = info.event;
+
+                if (eventObj.url) {
+                    window.open(eventObj.url,'in_schedule_event','width=770, height=700, toolbar=no, menubar=no, scrollbars=no, resizable=yes');
+                  info.jsEvent.preventDefault(); // prevents browser from following link in current tab.
+                }
             },
             events : data,
             eventOrder: 'color',
@@ -173,6 +185,8 @@ $.ajax({
             calendar.render();
 	}
 })
+// day box hover 시 pointer cursor 변경
+$('.fc-daygrid-day-frame').hover(function(event_obj){this.style.cursor = 'pointer'})
 }
 
 function setTeamSelect(){
@@ -258,9 +272,24 @@ $.ajax({
 function setSelectMoveToCalendar(){
     selector = document.getElementsByClassName("select_team_user");
     button = document.getElementsByClassName("edit_button");
+    event_button = document.getElementsByClassName("event_button");
+
     var button_month = document.getElementsByClassName("fc-toolbar-chunk")[2];
+    document.getElementsByClassName("fc-header-toolbar fc-toolbar ")[0].classList.add('columns');
+
+
     document.getElementsByClassName("fc-toolbar-chunk")[1].appendChild(selector[0]);
     button_month.insertBefore(button[0], button_month.firstChild);
+    button_month.insertBefore(event_button[0], button_month.firstChild);
+
+
+    document.getElementsByClassName("fc-toolbar-chunk")[0].classList.add('column');
+    document.getElementsByClassName("fc-toolbar-chunk")[0].classList.add('is-3');
+    document.getElementsByClassName("fc-toolbar-chunk")[1].classList.add('column');
+    document.getElementsByClassName("fc-toolbar-chunk")[1].classList.add('is-5');
+    document.getElementsByClassName("fc-toolbar-chunk")[2].classList.add('column');
+    document.getElementsByClassName("fc-toolbar-chunk")[2].classList.add('is-4');
+    document.getElementsByClassName("fc-toolbar-chunk")[2].classList.add('has-text-right');
 }
 
 function setModifyScheduleCalendar(){
@@ -296,7 +325,7 @@ function setModifyScheduleCalendar(){
                 dateClick: function(info){
                     var url="/schedule/register/day/" + info.dateStr.split('-')[0] + "/" + info.dateStr.split('-')[1] + "/" + info.dateStr.split('-')[2];
 
-                    window.open(url,'test','width=1000, height=1100, toolbar=no, menubar=no, scrollbars=no, resizable=yes');
+                    window.open(url,'modified_day_schedule','width=1250, height=900, toolbar=no, menubar=no, scrollbars=no, resizable=yes');
                 },
                 });
 
@@ -350,7 +379,7 @@ function editSchedule(){
         button.value = 1;
         button.classList.remove('is-dark');
         button.classList.add('is-danger');
-        button.innerText = 'Stop';
+        button.innerText = 'View';
     }
     else{
         checkScheduleMode();
@@ -404,11 +433,18 @@ window.addEventListener('DOMContentLoaded', init);
             </p>
         </div>
     </div>
-    <br>
+
+    {% if is_staff and not schedule_exist %}
+        <div class="box has-text-centered">
+            <p><strong>오늘 등록된 스케줄이 없습니다.</strong></p>
+            <a style="margin-top: 1rem;" href="{% url 'schedule-register-today' year month day %}" class="button is-dark is-rounded">스케줄 등록</a>
+        </div>
+    {% endif %}
+
     <div class="columns is-centered">
         <div class="column">
 
-            <div class="select_team_user" style="margin-right:700px;">
+            <div class="select_team_user">
                 <div class="select is-dark">
                     <select id="team_select">
                         <option value="-1" selected>team</option>
@@ -419,7 +455,8 @@ window.addEventListener('DOMContentLoaded', init);
                     </select>
                 </div>
             </div>
-            <button class="edit_button button" style="background:#1F2C37; color:white;"value="0">Edit</button>
+            <button class="event_button button" style="background:#314556; color:white;" value="0" onclick="goEventCreate()">일정 추가</button>
+            <button class="edit_button button" style="background:#1F2C37; color:white;" value="0">Edit</button>
             <div id='calendar' style="margin-top:14px;"></div>
         </div>
     </div>

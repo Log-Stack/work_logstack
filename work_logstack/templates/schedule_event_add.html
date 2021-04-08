@@ -1,0 +1,63 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+</head>
+
+
+<body>
+<div class="container">
+    <div class="hero is-dark is-small">
+        <div class="hero-body">
+            <div class="columns">
+                <div class="column is-7">
+                    <p class="title">
+                        일정 추가
+                    </p>
+                </div>
+                <div class="column is-5 has-text-right">
+                    {% if self_view %}
+                        <button type="submit" class="button is-Light" id="todo_save">Save</button>
+                    {% else %}
+                        <button class="button is-Light" id="todo_close" onclick="window.close()">Close</button>
+                    {% endif %}
+                    <div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <br>
+    <!-- 800 x 650 -->
+    <div class="box" style="height:82vh;" id="todo_context_div">
+        <form method="POST" action="" role="form">
+            {% csrf_token %}
+            {{ form.title }}
+            <br>
+            <div class="columns">
+                <div class="column is-3">
+                    {{ form.date }}
+                </div>
+                <div class="column is-4">
+                    {{ form.start }}
+                </div>
+                <div class="column is-1 has-text-centered">
+                    <p class="title is-3">-</p>
+                </div>
+                <div class="column is-4">
+                    {{ form.end }}
+                </div>
+            </div>
+            {{ form.content }}
+<br>
+            <button class="button is-dark is-fullwidth" type="submit">저장</button>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

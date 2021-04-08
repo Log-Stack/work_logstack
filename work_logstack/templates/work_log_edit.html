@@ -34,29 +34,40 @@
             <div class="hero is-dark is-small">
                 <div class="hero-body">
                     <p class="title">
-                        {{ profile.name }} 님의 Work Log
+                        Work Log Edit
                     </p>
                 </div>
             </div>
-
             <div class="card">
                 <div class="card-content">
-                    <div class="content">
-                        <time>Working Time: {{ work_hour.start_time|time }} ~ {{ work_hour.end_time|time }}</time>
-                        <br>
-                        <br>
-                        <pre>{{ work_log.content }}</pre>
-                        {% if work_log.user == request.user %}
-                            <br>
-                            <div class="control">
-                                <a href="{% url 'work_log_edit' work_log.pk %}" class="button is-dark">Edit</a>
+
+                    <form method="post" role="form">
+                        {% csrf_token %}
+
+                        <div class="content">
+                            <div class="field">
+                                <label class="label">Work Log</label>
+                                <div class="control">
+                                    {{ form.content }}
+                                </div>
                             </div>
-                        {% endif %}
-                    </div>
+                        </div>
+
+                        <div class="content">
+                            <div class="field is-grouped">
+                                <div class="control">
+                                    <button type="submit" class="button is-dark">Submit</button>
+                                </div>
+                                <div class="control">
+                                    <button type="reset" class="button is-dark is-light">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
                 </div>
             </div>
         </div>
 
     </body>
 </html>
-

@@ -8,9 +8,9 @@ class Schedule(models.Model):
     # 근무, 휴가 ,(추가사항) 외근, ...
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     date = models.DateField()
-    start = models.TimeField(null=True)
-    end = models.TimeField(null=True)
-    work_type = models.IntegerField(choices=WORK_TYPES)
+    start = models.TimeField(null=True, default=None)
+    end = models.TimeField(null=True, default=None)
+    work_type = models.IntegerField(choices=WORK_TYPES, default=0)
 
     def __str__(self):
         result = str(self.user)
@@ -40,6 +40,18 @@ class ToDo(models.Model):
 
     def __str__(self):
         return str(self.schedule.user) + " | " + self.schedule.date.strftime("%Y-%m-%d")
+
+
+class Event(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    date = models.DateField()
+    start = models.TimeField()
+    end = models.TimeField()
+    title = models.CharField(max_length=50)
+    context = models.TextField(default="내용이 없습니다")
+
+    def __str__(self):
+        return str(self.user) + " | " + self.date.strftime("%Y-%m-%d") + " | " + self.title
 
 
 post_save.connect(Schedule.schedule_created, sender=Schedule)

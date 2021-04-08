@@ -5,13 +5,15 @@ from dateutil.relativedelta import relativedelta
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Max, Min
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.template import loader
 
 from django.contrib.auth.models import User
+from django.utils import timezone
+
 from authy.models import Profile, TeamManager, Team
-from .forms import NewScheduleWeekForm, NewScheduleDayForm
-from .models import Schedule, ScheduleApproved, ToDo
+from .forms import NewScheduleWeekForm, NewScheduleDayForm, EventForm
+from .models import Schedule, ScheduleApproved, ToDo, Event
 
 COLORS = ['#0096c6', '#ff6939', '#fa3d00', '#6937a1', '#003458', '#008000']
 
@@ -22,8 +24,29 @@ def index(request):
 
     template = loader.get_template('schedule.html')
 
+    year = datetime.now().year
+    month = datetime.now().month
+    day = datetime.now().day
+    schedule_exist = False
+    is_staff = True
+    schedule = Schedule.objects.filter(user=user, date=timezone.now().date())
+    if user.is_superuser:
+        is_staff = False
+    else:
+        profile = Profile.objects.get(user=user)
+        is_manager = TeamManager.objects.filter(team=profile.team, user=user).exists()
+        if is_manager:
+            is_staff = False
+    if schedule.exists():
+        schedule_exist = True
+
     context = {
         'user': user,
+        'schedule_exist': schedule_exist,
+        'is_staff': is_staff,
+        'year': year,
+        'month': month,
+        'day': day,
     }
 
     return HttpResponse(template.render(context, request))
@@ -77,16 +100,17 @@ def schedule_day_user_work_time(request):
 
     work_times = Schedule.objects.filter(user__in=users, date=selected_date, work_type=1)
     events = []
-    for item in work_times.values_list("user_id", "date", "start", "end"):
-        url = "/schedule/todo/" + str(item[0]) + "/" + item[1].strftime('%Y-%m-%d')
-        events.append({
-            'resourceId': str(item[0]),
-            'title': Profile.objects.get(user=item[0]).name,
-            'start': str(item[1]) + "T" + item[2].isoformat(timespec='seconds') + "+00:00",
-            'end': str(item[1]) + "T" + item[3].isoformat(timespec='seconds') + "+00:00",
-            'color': COLORS[item[0] % len(COLORS)],
-            'url': url,
 
+    for item in work_times:
+        url = "/schedule/todo/" + str(item.user.id) + "/" + item.date.strftime('%Y-%m-%d')
+        events.append({
+            'resourceId': str(item.user.id),
+            'title': Profile.objects.get(user=item.user).name,
+            'start': item.date.strftime('%Y-%m-%d') + "T" + item.start.isoformat(timespec='seconds') + "+00:00",
+            'end': item.date.strftime('%Y-%m-%d') + "T" + item.end.isoformat(timespec='seconds') + "+00:00",
+            'color': COLORS[item.user.id % len(COLORS)],
+            'url': url,
+            'description': ToDo.objects.get(schedule=item).contents,
         })
 
     vacation_times = Schedule.objects.filter(user__in=users, date=selected_date, work_type=2)
@@ -266,6 +290,8 @@ def register_schedule_day(request, year, month, day):
             start_times.append(form.cleaned_data.get('start'))
             end_times.append(form.cleaned_data.get('end'))
 
+            contents = form.cleaned_data.get('contents')
+
             if is_approved:  # do create
                 for type_local, start_local, end_local in zip(work_types, start_times, end_times):
                     schedule, schedule_created = Schedule.objects.get_or_create(user=user, date=week_start_date,
@@ -282,6 +308,10 @@ def register_schedule_day(request, year, month, day):
                         schedule.start = start_local
                         schedule.end = end_local
                         schedule.save()
+
+                        todo = ToDo.objects.get(schedule=schedule)
+                        todo.contents = contents
+                        todo.save()
                     else:
                         Schedule.objects.get_or_create(user=user, date=week_start_date,
                                                        start=start_local,
@@ -301,6 +331,9 @@ def register_schedule_day(request, year, month, day):
 
         template = loader.get_template('schedule_register_day.html')
         form = NewScheduleDayForm()
+
+        schedule, schedule_created = Schedule.objects.get_or_create(user=user, date=selected_date)
+        form.fields['contents'].initial = ToDo.objects.get(schedule=schedule).contents
 
         if request.headers['Referer'].split('/')[-2] == "work_hour_check":
             temp = 'work_hour_check'
@@ -474,7 +507,8 @@ def schedule_summary_team(request):
     else:
         users = Profile.objects.filter(team=team_id).values_list('user_id', flat=True)
 
-    schedule = Schedule.objects.filter(user__in=users, date__range=[day_start, day_end], work_type__in=[1,2]).order_by('date')
+    schedule = Schedule.objects.filter(user__in=users, date__range=[day_start, day_end], work_type__in=[1, 2]).order_by(
+        'date')
     for work_date in schedule.values_list('date', flat=True).distinct():
         worker_count = Schedule.objects.annotate(num_work_types=Count('work_type')).filter(user__in=users,
                                                                                            date=work_date,
@@ -501,12 +535,21 @@ def schedule_summary_team(request):
         result.append({'title': "휴가 인원 : " + str(vacation_count) + "명", 'start': work_date.strftime('%Y-%m-%d'),
                        'end': work_date.strftime('%Y-%m-%d'), 'color': COLORS[2]})
 
-    birthday_users = Profile.objects.filter(team=team_id, birth_day__range=[day_start, day_end]).values()
-    for day in list(birthday_users):
-        result.append({'title': day['name'] + "님의 생일을 축하합니다!",
-                       'start': day['birth_day'].strftime('%Y-%m-%d'),
-                       'end': day['birth_day'].strftime('%Y-%m-%d'),
-                       "color": COLORS[1]})
+    if team_id == -1:
+        birthday_users = Profile.objects.filter(birth_day__range=[day_start, day_end]).values()
+        for day in list(birthday_users):
+            result.append({'title': day['name'] + "님의 생일을 축하합니다!",
+                           'start': day['birth_day'].strftime('%Y-%m-%d'),
+                           'end': day['birth_day'].strftime('%Y-%m-%d'),
+                           "color": COLORS[1]})
+
+        events = Event.objects.filter(date__range=[day_start, day_end]).values()
+        for event in events:
+            print(event['title'])
+            result.append({'title': '일정 | ' + event['title'],
+                           'start': event['date'].strftime('%Y-%m-%d'),
+                           'end': event['date'].strftime('%Y-%m-%d'),
+                           "color": '#fecb76', 'url':'/schedule/event/edit/' + str(event['id']) + '/' ,})
 
     return JsonResponse(result, safe=False)
 
@@ -536,10 +579,138 @@ def schedule_todo(request, user_id, date):
 
     elif request.method == "POST":
         context = request.POST.get("context")
-        print(date)
         schedule = Schedule.objects.get(user_id=request.user.id, date=date)
         todo, flag = ToDo.objects.get_or_create(schedule=schedule)
         todo.contents = context
         todo.save()
+
+        return JsonResponse({"result": True}, safe=False)
+
+
+
+@login_required
+def register_schedule_today(request, year, month, day):
+    user = User.objects.get(username=request.user)
+    work_types = []
+    start_times = []
+    end_times = []
+
+    if request.method == 'POST':
+        form = NewScheduleDayForm(request.POST)
+        if form.is_valid():
+            week_start_date = form.cleaned_data.get('week_start_date')
+            approved, is_approved = ScheduleApproved.objects.get_or_create(user=user,
+                                                                           week_start_date=week_start_date)
+
+            work_types.append(form.cleaned_data.get('work_type'))
+            start_times.append(form.cleaned_data.get('start'))
+            end_times.append(form.cleaned_data.get('end'))
+
+            if is_approved:  # do create
+                for type_local, start_local, end_local in zip(work_types, start_times, end_times):
+                    schedule, schedule_created = Schedule.objects.get_or_create(user=user, date=week_start_date,
+                                                                                start=start_local,
+                                                                                end=end_local, work_type=type_local)
+                    week_start_date += relativedelta(days=1)
+            else:  # do update
+                approved.approved_type = ScheduleApproved.APPROVED_TYPES[0][0]
+                approved.save()
+                for type_local, start_local, end_local in zip(work_types, start_times, end_times):
+                    if Schedule.objects.filter(user=user, date=week_start_date).exists():
+                        schedule = Schedule.objects.get(user=user, date=week_start_date)
+                        schedule.work_type = type_local
+                        schedule.start = start_local
+                        schedule.end = end_local
+                        schedule.save()
+                    else:
+                        Schedule.objects.get_or_create(user=user, date=week_start_date,
+                                                       start=start_local,
+                                                       end=end_local, work_type=type_local)
+                    week_start_date += relativedelta(days=1)
+
+            return redirect('work_hour_check')
+
+        return redirect('schedule-register-today', year, month, day)
+    else:
+        user = request.user
+
+        selected_date = datetime(year, month, day).strftime("%Y-%m-%d")
+
+        template = loader.get_template('schedule_register_today.html')
+        form = NewScheduleDayForm()
+
+        context = {
+            'user': user,
+            'selected_date': selected_date,
+            'forms': form,
+        }
+
+        return HttpResponse(template.render(context, request))
+
+@login_required
+def schedule_event_add(request):
+    if request.method == "GET":
+        form = EventForm()
+        context = {
+            'form': form,
+        }
+
+        return render(request, 'schedule_event_add.html', context)
+
+    if request.method == "POST":
+        form = EventForm(request.POST)
+        if form.is_valid():
+            user_id = request.user.id
+            title = form.cleaned_data.get('title')
+            date = form.cleaned_data.get('date')
+            start = form.cleaned_data.get('start')
+            end =  form.cleaned_data.get('end')
+            content =  form.cleaned_data.get('content')
+
+            user = User.objects.get(pk=user_id)
+
+            Event.objects.get_or_create(user=user, title=title, date=date, start=start, end=end, context=content)
+
+        return render(request, 'schedule_event_add.html', {'form':EventForm()})
+
+
+@login_required
+def schedule_event_edit(request, event_id):
+    self_view = False
+
+    if request.method == "GET":
+        template = loader.get_template('schedule_event_edit.html')
+
+        event = Event.objects.get(pk=event_id)
+
+        if request.user.id is event.user.id:
+            self_view = True
+
+        context = {
+            'event_id' : event_id,
+            'self_view': self_view,
+            'title': event.title,
+            'date': event.date.strftime("%Y-%m-%d"),
+            'start': event.start.strftime("%H:%M"),
+            'end': event.end.strftime("%H:%M"),
+            'content': event.context,
+        }
+
+        return HttpResponse(template.render(context, request))
+
+    elif request.method == "POST":
+        event = Event.objects.get(pk=event_id)
+        event.title = request.POST.get('title')
+        event.start = request.POST.get('start')
+        event.end = request.POST.get('end')
+        event.date = request.POST.get('date')
+        event.context = request.POST.get('content')
+        event.save()
+
+        return JsonResponse({"result": True}, safe=False)
+
+    elif request.method == "DELETE":
+        event = Event.objects.get(pk=event_id)
+        event.delete()
 
         return JsonResponse({"result": True}, safe=False)
