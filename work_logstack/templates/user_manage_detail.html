@@ -125,7 +125,13 @@ $(document).ready(function(){
 });
 
 </script>
-
+<style>
+.log_box {
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height:450px;
+}
+</style>
 
 <div class="container">
     <br>
@@ -296,6 +302,7 @@ $(document).ready(function(){
                         <p class="title is-4 work_log_date">{{ last_work_log.create_time|date:"Y-m-d" }}</p>                        <hr>
                         <pre style="background-color: white;" class="subtitle is-6 work_log_content">{{ last_work_log.content }}</pre>
                     </div>
+
                 </div>
             </div>
         </div>
