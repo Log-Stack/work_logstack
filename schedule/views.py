@@ -606,12 +606,15 @@ def register_schedule_today(request, year, month, day):
             start_times.append(form.cleaned_data.get('start'))
             end_times.append(form.cleaned_data.get('end'))
 
+            todo_contents = form.cleaned_data.get('contents')
+
+
             if is_approved:  # do create
                 for type_local, start_local, end_local in zip(work_types, start_times, end_times):
                     schedule, schedule_created = Schedule.objects.get_or_create(user=user, date=week_start_date,
                                                                                 start=start_local,
                                                                                 end=end_local, work_type=type_local)
-                    week_start_date += relativedelta(days=1)
+                    todo = ToDo.objects.get_or_create(schedule=schedule, contents=todo_contents)
             else:  # do update
                 approved.approved_type = ScheduleApproved.APPROVED_TYPES[0][0]
                 approved.save()
@@ -622,11 +625,17 @@ def register_schedule_today(request, year, month, day):
                         schedule.start = start_local
                         schedule.end = end_local
                         schedule.save()
+
+                        todo = ToDo.objects.get(schedule=schedule)
+                        todo.contents = todo_contents
+                        todo.save()
+
                     else:
                         Schedule.objects.get_or_create(user=user, date=week_start_date,
                                                        start=start_local,
                                                        end=end_local, work_type=type_local)
-                    week_start_date += relativedelta(days=1)
+
+                        todo = ToDo.objects.get_or_create(schedule=schedule, contents=todo_contents)
 
             return redirect('work_hour_check')
 
