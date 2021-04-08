@@ -417,11 +417,13 @@ def manage_list(request):
     user = request.user
     profile = Profile.objects.get(user=user)
     team_manager = TeamManager.objects.filter(team=profile.team).filter(user=user).first()
+    teams_exists = []
 
     if user.is_superuser:
         team_name = 'all'
-        teams = Team.objects.all()
-        team_members = Profile.objects.all()
+        teams = Team.objects.all().order_by('name')
+        team_members = Profile.objects.all().order_by('position', 'name')
+
 
         if request.method == "POST":
             search = request.POST.get('search')
@@ -430,6 +432,12 @@ def manage_list(request):
             if team_name != 'all':
                 team = Team.objects.get(name=team_name)
                 team_members = team_members.filter(team=team)
+                teams_exists.append(team)
+
+            else :
+                for team in teams:
+                    if Profile.objects.all().filter(team=team.pk).exists():
+                        teams_exists.append(team)
 
             result = team_members
             result = result.filter(name__icontains=search)
@@ -439,13 +447,18 @@ def manage_list(request):
                 'team': team_name,
                 'result': result,
                 'search': search,
+                'teams_exists':teams_exists,
             }
         else:
+            for team in teams:
+                if Profile.objects.all().filter(team=team.pk).exists():
+                    teams_exists.append(team)
             context = {
                 'teams': teams,
                 'team': team_name,
                 'result': team_members,
                 'search': "",
+                'teams_exists': teams_exists,
             }
         return render(request, 'user_manage.html', context)
 
@@ -465,19 +478,93 @@ def manage_list(request):
             result = result.filter(name__icontains=search)
 
             context = {
-                'team': team,
+                'teams_exists': [team],
                 'result': result,
                 'search': search,
             }
         else:
             context = {
-                'team': team,
+                'teams_exists': [team],
                 'result': team_members,
                 'search': "",
             }
         return render(request, 'user_manage.html', context)
     else:
         return redirect('schedule-index')
+
+# @login_required
+# def manage_list(request):
+#     user = request.user
+#     profile = Profile.objects.get(user=user)
+#     team_manager = TeamManager.objects.filter(team=profile.team).filter(user=user).first()
+#     teams_exists = []
+#
+#     if user.is_superuser:
+#         team_name = 'all'
+#         teams = Team.objects.all().order_by('name')
+#         team_members = Profile.objects.all().order_by('position', 'name')
+#         for team in teams:
+#             if Profile.objects.all().filter(team=team.pk).exists():
+#                 teams_exists.append(team)
+#
+#         if request.method == "POST":
+#             search = request.POST.get('search')
+#             team_name = request.POST.get('team_name')
+#
+#
+#             if team_name != 'all':
+#                 team = Team.objects.filter(name=team_name)
+#
+#                 team_members = team_members.filter(team=team)
+#
+#             result = team_members
+#             result = result.filter(name__icontains=search)
+#             print(team)
+#             context = {
+#                 'teams': team,
+#                 'team': team_name,
+#                 'result': result,
+#                 'search': search,
+#             }
+#         else:
+#
+#             context = {
+#                 'teams': teams_exists,
+#                 'team': team_name,
+#                 'result': team_members,
+#                 'search': "",
+#             }
+#         return render(request, 'user_manage.html', context)
+#
+#     elif team_manager:
+#         superusers = User.objects.filter(is_superuser=True)
+#         superuser_ids = []
+#         for superuser in superusers.values():
+#             superuser_ids.append(superuser['id'])
+#
+#         team = team_manager.team
+#         team_members = Profile.objects.filter(team=team).exclude(user__in=superuser_ids)
+#
+#         if request.method == "POST":
+#             search = request.POST.get('search')
+#
+#             result = team_members
+#             result = result.filter(name__icontains=search)
+#
+#             context = {
+#                 'team': team,
+#                 'result': result,
+#                 'search': search,
+#             }
+#         else:
+#             context = {
+#                 'team': team,
+#                 'result': team_members,
+#                 'search': "",
+#             }
+#         return render(request, 'user_manage.html', context)
+#     else:
+#         return redirect('schedule-index')
 
 
 @login_required
