@@ -323,7 +323,7 @@ def SearchAllView(request):
     teams_exists = []
 
     for team in teams:
-        if len(profile.filter(team=team.pk)) != 0:
+        if profile.filter(team=team.pk).exists():
             teams_exists.append(team)
 
     context = {
