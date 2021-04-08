@@ -692,7 +692,7 @@ def schedule_event_edit(request, event_id):
 
         event = Event.objects.get(pk=event_id)
 
-        if request.user.id is event.user.id:
+        if request.user.id is event.user.id or request.user.is_superuser or TeamManager.objects.filter(user_id=request.user.id).exists():
             self_view = True
 
         context = {
