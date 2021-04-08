@@ -283,8 +283,6 @@ def register_schedule_day(request, year, month, day):
         form = NewScheduleDayForm(request.POST)
         if form.is_valid():
             week_start_date = form.cleaned_data.get('week_start_date')
-            approved, is_approved = ScheduleApproved.objects.get_or_create(user=user,
-                                                                           week_start_date=week_start_date)
 
             work_types.append(form.cleaned_data.get('work_type'))
             start_times.append(form.cleaned_data.get('start'))
@@ -292,31 +290,24 @@ def register_schedule_day(request, year, month, day):
 
             contents = form.cleaned_data.get('contents')
 
-            if is_approved:  # do create
-                for type_local, start_local, end_local in zip(work_types, start_times, end_times):
-                    schedule, schedule_created = Schedule.objects.get_or_create(user=user, date=week_start_date,
-                                                                                start=start_local,
-                                                                                end=end_local, work_type=type_local)
-                    week_start_date += relativedelta(days=1)
-            else:  # do update
-                approved.approved_type = ScheduleApproved.APPROVED_TYPES[0][0]
-                approved.save()
-                for type_local, start_local, end_local in zip(work_types, start_times, end_times):
-                    if Schedule.objects.filter(user=user, date=week_start_date).exists():
-                        schedule = Schedule.objects.get(user=user, date=week_start_date)
-                        schedule.work_type = type_local
-                        schedule.start = start_local
-                        schedule.end = end_local
-                        schedule.save()
+            for type_local, start_local, end_local in zip(work_types, start_times, end_times):
+                if Schedule.objects.filter(user=user, date=week_start_date).exists():
+                    schedule = Schedule.objects.get(user=user, date=week_start_date)
+                    schedule.work_type = type_local
+                    schedule.start = start_local
+                    schedule.end = end_local
+                    schedule.save()
 
-                        todo = ToDo.objects.get(schedule=schedule)
-                        todo.contents = contents
-                        todo.save()
-                    else:
-                        Schedule.objects.get_or_create(user=user, date=week_start_date,
-                                                       start=start_local,
-                                                       end=end_local, work_type=type_local)
-                    week_start_date += relativedelta(days=1)
+                    todo = ToDo.objects.get(schedule=schedule)
+                    todo.contents = contents
+                    todo.save()
+                else:
+                    schedule, schedule_created = Schedule.objects.get_or_create(user=user, date=week_start_date,
+                                                   start=start_local,
+                                                   end=end_local, work_type=type_local)
+                    print(schedule_created, " in do_update")
+
+                week_start_date += relativedelta(days=1)
 
             temp = request.POST.get('temp')
 
@@ -333,6 +324,8 @@ def register_schedule_day(request, year, month, day):
         form = NewScheduleDayForm()
 
         schedule, schedule_created = Schedule.objects.get_or_create(user=user, date=selected_date)
+        print(schedule_created, " in else")
+
         form.fields['contents'].initial = ToDo.objects.get(schedule=schedule).contents
 
         if request.headers['Referer'].split('/')[-2] == "work_hour_check":
@@ -595,42 +588,33 @@ def register_schedule_today(request, year, month, day):
     start_times = []
     end_times = []
 
-    if request.method == 'POST':
-        form = NewScheduleDayForm(request.POST)
-        if form.is_valid():
-            week_start_date = form.cleaned_data.get('week_start_date')
-            approved, is_approved = ScheduleApproved.objects.get_or_create(user=user,
-                                                                           week_start_date=week_start_date)
+    form = NewScheduleDayForm(request.POST)
+    if form.is_valid():
+        week_start_date = form.cleaned_data.get('week_start_date')
 
-            work_types.append(form.cleaned_data.get('work_type'))
-            start_times.append(form.cleaned_data.get('start'))
-            end_times.append(form.cleaned_data.get('end'))
+        work_types.append(form.cleaned_data.get('work_type'))
+        start_times.append(form.cleaned_data.get('start'))
+        end_times.append(form.cleaned_data.get('end'))
 
-            if is_approved:  # do create
-                for type_local, start_local, end_local in zip(work_types, start_times, end_times):
-                    schedule, schedule_created = Schedule.objects.get_or_create(user=user, date=week_start_date,
-                                                                                start=start_local,
-                                                                                end=end_local, work_type=type_local)
-                    week_start_date += relativedelta(days=1)
-            else:  # do update
-                approved.approved_type = ScheduleApproved.APPROVED_TYPES[0][0]
-                approved.save()
-                for type_local, start_local, end_local in zip(work_types, start_times, end_times):
-                    if Schedule.objects.filter(user=user, date=week_start_date).exists():
-                        schedule = Schedule.objects.get(user=user, date=week_start_date)
-                        schedule.work_type = type_local
-                        schedule.start = start_local
-                        schedule.end = end_local
-                        schedule.save()
-                    else:
-                        Schedule.objects.get_or_create(user=user, date=week_start_date,
-                                                       start=start_local,
-                                                       end=end_local, work_type=type_local)
-                    week_start_date += relativedelta(days=1)
+        todo_contents = form.cleaned_data.get('contents')
+        for type_local, start_local, end_local in zip(work_types, start_times, end_times):
+            if Schedule.objects.filter(user=user, date=week_start_date).exists():
+                schedule = Schedule.objects.get(user=user, date=week_start_date)
+                schedule.work_type = type_local
+                schedule.start = start_local
+                schedule.end = end_local
+                schedule.save()
 
-            return redirect('work_hour_check')
+                todo = ToDo.objects.get(schedule=schedule)
+                todo.contents = todo_contents
+                todo.save()
+            else:
+                schedule, schedule_created = Schedule.objects.get_or_create(user=user, date=week_start_date,
+                                                                            start=start_local,
+                                                                            end=end_local, work_type=type_local)
+                todo = ToDo.objects.create(schedule=schedule, contents=todo_contents)
 
-        return redirect('schedule-register-today', year, month, day)
+        return redirect('work_hour_check')
     else:
         user = request.user
 
@@ -638,6 +622,10 @@ def register_schedule_today(request, year, month, day):
 
         template = loader.get_template('schedule_register_today.html')
         form = NewScheduleDayForm()
+
+        schedule, schedule_created = Schedule.objects.get_or_create(user=user, date=selected_date)
+
+        form.fields['contents'].initial = ToDo.objects.get(schedule=schedule).contents
 
         context = {
             'user': user,
@@ -683,7 +671,7 @@ def schedule_event_edit(request, event_id):
 
         event = Event.objects.get(pk=event_id)
 
-        if request.user.id is event.user.id:
+        if request.user.id is event.user.id or request.user.is_superuser or TeamManager.objects.filter(user_id=request.user.id).exists():
             self_view = True
 
         context = {
