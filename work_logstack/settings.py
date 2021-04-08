@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'schedule',
     'work_log',
     'rest_framework',
+    'directs',
 ]
 
 MIDDLEWARE = [
