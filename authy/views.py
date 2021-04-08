@@ -710,7 +710,7 @@ def calc_work_hours(request):
         if e_t:
             arranged_end_time = datetime.datetime(e_t.year, e_t.month, e_t.day, e_t.hour, 10 * (e_t.minute // 10))
             end_time = arranged_end_time.strftime("%H:%M")
-            total_working_time += (arranged_end_time - arranged_start_time).seconds
+            total_working_time += (arranged_end_time - arranged_start_time).seconds - 3600
         else:
             arranged_end_time = e_t
             end_time = ''
