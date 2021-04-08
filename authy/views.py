@@ -739,7 +739,7 @@ def send_work_log(request, member_pk, date):
         }
     else:
         result = {
-            'content': '',
+            'content': '퇴근 일지가 작성되지 않았습니다.',
             'create_time': '',
         }
     return JsonResponse(result, safe=False)
