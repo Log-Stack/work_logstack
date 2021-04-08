@@ -18,7 +18,7 @@
 
         <div class="hero is-dark is-small" >
             <div class="hero-body" style="display:flex; flex-direction:row; ">
-                <a href="{% url 'directlist' %}" style="margin-right:20px; margin-top:7px;"><i style="font-color:white;" class="fas fa-chevron-left fa-1x"></i></a>
+
                 <p class="title" style="text-align:center; margin-right:20px;">
                     SEND MESSAGES
 
@@ -26,14 +26,41 @@
 
             </div>
         </div>
+
+        <div class="tabs">
+          <ul>
+              <li><a href="{% url 'directlist' %}">받은 쪽지함</a></li>
+              <li><a href="#">보낸 쪽지함</a></li>
+              <li class="is-active"><a href="{% url 'senddirect' %}">쪽지 쓰기</a></li>
+
+          </ul>
+        </div>
+
+
 <form method="post" role="form">
     {% csrf_token %}
-    <article class="media" style="display:block; padding:30px;">
+    <div style="padding:30px;">
+        <label for="cars">받는 사람</label>
+
+        <select name="cars" id="cars">
+          <option value="volvo">Volvo</option>
+          <option value="saab">Saab</option>
+          <option value="mercedes">Mercedes</option>
+          <option value="audi">Audi</option>
+        </select>
+        <select >
+          <option value="volvo">Volvo</option>
+          <option value="saab">Saab</option>
+          <option value="mercedes">Mercedes</option>
+          <option value="audi">Audi</option>
+        </select>
+    </div>
+    <article class="media" style="display:block; padding:0px 30px;">
       <input class="input" type="text" name="title" placeholder="제목을 입력해주세요." style="margin-bottom:20px;">
       <div class="media-content">
         <div class="field">
           <p class="control">
-            <textarea class="textarea" name="body" style="height:500px; margin-bottom:35px;" placeholder="내용을 작성해주세요."></textarea>
+            <textarea class="textarea" name="body" style="height:400px; margin-bottom:35px;" placeholder="내용을 작성해주세요."></textarea>
           </p>
         </div>
         <nav class="level">
