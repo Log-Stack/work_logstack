@@ -14,6 +14,7 @@ var calendar = null;
 
 
 function goDetailSchedule(date){
+console.log(date);
 var date = new Date(date.split("T")[0]);
 var team_id = document.getElementById('team_select').value;
 
@@ -36,6 +37,7 @@ window.open(url,'event_add','width=800, height=700, toolbar=no, menubar=no, scro
 
 function goTodo(data){
     var eventObj = info.data;
+    alert("test");
     if (eventObj.url) {
       alert(
         'Clicked ' + eventObj.title + '.\n' +
@@ -77,6 +79,10 @@ else if(user_id != '-1'){
                     }
                 },
                 events : data,
+                eventMouseEnter: function(info) {
+                  var eventObj = info.event;
+                  info.el.style.cursor = 'default';
+                },
                 dateClick: function(info){
                     goDetailSchedule(info.dateStr);
                 },
@@ -119,6 +125,10 @@ $.ajax({
                 }
             },
             events : data,
+            eventMouseEnter: function(info) {
+              var eventObj = info.event;
+              info.el.style.cursor = 'default';
+            },
             dateClick: function(info){
                 goDetailSchedule(info.dateStr);
             },
@@ -423,7 +433,14 @@ window.addEventListener('DOMContentLoaded', init);
             </p>
         </div>
     </div>
-    <br>
+
+    {% if is_staff and not schedule_exist %}
+        <div class="box has-text-centered">
+            <p><strong>오늘 등록된 스케줄이 없습니다.</strong></p>
+            <a style="margin-top: 1rem;" href="{% url 'schedule-register-today' year month day %}" class="button is-dark is-rounded">스케줄 등록</a>
+        </div>
+    {% endif %}
+
     <div class="columns is-centered">
         <div class="column">
 

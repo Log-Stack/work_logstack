@@ -3,7 +3,8 @@ from django.urls import path
 from schedule.views import index, schedule_day, approved, register_index, schedule_list_user, schedule_list_team, \
     approved_list, \
     approved_user, register_schedule_list_week, register_schedule_day, schedule_summary_team, schedule_list_edit, \
-    schedule_day_user_work_time, schedule_todo, schedule_event_add, schedule_event_edit
+    schedule_day_user_work_time, schedule_todo, register_schedule_today, \
+    schedule_event_add, schedule_event_edit
 
 urlpatterns = [
     path('', index, name='schedule-index'),
@@ -28,4 +29,6 @@ urlpatterns = [
 
     path('event/add', schedule_event_add, name='schedule-event'),
     path('event/edit/<event_id>/', schedule_event_edit, name='schedule-event'),
+
+    path('today/register/<int:year>/<int:month>/<int:day>', register_schedule_today, name='schedule-register-today'),
 ]

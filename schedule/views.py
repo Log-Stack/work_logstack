@@ -9,6 +9,8 @@ from django.shortcuts import redirect, render
 from django.template import loader
 
 from django.contrib.auth.models import User
+from django.utils import timezone
+
 from authy.models import Profile, TeamManager, Team
 from .forms import NewScheduleWeekForm, NewScheduleDayForm, EventForm
 from .models import Schedule, ScheduleApproved, ToDo, Event
@@ -22,8 +24,29 @@ def index(request):
 
     template = loader.get_template('schedule.html')
 
+    year = datetime.now().year
+    month = datetime.now().month
+    day = datetime.now().day
+    schedule_exist = False
+    is_staff = True
+    schedule = Schedule.objects.filter(user=user, date=timezone.now().date())
+    if user.is_superuser:
+        is_staff = False
+    else:
+        profile = Profile.objects.get(user=user)
+        is_manager = TeamManager.objects.filter(team=profile.team, user=user).exists()
+        if is_manager:
+            is_staff = False
+    if schedule.exists():
+        schedule_exist = True
+
     context = {
         'user': user,
+        'schedule_exist': schedule_exist,
+        'is_staff': is_staff,
+        'year': year,
+        'month': month,
+        'day': day,
     }
 
     return HttpResponse(template.render(context, request))
@@ -563,6 +586,66 @@ def schedule_todo(request, user_id, date):
 
         return JsonResponse({"result": True}, safe=False)
 
+
+
+@login_required
+def register_schedule_today(request, year, month, day):
+    user = User.objects.get(username=request.user)
+    work_types = []
+    start_times = []
+    end_times = []
+
+    if request.method == 'POST':
+        form = NewScheduleDayForm(request.POST)
+        if form.is_valid():
+            week_start_date = form.cleaned_data.get('week_start_date')
+            approved, is_approved = ScheduleApproved.objects.get_or_create(user=user,
+                                                                           week_start_date=week_start_date)
+
+            work_types.append(form.cleaned_data.get('work_type'))
+            start_times.append(form.cleaned_data.get('start'))
+            end_times.append(form.cleaned_data.get('end'))
+
+            if is_approved:  # do create
+                for type_local, start_local, end_local in zip(work_types, start_times, end_times):
+                    schedule, schedule_created = Schedule.objects.get_or_create(user=user, date=week_start_date,
+                                                                                start=start_local,
+                                                                                end=end_local, work_type=type_local)
+                    week_start_date += relativedelta(days=1)
+            else:  # do update
+                approved.approved_type = ScheduleApproved.APPROVED_TYPES[0][0]
+                approved.save()
+                for type_local, start_local, end_local in zip(work_types, start_times, end_times):
+                    if Schedule.objects.filter(user=user, date=week_start_date).exists():
+                        schedule = Schedule.objects.get(user=user, date=week_start_date)
+                        schedule.work_type = type_local
+                        schedule.start = start_local
+                        schedule.end = end_local
+                        schedule.save()
+                    else:
+                        Schedule.objects.get_or_create(user=user, date=week_start_date,
+                                                       start=start_local,
+                                                       end=end_local, work_type=type_local)
+                    week_start_date += relativedelta(days=1)
+
+            return redirect('work_hour_check')
+
+        return redirect('schedule-register-today', year, month, day)
+    else:
+        user = request.user
+
+        selected_date = datetime(year, month, day).strftime("%Y-%m-%d")
+
+        template = loader.get_template('schedule_register_today.html')
+        form = NewScheduleDayForm()
+
+        context = {
+            'user': user,
+            'selected_date': selected_date,
+            'forms': form,
+        }
+
+        return HttpResponse(template.render(context, request))
 
 @login_required
 def schedule_event_add(request):

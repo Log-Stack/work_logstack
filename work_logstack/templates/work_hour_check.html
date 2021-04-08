@@ -82,8 +82,8 @@
 
     {% else %}
         <div class="box has-text-centered">
-            <p><strong>예정된 업무가 없습니다.</strong></p>
-            <a style="margin-top: 1rem;" href="{% url 'schedule-register-day' year month day %}" class="button is-dark is-rounded">스케줄 등록하러가기</a>
+            <p><strong>오늘 등록된 스케줄이 없습니다.</strong></p>
+            <a style="margin-top: 1rem;" href="{% url 'schedule-register-today' year month day %}" class="button is-dark is-rounded">스케줄 등록</a>
         </div>
     {% endif %}
 
