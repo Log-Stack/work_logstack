@@ -625,3 +625,9 @@ def schedule_event_edit(request, event_id):
         event.save()
 
         return JsonResponse({"result": True}, safe=False)
+
+    elif request.method == "DELETE":
+        event = Event.objects.get(pk=event_id)
+        event.delete()
+
+        return JsonResponse({"result": True}, safe=False)

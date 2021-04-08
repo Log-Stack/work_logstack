@@ -12,9 +12,11 @@
         var event_content = null;
 
         var event_save = null;
+        var event_delete = null;
 
         function getElements(){
-            todo_save = document.getElementById("event_save");
+            event_save = document.getElementById("event_save");
+            event_delete = document.getElementById("event_delete");
 
             event_title = document.getElementById("event_title");
             event_date = document.getElementById("event_date");
@@ -73,7 +75,31 @@
         }
 
         function setEventListener(){
-            todo_save.addEventListener("click", doSave);
+            event_save.addEventListener("click", doSave);
+        }
+
+        function init(){
+            getElements();
+            setEventListener();
+        };
+
+
+
+        function doDelete(){
+            $.ajax({
+                type: 'DELETE',
+                url: '/schedule/event/edit/' + {{event_id}} + '/',
+                dataType: 'json',
+                success: function(data){
+                    window.close();
+                }
+            })
+
+        }
+
+        function setEventListener(){
+            event_save.addEventListener("click", doSave);
+            event_delete.addEventListener("click", doDelete);
         }
 
         function init(){
@@ -99,6 +125,7 @@
                 </div>
                 <div class="column is-6 has-text-right">
                     {% if self_view %}
+                        <button type="submit" class="button is-Light" id="event_delete">Delete</button>
                         <button type="submit" class="button is-Light" id="event_save">Save</button>
                     {% else %}
                         <button class="button is-Light" id="todo_close" onclick="window.close()">Close</button>
