@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.http import HttpResponse, HttpResponseBadRequest
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render, get_object_or_404
 from django.template import loader
 from django.views.generic import ListView
 
@@ -39,6 +39,17 @@ class DirectsListReceived(ListView):
     ordering = '-date'
     paginate_by = 10
 
+    def post(self, request, *args, **kwargs):
+        if request.POST:
+            q = request.POST.getlist('delete')
+            for pk in q:
+                message = get_object_or_404(Message, pk=pk)
+                message.delete()
+
+
+
+            return redirect('directlist_received')
+
     def get_queryset(self):
         return Message.objects.all().filter(recipient=self.request.user)
 
@@ -50,6 +61,15 @@ class DirectsListSent(ListView):
     template_name = 'directs_list_sent.html'
     ordering = '-date'
     paginate_by = 10
+
+    def post(self, request, *args, **kwargs):
+        if request.POST:
+            q = request.POST.getlist('delete')
+            for pk in q:
+                message = get_object_or_404(Message, pk=pk)
+                message.delete()
+
+            return redirect('directlist_sent')
 
     def get_queryset(self):
         return Message.objects.all().filter(sender=self.request.user)
@@ -68,7 +88,7 @@ def directs_send(request):
 
         Message.send_message(from_user,to_user,title,body)
 
-        return redirect('directlist_received')
+        return redirect('directlist_sent')
     else:
         HttpResponseBadRequest()
 
