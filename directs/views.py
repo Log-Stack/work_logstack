@@ -35,18 +35,24 @@ from directs.models import Message
 #     return HttpResponse(template.render(context,request))
 class DirectsListReceived(ListView):
 
-    model = Message
     template_name = 'directs_list_received.html'
     ordering = '-date'
     paginate_by = 10
 
+    def get_queryset(self):
+        return Message.objects.all().filter(recipient=self.request.user)
+
+
 
 class DirectsListSent(ListView):
 
-    model = Message
+    #model = Message
     template_name = 'directs_list_sent.html'
     ordering = '-date'
     paginate_by = 10
+
+    def get_queryset(self):
+        return Message.objects.all().filter(sender=self.request.user)
 
 
 
