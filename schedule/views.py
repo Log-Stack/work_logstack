@@ -344,12 +344,12 @@ def register_schedule_day(request, year, month, day):
 @login_required
 def register_schedule_list_week(request, year, month, day):
     user = User.objects.get(id=request.user.id)
+    user_profile = Profile.objects.get(user=user)
 
     week_start = datetime(year, month, day).strftime('%Y-%m-%d')
     week_end = (datetime(year, month, day) + relativedelta(days=6)).strftime('%Y-%m-%d')
     schedule = Schedule.objects.filter(user=user, date__range=[week_start, week_end]).order_by('date')
 
-    user_profile = Profile.objects.get(user=user)
     schedule_list = list(schedule)
     result = []
     for item in schedule_list:
@@ -363,6 +363,24 @@ def register_schedule_list_week(request, year, month, day):
         work_type = item.work_type
         result.append(
             {'date': date, 'start': start, 'end': end, 'work_type': work_type})
+
+    vacation_date = 0
+    start_date = user_profile.start_date
+    start_datetime = datetime(start_date.year, start_date.month, start_date.day)
+
+    week_start = datetime(year, month, day)
+    total_vacations_count = 0
+
+    total_vacations_count += (week_start.year - start_datetime.year) * 12
+    total_vacations_count += (week_start.month - start_datetime.month)
+    if week_start.day - start_datetime.day < 0:
+        total_vacations_count -= 1
+
+    used_vacations_count = Schedule.objects.annotate(num_work_types=Count('work_type')).filter(user=user,
+                                                                                               date__range=[start_date,
+                                                                                                            week_start],
+                                                                                               work_type=2).count()
+    print(used_vacations_count)
 
     return JsonResponse(result, safe=False)
 
