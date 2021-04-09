@@ -51,7 +51,7 @@ class DirectsListReceived(ListView):
             return redirect('directlist_received')
 
     def get_queryset(self):
-        return Message.objects.all().filter(recipient=self.request.user)
+        return Message.objects.all().filter(user=self.request.user,recipient=self.request.user)
 
 
 
@@ -72,7 +72,7 @@ class DirectsListSent(ListView):
             return redirect('directlist_sent')
 
     def get_queryset(self):
-        return Message.objects.all().filter(sender=self.request.user)
+        return Message.objects.all().filter(user=self.request.user,sender=self.request.user)
 
 
 
@@ -80,10 +80,12 @@ class DirectsListSent(ListView):
 @login_required
 def directs_send(request):
     if request.method == "POST":
-        from_user = request.user
+        from_user_id = request.user.id
+        from_user = User.objects.get(id=from_user_id)
         title = request.POST.get('title')
         body = request.POST.get('body')
         user_id = request.POST.get('user')
+        print(user_id)
         to_user = User.objects.get(id=user_id)
 
         Message.send_message(from_user,to_user,title,body)
