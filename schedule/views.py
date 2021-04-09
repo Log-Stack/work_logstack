@@ -308,12 +308,6 @@ def register_schedule_day(request, year, month, day):
 
                 week_start_date += relativedelta(days=1)
 
-            temp = request.POST.get('temp')
-
-            if temp == "work_hour_check":
-                return redirect('work_hour_check')
-            else:
-                return redirect('schedule-register-day', year, month, day)
     else:
         user = request.user
 
@@ -326,16 +320,12 @@ def register_schedule_day(request, year, month, day):
 
         form.fields['contents'].initial = ToDo.objects.get(schedule=schedule).contents
 
-        if request.headers['Referer'].split('/')[-2] == "work_hour_check":
-            temp = 'work_hour_check'
-        else:
-            temp = 'schedule-register-day'
+
 
         context = {
             'user': user,
             'selected_date': selected_date,
             'forms': form,
-            'temp': temp,
         }
 
         return HttpResponse(template.render(context, request))
