@@ -7,7 +7,7 @@ from django.utils import timezone
 
 class WorkHour(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    date = models.DateField(default=datetime.now())
+    date = models.DateField(default=timezone.now)
     start_time = models.DateTimeField(default=timezone.now)
     end_time = models.DateTimeField(blank=True, null=True)
 
