@@ -32,10 +32,11 @@
 <!--                <a href="{% url 'senddirect' %}" style="margin-right:20px;"><i style="float:right;" class="far fa-edit fa-2x"></i></a>-->
             </div>
         </div>
+
         <div class="tabs">
           <ul>
-              <li><a href="{% url 'directlist' %}">받은 쪽지함</a></li>
-              <li class="is-active">보낸 쪽지함</li>
+              <li><a href="{% url 'directlist_received' %}">받은 쪽지함</a></li>
+              <li class="is-active"><a href="{% url 'directlist_sent' %}">보낸 쪽지함</a></li>
               <li><a href="{% url 'senddirect' %}">쪽지 쓰기</a></li>
         <!--    <li><a href="{% url 'searchselect' %}">by Team</a></li>-->
 

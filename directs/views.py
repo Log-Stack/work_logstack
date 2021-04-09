@@ -9,29 +9,24 @@ from directs.models import Message
 
 
 @login_required
-def directs_list(request):
+def directs_list_received(request):
 
-    template = loader.get_template('directs_list.html')
+    template = loader.get_template('directs_list_received.html')
     context = {
 
     }
     return HttpResponse(template.render(context,request))
 
 
-# @login_required
-# def SendDirect(request):
-#     from_user = request.user
-#     to_user_username = request.POST.get('to_user')
-#     body = request.POST.get('body')
-#
-#     if request.method == 'POST':
-#         to_user = User.objects.get(username=to_user_username)
-#         Message.send_message(from_user, to_user, body)
-#         return redirect('inbox')
-#     else:
-#         HttpResponseBadRequest()
-#
-#
+@login_required
+def directs_list_sent(request):
+
+    template = loader.get_template('directs_list_sent.html')
+    context = {
+
+    }
+    return HttpResponse(template.render(context,request))
+
 
 
 
