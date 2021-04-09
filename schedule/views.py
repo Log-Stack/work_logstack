@@ -29,7 +29,7 @@ def index(request):
     day = datetime.now().day
     schedule_exist = False
     is_staff = True
-    schedule = Schedule.objects.filter(user=user, date=timezone.now().date())
+    schedule = Schedule.objects.filter(user=user, date=timezone.now().date(), work_type=1)
     if user.is_superuser:
         is_staff = False
     else:
@@ -580,6 +580,8 @@ def schedule_todo(request, user_id, date):
         user = Profile.objects.get(user_id=user_id)
         schedule = Schedule.objects.get(user_id=user_id, date=date)
         todo, flag = ToDo.objects.get_or_create(schedule=schedule)
+        start_time = schedule.start
+        end_time = schedule.end
 
         context = {
             'self_view': self_view,
@@ -587,6 +589,8 @@ def schedule_todo(request, user_id, date):
             'id': user_id,
             'date': date,
             'context': todo.contents,
+            'start_time': start_time,
+            'end_time': end_time,
         }
 
         return HttpResponse(template.render(context, request))
