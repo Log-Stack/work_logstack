@@ -29,7 +29,7 @@ def index(request):
     day = datetime.now().day
     schedule_exist = False
     is_staff = True
-    schedule = Schedule.objects.filter(user=user, date=timezone.now().date())
+    schedule = Schedule.objects.filter(user=user, date=timezone.now().date(), work_type=1)
     if user.is_superuser:
         is_staff = False
     else:
