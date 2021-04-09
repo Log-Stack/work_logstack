@@ -14,6 +14,7 @@ var total_time = null;
 
 var date = null;
 
+var vacation_count = null;
 var working_time = null;
 var start_time = null;
 var end_time = null;
@@ -56,18 +57,23 @@ var week_start_date = document.getElementById('week_start_date').value.split('-'
         dataType: 'json',
 
         success: function(data){
-                if(data.length == 0){
+                vacation = data.vacation
+                schedule = data.date
+
+                if(date.length == 0){
                     for(let i=0;i<7;i++){
                         work_type[i].value = 0;
                         start_time[i].value = null;
                         end_time[i].value = null;
                     }
                 }
-                for(let i=0;i<data.length;i++){
-                    work_type[i].value = data[i].work_type;
-                    start_time[i].value = data[i].start;
-                    end_time[i].value = data[i].end;
+                for(let i=0;i<date.length;i++){
+                    work_type[i].value = schedule[i].work_type;
+                    start_time[i].value = schedule[i].start;
+                    end_time[i].value = schedule[i].end;
                 };
+
+                vacation_count.innerText = vacation
 
                 CheckWorkTime();
             }
@@ -121,6 +127,7 @@ setFormDate()
 function getAllWorkTimes(){
 
 total_time = document.getElementsByClassName("sum_time")[0];
+vacation_count = document.getElementsByClassName("vacation_count")[0];
 
 date = document.getElementsByClassName("date");
 
