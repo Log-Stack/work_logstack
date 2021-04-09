@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'work_log',
     'rest_framework',
     'directs',
+    'django_seed',
 ]
 
 MIDDLEWARE = [

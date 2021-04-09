@@ -1,8 +1,10 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.core.paginator import Paginator
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import redirect
 from django.template import loader
+from django.views.generic import ListView
 
 from authy.models import Team, Profile
 from directs.models import Message
@@ -18,15 +20,27 @@ def directs_list_received(request):
     return HttpResponse(template.render(context,request))
 
 
-@login_required
-def directs_list_sent(request):
-    user = request.user
+# @login_required
+# def directs_list_sent(request):
+#     from_user = request.user
+#
+#     messages_sent = Message.objects.all().filter(sender=from_user)
+#     p = Paginator(messages_sent,10)
+#     print(p.num_pages)
+#     template = loader.get_template('directs_list_sent.html')
+#     context = {
+#         'messages':messages_sent,
+#         'pages':[p.num_pages],
+#     }
+#     return HttpResponse(template.render(context,request))
 
-    template = loader.get_template('directs_list_sent.html')
-    context = {
 
-    }
-    return HttpResponse(template.render(context,request))
+class DirectsListSent(ListView):
+
+    model = Message
+    template_name = 'directs_list_sent.html'
+    ordering = '-date'
+    paginate_by = 10
 
 
 
@@ -53,9 +67,9 @@ def directs_send(request):
 
 
 @login_required
-def directs_read(request):
-
-    template = loader.get_template('directs_read.html')
+def directs_read(request,pk):
+    print(pk)
+    template = loader.get_template('directs_detail.html')
     context = {
 
     }
