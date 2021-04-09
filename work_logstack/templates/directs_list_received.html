@@ -48,27 +48,26 @@
           <tr class="table_head">
               <th><div>선택</div></th>
             <th><div>제목</div></th>
-            <th><div>글쓴이</div></th>
+            <th><div>보낸 이</div></th>
             <th><div>날짜</div></th>
           </tr>
+          {% for message in message_list %}
 
+              <tr class="table_list">
+                  <td><input type="checkbox"></td>
+
+                  <td><a href="{% url 'readdirect' message.pk %}"><div name="title">{{ message.title }}</div></a></td>
+
+                <td><div name="user">{{ message.recipient }}</div></td>
+                <td><div name="date">{{ message.date|date:"m-d h:m" }}</div></td>
+
+              </tr>
+
+
+          {% endfor %}
         </table>
      </div>
-<!--        <div style="padding:10px; margin-top:10px;">-->
-<!--            <div  style="display:flex; flex-direction:row; margin:5px; ">-->
-<!--                <figure class="image is-64x64" style="margin-right:15px;">-->
-<!--                    <img class="is-rounded" src="https://bulma.io/images/placeholders/128x128.png">-->
-<!--                </figure>-->
-<!--                <a href="# style="display:flex; flex-direction:column;">-->
-<!--                    <span>김기환 팀장</span>-->
-<!--                    <strong><span class="content" style="margin-top:3px;">-->
-<!--                     다음주 금요일은 쉬세요.-->
-<!--                    </span></strong>-->
-<!--                </a>-->
 
-<!--                <span style="position:fixed; right:5%;">2021.04.07</span>-->
-
-<!--            </div>-->
 
 <!--            <hr>-->
 <!--            <div  style="display:flex; flex-direction:row; margin:5px;">-->
@@ -89,21 +88,24 @@
 <!--            <hr>-->
 <!--        </div>-->
 
-        <nav class="pagination" role="navigation" aria-label="pagination" style="position: fixed; bottom: 0; left:30%; right:30%;">
 
-              <ul class="pagination-list">
-                <li>
-                  <a class="pagination-link is-current" aria-label="Page 1" aria-current="page">1</a>
-                </li>
-                <li>
-                  <a class="pagination-link" aria-label="Goto page 2">2</a>
-                </li>
-                <li>
-                  <a class="pagination-link" aria-label="Goto page 3">3</a>
-                </li>
-              </ul>
-        </nav>
+<div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; first</a>
+            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+        {% endif %}
 
+        <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+    </span>
+</div>
 
 
 

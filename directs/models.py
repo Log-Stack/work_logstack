@@ -8,8 +8,8 @@ class Message(models.Model):
     #user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user')
     sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='from_user')
     recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='to_user')
-    title = models.CharField(max_length=200)
-    body = models.TextField(max_length=1000, blank=True, null=True)
+    title = models.CharField(max_length=100)
+    body = models.TextField(max_length=700, blank=True, null=True)
     date = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
 
