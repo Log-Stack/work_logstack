@@ -305,7 +305,6 @@ def register_schedule_day(request, year, month, day):
                     schedule, schedule_created = Schedule.objects.get_or_create(user=user, date=week_start_date,
                                                    start=start_local,
                                                    end=end_local, work_type=type_local)
-                    print(schedule_created, " in do_update")
 
                 week_start_date += relativedelta(days=1)
 
@@ -324,7 +323,6 @@ def register_schedule_day(request, year, month, day):
         form = NewScheduleDayForm()
 
         schedule, schedule_created = Schedule.objects.get_or_create(user=user, date=selected_date)
-        print(schedule_created, " in else")
 
         form.fields['contents'].initial = ToDo.objects.get(schedule=schedule).contents
 
@@ -536,7 +534,6 @@ def schedule_summary_team(request):
 
         events = Event.objects.filter(date__range=[day_start, day_end]).values()
         for event in events:
-            print(event['title'])
             result.append({'title': '일정 | ' + event['title'],
                            'start': event['date'].strftime('%Y-%m-%d'),
                            'end': event['date'].strftime('%Y-%m-%d'),
