@@ -18,7 +18,7 @@
 
         <div class="hero is-dark is-small" >
             <div class="hero-body" style="display:flex; flex-direction:row; ">
-                <a href="{% url 'directlist' %}" style="margin-right:20px; margin-top:7px;"><i style="font-color:white;" class="fas fa-chevron-left fa-1x"></i></a>
+                <a href="{% url 'directlist_received' %}" style="margin-right:20px; margin-top:7px;"><i style="font-color:white;" class="fas fa-chevron-left fa-1x"></i></a>
                 <p class="title" style="text-align:center; margin-right:20px;">
                     READ MESSAGES
 
@@ -30,13 +30,13 @@
 <article class="media" style="display:block; padding:30px;">
 
   <div style=" margin-bottom:6px; padding:10px;">
-      <span><strong>제목입니다.</strong></span><br>
-      <span style="font-size:12px; color: #8e8e8e;">보낸 날짜 : date</span>
+      <span><strong>{{ message.title }}</strong></span><br>
+      <span style="font-size:12px; color: #8e8e8e;">보낸 날짜 : {{ message.date }}</span>
   </div>
   <div class="media-content">
     <div class="field" style="height:500px; margin-bottom:35px; border: thin solid #EEEEEE; border-radius:10px; padding:10px;">
       <p class="control">
-        내용입니다.
+        {{ message.body|linebreaks }}
       </p>
     </div>
     <nav class="level">

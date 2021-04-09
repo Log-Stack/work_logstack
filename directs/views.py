@@ -67,10 +67,11 @@ def directs_send(request):
 
 
 @login_required
-def directs_read(request,pk):
-    print(pk)
+def directs_detail(request,pk):
+
+    message = Message.objects.get(pk=pk)
     template = loader.get_template('directs_detail.html')
     context = {
-
+        'message':message
     }
     return HttpResponse(template.render(context,request))
