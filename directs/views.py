@@ -70,6 +70,8 @@ def directs_send(request):
 def directs_detail(request,pk):
 
     message = Message.objects.get(pk=pk)
+    message.is_read = True
+    message.save()
     template = loader.get_template('directs_detail.html')
     context = {
         'message':message

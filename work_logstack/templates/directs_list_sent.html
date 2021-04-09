@@ -54,25 +54,17 @@
 
               <tr class="table_list">
                   <td><input type="checkbox"></td>
+
                   <td><a href="{% url 'readdirect' message.pk %}"><div name="title">{{ message.title }}</div></a></td>
+
                 <td><div name="user">{{ message.recipient }}</div></td>
-                <td><div name="date">{{ message.date }}</div></td>
+                <td><div name="date">{{ message.date|date:"m-d h:m" }}</div></td>
+
               </tr>
 
 
           {% endfor %}
-<!--          <tr class="table_list">-->
-<!--              <td><input type="checkbox"></td>-->
-<!--              <td><a href="#"><div name="title">Jill</div></a></td>-->
-<!--            <td><div name="user">Smith</div></td>-->
-<!--            <td><div name="date">50</div></td>-->
-<!--          </tr>-->
-<!--          <tr>-->
-<!--              <td><input type="checkbox"></td>-->
-<!--            <td><div>Eve</div></td>-->
-<!--            <td><div>Jackson</div></td>-->
-<!--            <td><div>94</div></td>-->
-<!--          </tr>-->
+
         </table>
      </div>
 <!--        <div style="padding:10px; margin-top:10px;">-->
