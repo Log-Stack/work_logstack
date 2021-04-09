@@ -12,8 +12,13 @@ class Message(models.Model):
     body = models.TextField(max_length=1000, blank=True, null=True)
     date = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        sender = self.sender
+        recipient = self.recipient
+        return f'from {sender} to {recipient}'
 
     def send_message(from_user, to_user, title, body):
+        #보낸 사람의 메세지
         sender_message = Message(
             user=from_user,
             sender=from_user,
@@ -23,11 +28,12 @@ class Message(models.Model):
             )
         sender_message.save()
 
+        #받은 사람의 메세지
         recipient_message = Message(
             user=to_user,
             sender=from_user,
             body=body,
-            recipient=from_user, )
+            recipient=to_user, )
         recipient_message.save()
         return sender_message
 
