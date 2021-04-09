@@ -101,10 +101,9 @@ document.getElementById('week_start_date').value = result_str;
 
 function setDateBefore(){
 var d = new Date(document.getElementById('week_start_date').value);
-d.setDate(d.getDate() - 1);
-if (d <= Date.now()){
-alert("이번주 이전 날자는 신청이 불가능 합니다.");
-return;
+if (d.setDate(d.getDate() - 1) <= Date.now()){
+    alert("오늘 이전 날자는 신청이 불가능 합니다.");
+    return;
 }
 result_str = d.getFullYear() + "-" +("0" +  (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
 document.getElementById('week_start_date').value = result_str;
