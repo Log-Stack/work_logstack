@@ -13,12 +13,78 @@
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css"
       />
+    <script src='http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery.min.js'></script>
 
+    <script>
+        function setTeamSelect(){
+        var team_select = document.getElementById('team_select');
+
+        team_select.addEventListener('change', setUserSelect);
+        $.ajax({
+                    type: 'GET',
+                    url: '/authy/api/teams/',
+                    dataType: 'json',
+
+                    success: function(data){
+                        for(let i = 1;i<=team_select.options.length;i++){
+                            team_select.remove(1);
+                        }
+                        for(let i = 0;i<data.length;i++){
+                        var temp = document.createElement("option");
+                        temp.value = data[i].id
+                        temp.text = data[i].name
+                        team_select.add(temp);
+                        }
+                    }
+                })
+        }
+
+        function setUserSelect(){
+        var user_select = document.getElementById('user_select');
+        var team_select = document.getElementById('team_select');
+
+        var team_id = team_select.options[team_select.selectedIndex].value;
+
+        $.ajax({
+                    type: 'GET',
+                    url: '/authy/byteam/' + team_id,
+                    dataType: 'json',
+
+                    success: function(data){
+                        var len = user_select.options.length;
+                        for(let i = 0;i<=len;i++){
+                            user_select.remove(0);
+                        }
+
+                        for(let i = 0;i<data.length;i++){
+                        var temp = document.createElement("option");
+                        temp.value = data[i].user_id
+                        temp.text = data[i].name
+                        user_select.add(temp);
+                        }
+                    },
+                    error:function(data){
+                        var len = user_select.options.length;
+                        for(let i = 0;i<=len;i++){
+                            user_select.remove(0);
+                        }
+                    }
+                })
+        }
+
+        function init(){
+            setTeamSelect();
+        }
+
+        window.addEventListener('DOMContentLoaded', init);
+
+    </script>
+</head>
 <body>
 
         <div class="hero is-dark is-small" >
             <div class="hero-body" style="display:flex; flex-direction:row; ">
-                <a href="{% url 'directlist' %}" style="margin-right:20px; margin-top:7px;"><i style="font-color:white;" class="fas fa-chevron-left fa-1x"></i></a>
+
                 <p class="title" style="text-align:center; margin-right:20px;">
                     SEND MESSAGES
 
@@ -26,20 +92,46 @@
 
             </div>
         </div>
+
+        <div class="tabs">
+          <ul>
+              <li><a href="{% url 'directlist_received' %}">받은 쪽지함</a></li>
+              <li><a href="{% url 'directlist_sent' %}">보낸 쪽지함</a></li>
+              <li class="is-active"><a href="{% url 'senddirect' %}">쪽지 쓰기</a></li>
+
+          </ul>
+        </div>
+
+
 <form method="post" role="form">
     {% csrf_token %}
-    <article class="media" style="display:block; padding:30px;">
+    <div style="padding:30px;">
+
+        <div style="width:120px;  display:flex; flex-direction:row;" class="select_team_user" >
+
+            <div class="select is-dark" style="margin-right:10px;">
+                <select id="team_select" name="team">
+                    <option value="-1" selected>team</option>
+                </select>
+            </div>
+            <div class="select is-dark">
+                <select id="user_select" name="user">
+                </select>
+            </div>
+        </div>
+    </div>
+    <article class="media" style="display:block; padding:0px 30px;">
       <input class="input" type="text" name="title" placeholder="제목을 입력해주세요." style="margin-bottom:20px;">
       <div class="media-content">
         <div class="field">
           <p class="control">
-            <textarea class="textarea" name="body" style="height:500px; margin-bottom:35px;" placeholder="내용을 작성해주세요."></textarea>
+            <textarea class="textarea" name="body" style="height:400px; margin-bottom:35px;" placeholder="내용을 작성해주세요."></textarea>
           </p>
         </div>
         <nav class="level">
           <div class="level-left">
             <div class="level-item">
-              <a class="button is-dark" type="submit">Submit</a>
+              <input class="button is-dark" type="submit" value="submit"></input>
             </div>
           </div>
         </nav>

@@ -1,0 +1,111 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100&display=swap" rel="stylesheet">
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css"
+      />
+<!--<script>-->
+<!--        function popup(){-->
+<!--            var url = "{% url 'senddirect' %}";-->
+<!--            var name = "쪽지 보내기";-->
+<!--            var option = "location=no, directories=no, status=no, toolbar=no, menubar=no, scrollbars=no, resizable=yes, width=550, height=800";-->
+<!--            window.open(url, name, option);-->
+<!--        }-->
+<!--</script>-->
+<body>
+
+        <div class="hero is-dark is-small" >
+            <div class="hero-body" style="display:flex; flex-direction:row; ">
+                <p class="title" style="text-align:center; margin-right:20px;">
+                    MESSAGES
+
+
+                </p>
+<!--                <a href="{% url 'senddirect' %}" style="margin-right:20px;"><i style="float:right;" class="far fa-edit fa-2x"></i></a>-->
+            </div>
+        </div>
+
+        <div class="tabs">
+          <ul>
+              <li class="is-active"><a href="#">받은 쪽지함</a></li>
+              <li><a href="{% url 'directlist_sent' %}">보낸 쪽지함</a></li>
+              <li><a href="{% url 'senddirect' %}">쪽지 쓰기</a></li>
+        <!--    <li><a href="{% url 'searchselect' %}">by Team</a></li>-->
+
+          </ul>
+        </div>
+     <div style="display:flex; justify-content:center;">
+        <table style="width:90%">
+          <tr class="table_head">
+              <th><div>선택</div></th>
+            <th><div>제목</div></th>
+            <th><div>글쓴이</div></th>
+            <th><div>날짜</div></th>
+          </tr>
+
+        </table>
+     </div>
+<!--        <div style="padding:10px; margin-top:10px;">-->
+<!--            <div  style="display:flex; flex-direction:row; margin:5px; ">-->
+<!--                <figure class="image is-64x64" style="margin-right:15px;">-->
+<!--                    <img class="is-rounded" src="https://bulma.io/images/placeholders/128x128.png">-->
+<!--                </figure>-->
+<!--                <a href="# style="display:flex; flex-direction:column;">-->
+<!--                    <span>김기환 팀장</span>-->
+<!--                    <strong><span class="content" style="margin-top:3px;">-->
+<!--                     다음주 금요일은 쉬세요.-->
+<!--                    </span></strong>-->
+<!--                </a>-->
+
+<!--                <span style="position:fixed; right:5%;">2021.04.07</span>-->
+
+<!--            </div>-->
+
+<!--            <hr>-->
+<!--            <div  style="display:flex; flex-direction:row; margin:5px;">-->
+<!--                <figure class="image is-64x64" style="margin-right:15px;">-->
+<!--                    <img class="is-rounded" src="https://bulma.io/images/placeholders/128x128.png">-->
+<!--                </figure>-->
+<!--                <a href="#" style="display:flex; flex-direction:column;">-->
+<!--                    <span>김기환 팀장</span>-->
+<!--                    <strong><span class="content" style="margin-top:3px;">-->
+<!--                     다음주 금요일은 쉬세요.-->
+<!--                    </span></strong>-->
+<!--                </a>-->
+
+<!--                <span style="position:fixed; right:5%;">2021.04.07</span>-->
+
+<!--            </div>-->
+
+<!--            <hr>-->
+<!--        </div>-->
+
+        <nav class="pagination" role="navigation" aria-label="pagination" style="position: fixed; bottom: 0; left:30%; right:30%;">
+
+              <ul class="pagination-list">
+                <li>
+                  <a class="pagination-link is-current" aria-label="Page 1" aria-current="page">1</a>
+                </li>
+                <li>
+                  <a class="pagination-link" aria-label="Goto page 2">2</a>
+                </li>
+                <li>
+                  <a class="pagination-link" aria-label="Goto page 3">3</a>
+                </li>
+              </ul>
+        </nav>
+
+
+
+
+</body>
+</html>
