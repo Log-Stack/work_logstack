@@ -98,14 +98,16 @@
             </div>
         </div>
     </div>
-    <br>
     <div class="box" style="height:84vh;" id="todo_context_div">
-            {% if self_view %}
-                {% csrf_token %}
-                <textarea style="height:100%;" class="textarea is-dark" id="todo_context_textarea">{{context}}</textarea>
-            {% else %}
-                <div class="context" id="todo_context">{{context}}</div>
-            {% endif %}
+        <time>Time: {{ start_time }} ~ {{ end_time }}</time>
+        <br>
+        <br>
+        {% if self_view %}
+            {% csrf_token %}
+            <textarea style="height:100%;" class="textarea is-dark" id="todo_context_textarea">{{context}}</textarea>
+        {% else %}
+            <div class="context" id="todo_context">{{context}}</div>
+        {% endif %}
     </div>
 </div>
 

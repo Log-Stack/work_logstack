@@ -55,6 +55,7 @@ class UserCreateForm(forms.ModelForm):
 
 class ProfileForm(forms.ModelForm):
     picture = forms.ImageField(required=False)
+    color = forms.CharField(widget=forms.TextInput(attrs={'class': 'is-dark', 'type': 'color'}))
 
     def __init__(self, *args, **kwargs):
         super(ProfileForm, self).__init__(*args, **kwargs)
@@ -65,11 +66,12 @@ class ProfileForm(forms.ModelForm):
         self.fields['phone_number'].required = True
         self.fields['email_address'].required = True
         self.fields['start_date'].required = True
+        self.fields['color'].required = True
 
 
     class Meta:
         model = Profile
-        fields = ['picture', 'name', 'birth_day', 'phone_number', 'email_address', 'start_date']
+        fields = ['picture', 'name', 'birth_day', 'phone_number', 'email_address', 'start_date', 'color', ]
 
 
 class ForbiddenUsers(object):

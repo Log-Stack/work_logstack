@@ -233,9 +233,12 @@ def work_logs_by_team(request, team_id, year, month):
             work_logs_pk = str(item.pk)
             name = str(user.name)
             create_date = str(item.create_time.date())
+            work_hour = WorkHour.objects.get(user=item.user, date=create_date)
+            start_time = work_hour.start_time.strftime("%H:%M")
+            end_time = work_hour.end_time.strftime("%H:%M")
             result.append(
                 {'url': '/work_log/detail/' + str(work_logs_pk) + '/',
-                 'title': name,
+                 'title': name + " | " + start_time + " ~ " + end_time,
                  'start': create_date,
                  'end': create_date,
                  'color': COLORS[user.id % len(COLORS)]
@@ -253,9 +256,12 @@ def work_logs_by_user(request, user_id, year, month):
         work_logs_pk = str(item.pk)
         name = str(user_profile.name)
         create_date = str(item.create_time.date())
+        work_hour = WorkHour.objects.get(user=item.user, date=create_date)
+        start_time = work_hour.start_time.strftime("%H:%M")
+        end_time = work_hour.end_time.strftime("%H:%M")
         result.append(
             {'url': '/work_log/detail/' + str(work_logs_pk) + '/',
-             'title': name,
+             'title': name + " | " + start_time + " ~ " + end_time,
              'start': create_date,
              'end': create_date,
              'color': COLORS[user.id % len(COLORS)],

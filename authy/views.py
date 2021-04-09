@@ -53,7 +53,7 @@ def login(request):
                 else:
                     return redirect('schedule-index')
             else:
-                schedule = Schedule.objects.filter(user=request.user, date=timezone.now().date())
+                schedule = Schedule.objects.filter(user=request.user, date=timezone.now().date(), work_type=1)
                 if schedule.exists():
                     return redirect('work_hour_check')
                 else:

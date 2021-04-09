@@ -60,12 +60,17 @@
                                     {{ form.picture }}<br><br>
                                 </div>
                             </div>
-                            <label for="name">Name</label><br>
 
-                            <input class="input" type="text" id="name" name="name" value="{% if profile.name %}{{ profile.name }}{% else %}{% endif %}">
-
-                            <br><br>
-
+                            <div class="columns">
+                                <div class="column is-8">
+                                    <label for="name">Name</label><br>
+                                    <input class="input" type="text" id="name" name="name" value="{% if profile.name %}{{ profile.name }}{% else %}{% endif %}">
+                                </div>
+                                <div class="column is-4">
+                                    <label for="color">Color</label><br>
+                                    <input class="input" type="color" id="color" name="color" value="{% if profile.color %}{{ profile.color }}{% else %}{% endif %}">
+                                </div>
+                            </div>
 
                             <label for="birth_day">Birth Date</label><br>
                             <input class="input" type="date" id="birth_day" name="birth_day"

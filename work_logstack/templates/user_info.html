@@ -52,22 +52,50 @@
     <div class="card">
       <div class="card-content">
         <div class="content">
-            <strong><p>Name</p></strong>
+
+            <div class="columns">
+                <div class="column">
+                    <strong><p>Name</p></strong>
+                    <br>
+                    {% if profile.name != None %}
+                    <p>{{ profile.name }}</p>
+                    {% else %}
+                    <p></p>
+                    {% endif %}
+                </div>
+                <div class="column">
+                    <strong><p>Color</p></strong>
+                    <br>
+                    {% if profile.color != None %}
+                    <p style="background-color: {{ profile.color }}; color: {{ profile.color }};">{{ profile.color }}</p>
+                    {% else %}
+                    <p></p>
+                    {% endif %}
+                </div>
+            </div>
             <br>
-            {% if profile.name != None %}
-            <p>{{ profile.name }}</p>
-            {% else %}
-            <p></p>
-            {% endif %}
-            <br><br>
-            <strong><p>Birth Date</p></strong>
+
+            <div class="columns">
+                <div class="column">
+                    <strong><p>Birth Date</p></strong>
+                    <br>
+                    {% if profile.birth_day != None %}
+                    <p>{{ profile.birth_day }}</p>
+                    {% else %}
+                    <p></p>
+                    {% endif %}
+                </div>
+                <div class="column">
+                    <strong><p>Start Date</p></strong>
+                     <br>
+                    {% if profile.start_date != None %}
+                    <p>{{ profile.start_date }}</p>
+                    {% else %}
+                    <p></p>
+                    {% endif %}
+                </div>
+            </div>
             <br>
-            {% if profile.birth_day != None %}
-            <p>{{ profile.birth_day }}</p>
-            {% else %}
-            <p></p>
-            {% endif %}
-            <br><br>
             <strong><p>Email Address</p></strong>
              <br>
             {% if profile.email_address != None %}
@@ -75,19 +103,11 @@
             {% else %}
             <p></p>
             {% endif %}
-            <br><br>
+            <br>
             <strong><p>Mobile</p></strong>
              <br>
             {% if profile.phone_number != None %}
             <p>{{ profile.phone_number }}</p>
-            {% else %}
-            <p></p>
-            {% endif %}
-            <br><br>
-            <strong><p>Start Date</p></strong>
-             <br>
-            {% if profile.start_date != None %}
-            <p>{{ profile.start_date }}</p>
             {% else %}
             <p></p>
             {% endif %}
