@@ -20,6 +20,7 @@ def directs_list_received(request):
 
 @login_required
 def directs_list_sent(request):
+    user = request.user
 
     template = loader.get_template('directs_list_sent.html')
     context = {
@@ -41,7 +42,7 @@ def directs_send(request):
 
         Message.send_message(from_user,to_user,title,body)
 
-        return redirect('directlist')
+        return redirect('directlist_received')
     else:
         HttpResponseBadRequest()
 

@@ -5,7 +5,7 @@ from django.db.models import Max
 
 # Create your models here.
 class Message(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user')
+    #user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user')
     sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='from_user')
     recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='to_user')
     title = models.CharField(max_length=200)
@@ -19,23 +19,23 @@ class Message(models.Model):
 
     def send_message(from_user, to_user, title, body):
         #보낸 사람의 메세지
-        sender_message = Message(
-            user=from_user,
+        message = Message(
+            #user=from_user,
             sender=from_user,
             recipient=to_user,
             title=title,
             body=body,
             )
-        sender_message.save()
+        message.save()
 
         #받은 사람의 메세지
-        recipient_message = Message(
-            user=to_user,
-            sender=from_user,
-            body=body,
-            recipient=to_user, )
-        recipient_message.save()
-        return sender_message
+        # recipient_message = Message(
+        #     #user=to_user,
+        #     sender=from_user,
+        #     body=body,
+        #     recipient=to_user, )
+        # recipient_message.save()
+        return message
 
     def get_messages(user):
         messages = Message.objects.filter(user=user).values('recipient').annotate(last=Max('date')).order_by('-last')
