@@ -11,6 +11,8 @@ class Message(models.Model):
     title = models.CharField(max_length=200)
     body = models.TextField(max_length=1000, blank=True, null=True)
     date = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+
 
     def __str__(self):
         sender = self.sender
