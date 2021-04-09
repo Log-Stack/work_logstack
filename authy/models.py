@@ -59,7 +59,7 @@ class Profile(models.Model):
     currently_employed = models.BooleanField(default=True)
     picture = models.ImageField(upload_to=user_directory_path, blank=True, null=True, verbose_name='Picture')
     start_date = models.DateField(blank=True, null=True)
-    color = models.TextField(default=random_string, null=True, blank=True)
+    color = models.TextField(default=random_string, unique=True)
 
     def __str__(self):
         return f"{self.team} - {self.user}"

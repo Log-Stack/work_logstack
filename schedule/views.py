@@ -355,7 +355,6 @@ def register_schedule_list_week(request, year, month, day):
     schedule_list = list(schedule)
     result = []
     for item in schedule_list:
-        name = str(user_profile.name)
         date = str(item.date)
         if item.start is not None and item.end is not None:
             start = str(item.start.strftime("%H:%M"))
@@ -373,16 +372,17 @@ def register_schedule_list_week(request, year, month, day):
 @login_required
 def schedule_list_user(request, user_id, year, month):
     user = User.objects.get(id=user_id)
-    schedule = Schedule.objects.filter(user=user, date__year=year, date__month=month).order_by('user')
-    schedule = schedule | Schedule.objects.filter(user=user, date__year=year,
-                                                  date__month=str(int(month) + 1)).order_by(
-        'user')
+
+    day_start = datetime(year, month, 1).strftime('%Y-%m-%d')
+    day_end = (datetime(year, month, 1) + relativedelta(months=2)).strftime('%Y-%m-%d')
+
+    schedule = Schedule.objects.filter(user=user, date__range=[day_start, day_end]).order_by('user')
+
     user_profile = Profile.objects.get(user=user)
     schedule_list = list(schedule)
     result = []
     for item in schedule_list:
         name = str(user_profile.name)
-        date = str(item.date)
         if item.start is not None and item.end is not None:
             start = str(item.start.strftime("%H:%M"))
             end = str(item.end.strftime("%H:%M"))
@@ -390,11 +390,9 @@ def schedule_list_user(request, user_id, year, month):
             start = "00:00"
             end = "00:00"
         work_type = item.work_type
-        title = ""
-        color = ""
         if work_type == 1:
             title = name + " | " + start + " : " + end
-            color = COLORS[item.user.id % len(COLORS)]
+            color = user_profile.color
         elif work_type == 2:
             title = name + " | 휴가"
             color = COLORS[5]
@@ -464,7 +462,7 @@ def schedule_list_team(request, team_id, year, month):
         url = "/schedule/todo/" + str(item.user.id) + "/" + item.date.strftime('%Y-%m-%d')
         result.append({'title': name + " | " + start + " ~ " + end, 'start': item.date.strftime('%Y-%m-%d'),
                        'end': item.date.strftime('%Y-%m-%d'),
-                       "color": COLORS[item.user.id % len(COLORS)],
+                       "color": Profile.objects.get(user=item.user.id).color,
                        'url': url})
 
     vacation_schedule = Schedule.objects.filter(user__in=users, date__range=[day_start, day_end], work_type=2) \
