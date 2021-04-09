@@ -10,14 +10,14 @@ from authy.models import Team, Profile
 from directs.models import Message
 
 
-@login_required
-def directs_list_received(request):
-
-    template = loader.get_template('directs_list_received.html')
-    context = {
-
-    }
-    return HttpResponse(template.render(context,request))
+# @login_required
+# def directs_list_received(request):
+#
+#     template = loader.get_template('directs_list_received.html')
+#     context = {
+#
+#     }
+#     return HttpResponse(template.render(context,request))
 
 
 # @login_required
@@ -33,6 +33,12 @@ def directs_list_received(request):
 #         'pages':[p.num_pages],
 #     }
 #     return HttpResponse(template.render(context,request))
+class DirectsListReceived(ListView):
+
+    model = Message
+    template_name = 'directs_list_received.html'
+    ordering = '-date'
+    paginate_by = 10
 
 
 class DirectsListSent(ListView):
