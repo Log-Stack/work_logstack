@@ -42,86 +42,152 @@
 
           </ul>
         </div>
-     <div style="display:flex; justify-content:center;">
-        <table style="width:90%">
-          <tr class="table_head">
-              <th><div>선택</div></th>
-            <th><div>제목</div></th>
-            <th><div>받는 이</div></th>
-            <th><div>날짜</div></th>
-          </tr>
-          {% for message in message_list %}
 
-              <tr class="table_list">
-                  <td><input type="checkbox"></td>
+<!--     <div style="display:flex; justify-content:center;">-->
+<!--        <table style="width:90%">-->
+<!--          <tr class="table_head">-->
+<!--              <th><div>선택</div></th>-->
+<!--            <th><div>제목</div></th>-->
+<!--            <th><div>받는 이</div></th>-->
+<!--            <th><div>날짜</div></th>-->
+<!--          </tr>-->
+<!--          {% for message in message_list %}-->
 
-                  <td><a href="{% url 'readdirect' message.pk %}"><div name="title">{{ message.title }}</div></a></td>
-
-                <td><div name="user">{{ message.recipient }}</div></td>
-                <td><div name="date">{{ message.date|date:"m-d h:m" }}</div></td>
-
-              </tr>
+<!--              <tr class="table_list">-->
+<!--                  <td><input type="checkbox"></td>-->
+<!--                  <td><a href="{% url 'readdirect' message.pk %}"><div name="title">{{ message.title }}</div></a></td>-->
+<!--                <td><div name="user">{{ message.recipient }}</div></td>-->
+<!--                <td><div name="date">{{ message.date|date:"m-d a f" }}</div></td>-->
+<!--              </tr>-->
 
 
-          {% endfor %}
+<!--          {% endfor %}-->
+<!--&lt;!&ndash;          <tr class="table_list">&ndash;&gt;-->
+<!--&lt;!&ndash;              <td><input type="checkbox"></td>&ndash;&gt;-->
+<!--&lt;!&ndash;              <td><a href="#"><div name="title">Jill</div></a></td>&ndash;&gt;-->
+<!--&lt;!&ndash;            <td><div name="user">Smith</div></td>&ndash;&gt;-->
+<!--&lt;!&ndash;            <td><div name="date">50</div></td>&ndash;&gt;-->
+<!--&lt;!&ndash;          </tr>&ndash;&gt;-->
+<!--&lt;!&ndash;          <tr>&ndash;&gt;-->
+<!--&lt;!&ndash;              <td><input type="checkbox"></td>&ndash;&gt;-->
+<!--&lt;!&ndash;            <td><div>Eve</div></td>&ndash;&gt;-->
+<!--&lt;!&ndash;            <td><div>Jackson</div></td>&ndash;&gt;-->
+<!--&lt;!&ndash;            <td><div>94</div></td>&ndash;&gt;-->
+<!--&lt;!&ndash;          </tr>&ndash;&gt;-->
+<!--        </table>-->
+<!--     </div>-->
+<!--&lt;!&ndash;        <div style="padding:10px; margin-top:10px;">&ndash;&gt;-->
+<!--&lt;!&ndash;            <div  style="display:flex; flex-direction:row; margin:5px; ">&ndash;&gt;-->
+<!--&lt;!&ndash;                <figure class="image is-64x64" style="margin-right:15px;">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <img class="is-rounded" src="https://bulma.io/images/placeholders/128x128.png">&ndash;&gt;-->
+<!--&lt;!&ndash;                </figure>&ndash;&gt;-->
+<!--&lt;!&ndash;                <a href="#" style="display:flex; flex-direction:column;">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <span>김기환 팀장</span>&ndash;&gt;-->
+<!--&lt;!&ndash;                    <strong><span class="content" style="margin-top:3px;">&ndash;&gt;-->
+<!--&lt;!&ndash;                     다음주 금요일은 쉬세요.&ndash;&gt;-->
+<!--&lt;!&ndash;                    </span></strong>&ndash;&gt;-->
+<!--&lt;!&ndash;                </a>&ndash;&gt;-->
 
-        </table>
-     </div>
-<!--        <div style="padding:10px; margin-top:10px;">-->
-<!--            <div  style="display:flex; flex-direction:row; margin:5px; ">-->
-<!--                <figure class="image is-64x64" style="margin-right:15px;">-->
-<!--                    <img class="is-rounded" src="https://bulma.io/images/placeholders/128x128.png">-->
-<!--                </figure>-->
-<!--                <a href="#" style="display:flex; flex-direction:column;">-->
-<!--                    <span>김기환 팀장</span>-->
-<!--                    <strong><span class="content" style="margin-top:3px;">-->
-<!--                     다음주 금요일은 쉬세요.-->
-<!--                    </span></strong>-->
-<!--                </a>-->
+<!--&lt;!&ndash;                <span style="position:fixed; right:5%;">2021.04.07</span>&ndash;&gt;-->
 
-<!--                <span style="position:fixed; right:5%;">2021.04.07</span>-->
+<!--&lt;!&ndash;            </div>&ndash;&gt;-->
 
-<!--            </div>-->
+<!--&lt;!&ndash;            <hr>&ndash;&gt;-->
+<!--&lt;!&ndash;            <div  style="display:flex; flex-direction:row; margin:5px;">&ndash;&gt;-->
+<!--&lt;!&ndash;                <figure class="image is-64x64" style="margin-right:15px;">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <img class="is-rounded" src="https://bulma.io/images/placeholders/128x128.png">&ndash;&gt;-->
+<!--&lt;!&ndash;                </figure>&ndash;&gt;-->
+<!--&lt;!&ndash;                <a href="#" style="display:flex; flex-direction:column;">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <span>김기환 팀장</span>&ndash;&gt;-->
+<!--&lt;!&ndash;                    <strong><span class="content" style="margin-top:3px;">&ndash;&gt;-->
+<!--&lt;!&ndash;                     다음주 금요일은 쉬세요.&ndash;&gt;-->
+<!--&lt;!&ndash;                    </span></strong>&ndash;&gt;-->
+<!--&lt;!&ndash;                </a>&ndash;&gt;-->
 
-<!--            <hr>-->
-<!--            <div  style="display:flex; flex-direction:row; margin:5px;">-->
-<!--                <figure class="image is-64x64" style="margin-right:15px;">-->
-<!--                    <img class="is-rounded" src="https://bulma.io/images/placeholders/128x128.png">-->
-<!--                </figure>-->
-<!--                <a href="#" style="display:flex; flex-direction:column;">-->
-<!--                    <span>김기환 팀장</span>-->
-<!--                    <strong><span class="content" style="margin-top:3px;">-->
-<!--                     다음주 금요일은 쉬세요.-->
-<!--                    </span></strong>-->
-<!--                </a>-->
+<!--&lt;!&ndash;                <span style="position:fixed; right:5%;">2021.04.07</span>&ndash;&gt;-->
 
-<!--                <span style="position:fixed; right:5%;">2021.04.07</span>-->
+<!--&lt;!&ndash;            </div>&ndash;&gt;-->
 
-<!--            </div>-->
-
-<!--            <hr>-->
-<!--        </div>-->
-
-
-<div class="pagination">
-    <span class="step-links">
-        {% if page_obj.has_previous %}
-            <a href="?page=1">&laquo; first</a>
-            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
-        {% endif %}
-
-        <span class="current">
-            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-        </span>
-
-        {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}">next</a>
-            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
-        {% endif %}
-    </span>
-</div>
+<!--&lt;!&ndash;            <hr>&ndash;&gt;-->
+<!--&lt;!&ndash;        </div>&ndash;&gt;-->
 
 
+<!--<div class="pagination">-->
+<!--    <span class="step-links">-->
+<!--        {% if page_obj.has_previous %}-->
+<!--            <a href="?page=1">&laquo; first</a>-->
+<!--            <a href="?page={{ page_obj.previous_page_number }}">previous</a>-->
+<!--        {% endif %}-->
 
+<!--        <span class="current">-->
+<!--            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.-->
+<!--        </span>-->
+
+<!--        {% if page_obj.has_next %}-->
+<!--            <a href="?page={{ page_obj.next_page_number }}">next</a>-->
+<!--            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>-->
+<!--        {% endif %}-->
+<!--    </span>-->
+<!--</div>-->
+
+        <div style="display:flex; justify-content:center;">
+            <table class="table is-hoverable" style="width:90%">
+                <thead>
+                <tr>
+                    <th>
+                        <div>선택</div>
+                    </th>
+                    <th>
+                        <div>제목</div>
+                    </th>
+                    <th>
+                        <div>받는 이</div>
+                    </th>
+                    <th>
+                        <div>날짜</div>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for message in message_list %}
+
+                <tr>
+                    <td><input type="checkbox"></td>
+                    <td><a href="{% url 'readdirect' message.pk %}">
+                        <div name="title" style="width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ message.title }}</div>
+                    </a></td>
+                    <td>
+                        <div name="user" style="width:80px;">{{ message.recipient }}</div>
+                    </td>
+                    <td>
+                        <div name="date">{{ message.date|date:"m-d a f" }}</div>
+                    </td>
+                </tr>
+
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <br>
+        <div style="display:flex; justify-content:center;">
+            <div class="pagination">
+                <span class="step-links">
+                    {% if page_obj.has_previous %}
+                        <a href="?page=1">&laquo; first</a>
+                        <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                    {% endif %}
+
+                    <span class="current">
+                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                    </span>
+
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}">next</a>
+                        <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+        <br>
 </body>
 </html>
