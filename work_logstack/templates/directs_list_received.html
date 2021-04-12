@@ -51,10 +51,12 @@
             <th><div>보낸 이</div></th>
             <th><div>날짜</div></th>
           </tr>
+           <form method="post">
+            {% csrf_token %}
           {% for message in message_list %}
 
               <tr class="table_list">
-                  <td><input type="checkbox"></td>
+                  <td><input type="checkbox" name="delete" value="{{message.id}}"></td>
 
                   <td><a href="{% url 'readdirect' message.pk %}"><div name="title">{{ message.title }}</div></a></td>
 
@@ -65,6 +67,8 @@
 
 
           {% endfor %}
+               <button class="button is-light">삭제</button>
+               </form>
         </table>
      </div>
 
@@ -106,6 +110,8 @@
         {% endif %}
     </span>
 </div>
+
+
 
 
 

@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.http import HttpResponse, HttpResponseBadRequest
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render, get_object_or_404
 from django.template import loader
 from django.views.generic import ListView
 
@@ -39,8 +39,19 @@ class DirectsListReceived(ListView):
     ordering = '-date'
     paginate_by = 10
 
+    def post(self, request, *args, **kwargs):
+        if request.POST:
+            q = request.POST.getlist('delete')
+            for pk in q:
+                message = get_object_or_404(Message, pk=pk)
+                message.delete()
+
+
+
+            return redirect('directlist_received')
+
     def get_queryset(self):
-        return Message.objects.all().filter(recipient=self.request.user)
+        return Message.objects.all().filter(user=self.request.user,recipient=self.request.user)
 
 
 
@@ -51,8 +62,17 @@ class DirectsListSent(ListView):
     ordering = '-date'
     paginate_by = 10
 
+    def post(self, request, *args, **kwargs):
+        if request.POST:
+            q = request.POST.getlist('delete')
+            for pk in q:
+                message = get_object_or_404(Message, pk=pk)
+                message.delete()
+
+            return redirect('directlist_sent')
+
     def get_queryset(self):
-        return Message.objects.all().filter(sender=self.request.user)
+        return Message.objects.all().filter(user=self.request.user,sender=self.request.user)
 
 
 
@@ -60,15 +80,17 @@ class DirectsListSent(ListView):
 @login_required
 def directs_send(request):
     if request.method == "POST":
-        from_user = request.user
+        from_user_id = request.user.id
+        from_user = User.objects.get(id=from_user_id)
         title = request.POST.get('title')
         body = request.POST.get('body')
         user_id = request.POST.get('user')
+        print(user_id)
         to_user = User.objects.get(id=user_id)
 
         Message.send_message(from_user,to_user,title,body)
 
-        return redirect('directlist_received')
+        return redirect('directlist_sent')
     else:
         HttpResponseBadRequest()
 
