@@ -36,7 +36,6 @@ from directs.models import Message
 class DirectsListReceived(ListView):
 
     template_name = 'directs_list_received.html'
-    ordering = '-date'
     paginate_by = 10
 
     def post(self, request, *args, **kwargs):
@@ -51,7 +50,7 @@ class DirectsListReceived(ListView):
             return redirect('directlist_received')
 
     def get_queryset(self):
-        return Message.objects.all().filter(user=self.request.user,recipient=self.request.user)
+        return Message.objects.all().filter(user=self.request.user,recipient=self.request.user).order_by('-date')
 
 
 
@@ -59,7 +58,6 @@ class DirectsListSent(ListView):
 
     #model = Message
     template_name = 'directs_list_sent.html'
-    ordering = '-date'
     paginate_by = 10
 
     def post(self, request, *args, **kwargs):
@@ -72,7 +70,7 @@ class DirectsListSent(ListView):
             return redirect('directlist_sent')
 
     def get_queryset(self):
-        return Message.objects.all().filter(user=self.request.user,sender=self.request.user)
+        return Message.objects.all().filter(user=self.request.user,sender=self.request.user).order_by('-date')
 
 
 
