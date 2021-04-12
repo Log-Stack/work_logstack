@@ -1,0 +1,80 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100&display=swap" rel="stylesheet">
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css"
+      />
+    <script src='http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery.min.js'></script>
+
+</head>
+<body>
+
+        <div class="hero is-dark is-small" >
+            <div class="hero-body" style="display:flex; flex-direction:row; ">
+
+                <p class="title" style="text-align:center; margin-right:20px;">
+                    SEND MESSAGES
+
+                </p>
+
+            </div>
+        </div>
+
+        <div class="tabs">
+          <ul>
+              <li><a href="{% url 'directlist_received' %}">받은 쪽지함</a></li>
+              <li><a href="{% url 'directlist_sent' %}">보낸 쪽지함</a></li>
+              <li class="is-active"><a href="{% url 'senddirect' %}">쪽지 쓰기</a></li>
+
+          </ul>
+        </div>
+
+
+<form method="post" role="form">
+    {% csrf_token %}
+    <div style="padding:30px;">
+
+<!--        <div style="width:120px;  display:flex; flex-direction:row;" class="select_team_user" >-->
+
+<!--            <div class="select is-dark" style="margin-right:10px;">-->
+<!--&lt;!&ndash;                <select id="team_select" name="team">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <option value="-1" selected>team</option>&ndash;&gt;-->
+<!--&lt;!&ndash;                </select>&ndash;&gt;-->
+<!--            </div>-->
+<!--            <div class="select is-dark">-->
+<!--                <select id="user_select" name="user">-->
+<!--                </select>-->
+<!--            </div>-->
+<!--        </div>-->
+        <p>받는 사람 : {{ receiver }}</p>
+    </div>
+    <article class="media" style="display:block; padding:0px 30px;">
+      <input class="input" type="text" name="title" placeholder="제목을 입력해주세요." style="margin-bottom:20px;">
+      <div class="media-content">
+        <div class="field">
+          <p class="control">
+            <textarea class="textarea" name="body" style="height:400px; margin-bottom:35px;" placeholder="내용을 작성해주세요."></textarea>
+          </p>
+        </div>
+        <nav class="level">
+          <div class="level-left">
+            <div class="level-item">
+              <input class="button is-dark" type="submit" value="submit"></input>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </article>
+</form>
+
+</body>
+</html>

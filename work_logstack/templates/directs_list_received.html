@@ -43,30 +43,37 @@
 
           </ul>
         </div>
-     <div style="display:flex; justify-content:center;">
-        <table style="width:90%">
-          <tr class="table_head">
-              <th><div>선택</div></th>
-            <th><div>제목</div></th>
-            <th><div>보낸 이</div></th>
-            <th><div>날짜</div></th>
-          </tr>
-          {% for message in message_list %}
-
-              <tr class="table_list">
-                  <td><input type="checkbox"></td>
-
-                  <td><a href="{% url 'readdirect' message.pk %}"><div name="title">{{ message.title }}</div></a></td>
-
-                <td><div name="user">{{ message.recipient }}</div></td>
-                <td><div name="date">{{ message.date|date:"m-d h:m" }}</div></td>
-
-              </tr>
 
 
-          {% endfor %}
-        </table>
-     </div>
+
+<!--     <div style="display:flex; justify-content:center;">-->
+<!--        <table style="width:90%">-->
+<!--          <tr class="table_head">-->
+<!--              <th><div>선택</div></th>-->
+<!--            <th><div>제목</div></th>-->
+<!--            <th><div>보낸 이</div></th>-->
+<!--            <th><div>날짜</div></th>-->
+<!--          </tr>-->
+<!--           <form method="post">-->
+<!--            {% csrf_token %}-->
+<!--          {% for message in message_list %}-->
+
+<!--              <tr class="table_list">-->
+<!--                  <td><input type="checkbox" name="delete" value="{{message.id}}"></td>-->
+
+<!--                  <td><a href="{% url 'readdirect' message.pk %}"><div name="title">{{ message.title }}</div></a></td>-->
+
+<!--                <td><div name="user">{{ message.recipient }}</div></td>-->
+<!--                <td><div name="date">{{ message.date|date:"m-d h:m" }}</div></td>-->
+
+<!--              </tr>-->
+
+
+<!--          {% endfor %}-->
+<!--               <button class="button is-light">삭제</button>-->
+<!--               </form>-->
+<!--        </table>-->
+<!--     </div>-->
 
 
 <!--            <hr>-->
@@ -89,23 +96,92 @@
 <!--        </div>-->
 
 
-<div class="pagination">
-    <span class="step-links">
-        {% if page_obj.has_previous %}
-            <a href="?page=1">&laquo; first</a>
-            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
-        {% endif %}
+        <div style="display:flex; justify-content:center;">
+            <table class="table is-hoverable" style="width:90%">
+                <thead>
+                <tr>
+                    <th>
+                        <div>선택</div>
+                    </th>
+                    <th>
+                        <div>제목</div>
+                    </th>
+                    <th>
+                        <div>보낸 이</div>
+                    </th>
+                    <th>
+                        <div>날짜</div>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <form method="post">
+                    {% csrf_token %}
+                {% for message in message_list %}
 
-        <span class="current">
-            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-        </span>
+                <tr>
+                    <td><input type="checkbox" name="delete" value="{{message.id}}"></td>
+                    <td><a href="{% url 'readdirect' message.pk %}">
+                        <div name="title" style="width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ message.title }}</div>
+                    </a></td>
+                    <td>
+                        <div name="user" style="width:80px;">{{ message.sender }}</div>
+                    </td>
+                    <td>
+                        <div name="date">{{ message.date|date:"m-d a f" }}</div>
+                    </td>
+                </tr>
 
-        {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}">next</a>
-            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
-        {% endif %}
-    </span>
-</div>
+                {% endfor %}
+
+                </tbody>
+            </table>
+        </div>
+        <br>
+
+
+<!--<div class="pagination">-->
+<!--    <span class="step-links">-->
+<!--        {% if page_obj.has_previous %}-->
+<!--            <a href="?page=1">&laquo; first</a>-->
+<!--            <a href="?page={{ page_obj.previous_page_number }}">previous</a>-->
+<!--        {% endif %}-->
+
+<!--        <span class="current">-->
+<!--            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.-->
+<!--        </span>-->
+
+<!--        {% if page_obj.has_next %}-->
+<!--            <a href="?page={{ page_obj.next_page_number }}">next</a>-->
+<!--            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>-->
+<!--        {% endif %}-->
+<!--    </span>-->
+<!--</div>-->
+
+        <button class="button is-light" style="margin-left:5%;">삭제</button>
+        </form>
+
+        <br>
+        <br>
+        <div class="buttons is-centered">
+            {% if page_obj.has_previous %}
+                <a href="?page=1" class="button is-dark is-light">&laquo; first</a>
+                <a href="?page={{ page_obj.previous_page_number }}" class="button is-dark">&lt;</a>
+            {% endif %}
+
+<!--            <span class="button" style="pointer-events: none; outline: none;">-->
+<!--                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.-->
+<!--            </span>-->
+
+            <span style="margin-bottom: 0.5rem; margin-left: 0.5rem; margin-right: 0.5rem;">
+                {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="button is-dark">&gt;</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}" class="button is-dark is-light">last &raquo;</a>
+            {% endif %}
+        </div>
 
 
 
