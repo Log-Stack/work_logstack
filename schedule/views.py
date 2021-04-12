@@ -70,13 +70,6 @@ def schedule_day(request, team_id, date):
 
 @login_required
 def schedule_day_user_work_time(request):
-    # team_id와 date를 받으면 팀원 리스트와 팀원의 해당 일자 예상 근무를 반환
-    # events: [
-    # {"resourceId":"team_id","title":"team_name",
-    # "start":"2021-04-02T12:00:00+00:00","end":"2021-04-03T06:00:00+00:00",
-    # "color" : COLORS[item.user.id % len(COLORS)]},
-    # ...
-    # ]
     team_id = request.GET.get('team_id')
     date = request.GET.get('selected_date')
 
@@ -108,19 +101,20 @@ def schedule_day_user_work_time(request):
             'title': Profile.objects.get(user=item.user).name,
             'start': item.date.strftime('%Y-%m-%d') + "T" + item.start.isoformat(timespec='seconds') + "+00:00",
             'end': item.date.strftime('%Y-%m-%d') + "T" + item.end.isoformat(timespec='seconds') + "+00:00",
-            'color': COLORS[item.user.id % len(COLORS)],
+            'color': Profile.objects.get(user=item.user).color,
             'url': url,
             'description': ToDo.objects.get(schedule=item).contents,
         })
 
     vacation_times = Schedule.objects.filter(user__in=users, date=selected_date, work_type=2)
     for item in vacation_times.values_list("user_id", "date", "start", "end"):
+        print(item)
         events.append({
             'resourceId': str(item[0]),
             'title': "휴가",
             'start': str(item[1]),
             'end': str(item[1]),
-            'color': COLORS[item[0] % len(COLORS)],
+            'color': Profile.objects.get(user_id=item[0]).color,
         })
     result = {"resources": resources, 'event': events}
 
