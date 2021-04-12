@@ -167,8 +167,6 @@
                 </tr>
 
                 {% endfor %}
-                    <button class="button is-light">삭제</button>
-               </form>
                 </tbody>
             </table>
         </div>
@@ -194,6 +192,11 @@
 <!--        </div>-->
 <!--        <br>-->
 
+        <button class="button is-light" style="margin-left:5%;">삭제</button>
+        </form>
+
+        <br>
+        <br>
         <div class="buttons is-centered">
             {% if page_obj.has_previous %}
                 <a href="?page=1" class="button is-dark is-light">&laquo; first</a>
