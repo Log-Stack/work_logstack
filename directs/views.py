@@ -99,6 +99,32 @@ def directs_send(request):
     return HttpResponse(template.render({},request))
 
 
+@login_required
+def directs_reply(request, pk):
+    message_id = pk
+    receiver = Message.objects.get(pk=pk).sender
+
+    if request.method == "POST":
+        from_user_id = request.user.id
+        from_user = User.objects.get(id=from_user_id)
+        title = request.POST.get('title')
+        body = request.POST.get('body')
+        to_user = User.objects.get(username=receiver)
+
+        Message.send_message(from_user,to_user,title,body)
+
+        return redirect('directlist_sent')
+    else:
+        HttpResponseBadRequest()
+
+    context = {
+        'receiver' : receiver
+    }
+    template = loader.get_template('directs_reply.html')
+    return HttpResponse(template.render(context,request))
+
+
+
 
 @login_required
 def directs_detail(request,pk):
