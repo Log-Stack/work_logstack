@@ -60,7 +60,7 @@ class ProfileForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ProfileForm, self).__init__(*args, **kwargs)
         # Making location required
-        self.fields['picture'].required = True
+        # self.fields['picture'].required = True
         self.fields['name'].required = True
         self.fields['birth_day'].required = True
         self.fields['phone_number'].required = True
