@@ -56,6 +56,8 @@ class UserCreateForm(forms.ModelForm):
 class ProfileForm(forms.ModelForm):
     picture = forms.ImageField(required=False)
     color = forms.CharField(widget=forms.TextInput(attrs={'class': 'is-dark', 'type': 'color'}))
+    start_date = forms.DateField(widget=forms.DateInput(attrs={'type': "date", 'class': 'input', 'id': 'start_date', 'name': 'start_date'}))
+    birth_day = forms.DateField(widget=forms.DateInput(attrs={'type': "date", 'class': 'input', 'id': 'birth_day', 'name': 'birth_day'}))
 
     def __init__(self, *args, **kwargs):
         super(ProfileForm, self).__init__(*args, **kwargs)

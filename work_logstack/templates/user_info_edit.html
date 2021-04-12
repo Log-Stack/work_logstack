@@ -56,9 +56,10 @@
                             {% csrf_token %}
                             <div class="field">
                                 프로필 사진 등록<br><br>
-                                <div class="file is-boxed">
-                                    {{ form.picture }}<br><br>
-                                </div>
+<!--                                <div class="file is-boxed">-->
+<!--                                    {{ form.picture }}<br><br>-->
+<!--                                </div>-->
+                                {{ form.picture }}
                             </div>
 
                             <div class="columns">
@@ -73,8 +74,10 @@
                             </div>
 
                             <label for="birth_day">Birth Date</label><br>
-                            <input class="input" type="date" id="birth_day" name="birth_day"
-                                   value="{{ profile.birth_day }}"><br><br>
+<!--                            <input class="input" type="date" id="birth_day" name="birth_day"-->
+<!--                                   value="{{ profile.birth_day }}">-->
+                            {{ form.birth_day }}
+                            <br><br>
                             <!--                    2021년 3월 12일-->
 
                             <label for="email_address">Email Address</label><br>
@@ -86,8 +89,10 @@
                             <br><br>
 
                             <label for="start_date">Start Date</label><br>
-                            <input class="input" type="date" id="start_date" name="start_date"
-                                   value="{{ profile.start_date }}"><br><br><br>
+<!--                            <input class="input" type="date" id="start_date" name="start_date"-->
+<!--                                   value="{{ profile.start_date }}">-->
+                            {{ form.start_date }}
+                            <br><br><br>
 
                             {% if form.errors %}
                                 {% for field in form %}
