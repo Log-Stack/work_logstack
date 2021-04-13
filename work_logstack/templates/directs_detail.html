@@ -13,7 +13,15 @@
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css"
       />
-
+</head>
+<script>
+    function popup(){
+    var url = "{% url 'replydirects' message.pk %}"
+    var name = "답장 하기";
+    var option = "location=no, directories=no, status=no, toolbar=no, menubar=no, scrollbars=no, resizable=yes, width=550, height=800";
+    window.open(url, name, option);
+}
+</script>
 <body>
 
         <div class="hero is-dark is-small" >
@@ -47,7 +55,12 @@
     <nav class="level">
       <div class="level-left" >
         <div class="level-item">
-          <a href="{% url 'replydirects' message.pk %}" class="button is-dark">답장</a>
+            {% if user != message.sender %}
+              <a href="javascript:popup()" class="button is-dark">답장</a>
+
+<!--          <a href="{% url 'replydirects' message.pk %}" class="button is-dark">답장</a>-->
+             {% endif %}
+            <a href="#" class="button is-dark">삭제</a>
         </div>
       </div>
     </nav>
