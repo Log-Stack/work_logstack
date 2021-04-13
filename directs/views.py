@@ -135,3 +135,12 @@ def directs_detail(request,pk):
         'message':message
     }
     return HttpResponse(template.render(context,request))
+
+
+@login_required
+def checkDirects(request):
+    directs_count = 0
+    if request.user.is_authenticated:
+        directs_count = Message.objects.all().filter(user=request.user,recipient=request.user,is_read=False).count()
+
+    return {'directs_count': directs_count}

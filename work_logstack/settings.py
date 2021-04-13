@@ -71,6 +71,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'authy.views.check_manager',
+                'directs.views.checkDirects',
             ],
         },
     },
