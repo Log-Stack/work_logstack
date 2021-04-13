@@ -1,4 +1,5 @@
 import os
+import random
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -37,6 +38,12 @@ class TeamManager(models.Model):
     date = models.DateField(auto_now_add=True)
 
 
+
+
+
+def random_string():
+    return "#" + hex(random.randint(0, 16777215))[2:]
+
 class Profile(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     # blank = True 추가
@@ -52,7 +59,7 @@ class Profile(models.Model):
     currently_employed = models.BooleanField(default=True)
     picture = models.ImageField(upload_to=user_directory_path, blank=True, null=True, verbose_name='Picture')
     start_date = models.DateField(blank=True, null=True)
-    color = models.TextField(unique=True, null=True, blank=True)
+    color = models.TextField(default=random_string, unique=True)
 
     def __str__(self):
         return f"{self.team} - {self.user}"

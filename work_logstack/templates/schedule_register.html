@@ -14,6 +14,7 @@ var total_time = null;
 
 var date = null;
 
+var vacation_count = null;
 var working_time = null;
 var start_time = null;
 var end_time = null;
@@ -56,18 +57,23 @@ var week_start_date = document.getElementById('week_start_date').value.split('-'
         dataType: 'json',
 
         success: function(data){
-                if(data.length == 0){
+                vacation = data.vacation
+                schedule = data.date
+
+                if(date.length == 0){
                     for(let i=0;i<7;i++){
                         work_type[i].value = 0;
                         start_time[i].value = null;
                         end_time[i].value = null;
                     }
                 }
-                for(let i=0;i<data.length;i++){
-                    work_type[i].value = data[i].work_type;
-                    start_time[i].value = data[i].start;
-                    end_time[i].value = data[i].end;
+                for(let i=0;i<date.length;i++){
+                    work_type[i].value = schedule[i].work_type;
+                    start_time[i].value = schedule[i].start;
+                    end_time[i].value = schedule[i].end;
                 };
+
+                vacation_count.innerText = vacation
 
                 CheckWorkTime();
             }
@@ -121,6 +127,7 @@ setFormDate()
 function getAllWorkTimes(){
 
 total_time = document.getElementsByClassName("sum_time")[0];
+vacation_count = document.getElementsByClassName("vacation_count")[0];
 
 date = document.getElementsByClassName("date");
 
@@ -230,7 +237,7 @@ window.addEventListener('DOMContentLoaded', init);
             <div class="column">
                 <div class="box">
                     <div class="columns">
-                        <div class="column select_date">
+                        <div class="column is-3 select_date" style="align-items: left;">
                             <div class="field has-addons">
                                 <p class="control">
                                     <button class="button" type="button" onclick="setDateBefore()">
@@ -251,9 +258,12 @@ window.addEventListener('DOMContentLoaded', init);
                                 </p>
                             </div>
                         </div>
-<!--                        <div class="column is-4">-->
-<!--                            <b class="title is-3" style="padding-right:130px;">이번 주 근무</b>-->
-<!--                        </div>-->
+                        <div class="column is-5"></div>
+                        <div class="column is-4">
+                            <div class="notification is-dark" style="height:50px; text-align: center;">
+                                <h1 class="subtitle is-4 vacation_count" style="margin-top : -8px;">남은 휴가 / 총 휴가 | 10 / 12</h1>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="box">
@@ -515,12 +525,12 @@ window.addEventListener('DOMContentLoaded', init);
                             <h3 class="title is-3">총 예정 근무 시간</h3>
                         </div>
                         <div class="column is-4">
-                            <div class="notification is-dark">
-                                <h1 class="title is-2"><p class="sum_time">00:00</p></h1>
+                            <div class="notification is-dark is-vcentered" style="height:80px; text-align: center;">
+                                <h1 class="title is-2" style="margin-top : -2px;"><p class="sum_time">00:00</p></h1>
                             </div>
                         </div>
                         <div class="column is-4">
-                            <button type="submit" class="button is-dark is-large" style="height:85px">
+                            <button type="submit" class="button is-dark is-large" >
                                 <h1 class="title is-3" style="color:white;">등록</p></h1>
                             </button>
                         </div>

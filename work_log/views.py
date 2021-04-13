@@ -233,15 +233,21 @@ def work_logs_by_team(request, team_id, year, month):
             work_logs_pk = str(item.pk)
             name = str(user.name)
             create_date = str(item.create_time.date())
-            work_hour = WorkHour.objects.get(user=item.user, date=create_date)
-            start_time = work_hour.start_time.strftime("%H:%M")
-            end_time = work_hour.end_time.strftime("%H:%M")
+
+            work_hour = WorkHour.objects.get(user_id=user.user.id, date=item.create_time.date())
+            s_t = work_hour.start_time
+            arranged_start_time = datetime(s_t.year, s_t.month, s_t.day, s_t.hour, 10 * (s_t.minute // 10))
+            start_time = arranged_start_time.strftime("%H:%M")
+            e_t = work_hour.end_time
+            arranged_end_time = datetime(e_t.year, e_t.month, e_t.day, e_t.hour, 10 * (e_t.minute // 10))
+            end_time = arranged_end_time.strftime("%H:%M")
+
             result.append(
                 {'url': '/work_log/detail/' + str(work_logs_pk) + '/',
-                 'title': name + " | " + start_time + " ~ " + end_time,
+                 'title': name + " | " + start_time + " : " + end_time,
                  'start': create_date,
                  'end': create_date,
-                 'color': COLORS[user.id % len(COLORS)]
+                 'color': user.color
                  })
     return JsonResponse(result, safe=False)
 
@@ -256,15 +262,21 @@ def work_logs_by_user(request, user_id, year, month):
         work_logs_pk = str(item.pk)
         name = str(user_profile.name)
         create_date = str(item.create_time.date())
-        work_hour = WorkHour.objects.get(user=item.user, date=create_date)
-        start_time = work_hour.start_time.strftime("%H:%M")
-        end_time = work_hour.end_time.strftime("%H:%M")
+
+        work_hour = WorkHour.objects.get(user=user, date=item.create_time.date())
+        s_t = work_hour.start_time
+        arranged_start_time = datetime(s_t.year, s_t.month, s_t.day, s_t.hour, 10 * (s_t.minute // 10))
+        start_time = arranged_start_time.strftime("%H:%M")
+        e_t = work_hour.end_time
+        arranged_end_time = datetime(e_t.year, e_t.month, e_t.day, e_t.hour, 10 * (e_t.minute // 10))
+        end_time = arranged_end_time.strftime("%H:%M")
+
         result.append(
             {'url': '/work_log/detail/' + str(work_logs_pk) + '/',
-             'title': name + " | " + start_time + " ~ " + end_time,
+             'title': name + " | " + start_time + " : " + end_time,
              'start': create_date,
              'end': create_date,
-             'color': COLORS[user.id % len(COLORS)],
+             'color': user_profile.color,
              })
     return JsonResponse(result, safe=False)
 

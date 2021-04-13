@@ -70,13 +70,6 @@ def schedule_day(request, team_id, date):
 
 @login_required
 def schedule_day_user_work_time(request):
-    # team_id와 date를 받으면 팀원 리스트와 팀원의 해당 일자 예상 근무를 반환
-    # events: [
-    # {"resourceId":"team_id","title":"team_name",
-    # "start":"2021-04-02T12:00:00+00:00","end":"2021-04-03T06:00:00+00:00",
-    # "color" : COLORS[item.user.id % len(COLORS)]},
-    # ...
-    # ]
     team_id = request.GET.get('team_id')
     date = request.GET.get('selected_date')
 
@@ -108,19 +101,20 @@ def schedule_day_user_work_time(request):
             'title': Profile.objects.get(user=item.user).name,
             'start': item.date.strftime('%Y-%m-%d') + "T" + item.start.isoformat(timespec='seconds') + "+00:00",
             'end': item.date.strftime('%Y-%m-%d') + "T" + item.end.isoformat(timespec='seconds') + "+00:00",
-            'color': COLORS[item.user.id % len(COLORS)],
+            'color': Profile.objects.get(user=item.user).color,
             'url': url,
             'description': ToDo.objects.get(schedule=item).contents,
         })
 
     vacation_times = Schedule.objects.filter(user__in=users, date=selected_date, work_type=2)
     for item in vacation_times.values_list("user_id", "date", "start", "end"):
+        print(item)
         events.append({
             'resourceId': str(item[0]),
             'title': "휴가",
             'start': str(item[1]),
             'end': str(item[1]),
-            'color': COLORS[item[0] % len(COLORS)],
+            'color': Profile.objects.get(user_id=item[0]).color,
         })
     result = {"resources": resources, 'event': events}
 
@@ -303,18 +297,11 @@ def register_schedule_day(request, year, month, day):
                     todo.save()
                 else:
                     schedule, schedule_created = Schedule.objects.get_or_create(user=user, date=week_start_date,
-                                                   start=start_local,
-                                                   end=end_local, work_type=type_local)
-                    print(schedule_created, " in do_update")
+                                                                                start=start_local,
+                                                                                end=end_local, work_type=type_local)
 
                 week_start_date += relativedelta(days=1)
 
-            temp = request.POST.get('temp')
-
-            if temp == "work_hour_check":
-                return redirect('work_hour_check')
-            else:
-                return redirect('schedule-register-day', year, month, day)
     else:
         user = request.user
 
@@ -324,20 +311,15 @@ def register_schedule_day(request, year, month, day):
         form = NewScheduleDayForm()
 
         schedule, schedule_created = Schedule.objects.get_or_create(user=user, date=selected_date)
-        print(schedule_created, " in else")
 
         form.fields['contents'].initial = ToDo.objects.get(schedule=schedule).contents
 
-        if request.headers['Referer'].split('/')[-2] == "work_hour_check":
-            temp = 'work_hour_check'
-        else:
-            temp = 'schedule-register-day'
+
 
         context = {
             'user': user,
             'selected_date': selected_date,
             'forms': form,
-            'temp': temp,
         }
 
         return HttpResponse(template.render(context, request))
@@ -346,16 +328,23 @@ def register_schedule_day(request, year, month, day):
 @login_required
 def register_schedule_list_week(request, year, month, day):
     user = User.objects.get(id=request.user.id)
+    user_profile = Profile.objects.get(user=user)
 
     week_start = datetime(year, month, day).strftime('%Y-%m-%d')
     week_end = (datetime(year, month, day) + relativedelta(days=6)).strftime('%Y-%m-%d')
     schedule = Schedule.objects.filter(user=user, date__range=[week_start, week_end]).order_by('date')
 
-    user_profile = Profile.objects.get(user=user)
     schedule_list = list(schedule)
-    result = []
+    schedule_data = []
+
+    if len(schedule_list) == 0:
+        for i in range(7):
+            schedule_data.append(
+                {'date': (datetime(year, month, day) + relativedelta(days=i)).strftime('%Y-%m-%d'),
+                 'start': "00:00", 'end': "00:00",
+                 'work_type': 0})
+
     for item in schedule_list:
-        name = str(user_profile.name)
         date = str(item.date)
         if item.start is not None and item.end is not None:
             start = str(item.start.strftime("%H:%M"))
@@ -364,25 +353,44 @@ def register_schedule_list_week(request, year, month, day):
             start = "00:00"
             end = "00:00"
         work_type = item.work_type
-        result.append(
+        schedule_data.append(
             {'date': date, 'start': start, 'end': end, 'work_type': work_type})
 
-    return JsonResponse(result, safe=False)
+    start_date = user_profile.start_date
+    start_datetime = datetime(start_date.year, start_date.month, start_date.day)
+
+    week_start = datetime(year, month, day)
+    total_vacations_count = 0
+
+    total_vacations_count += (week_start.year - start_datetime.year) * 12
+    total_vacations_count += (week_start.month - start_datetime.month)
+    if week_start.day - start_datetime.day < 0:
+        total_vacations_count -= 1
+
+    used_vacations_count = Schedule.objects.annotate(num_work_types=Count('work_type')).filter(user=user,
+                                                                                               date__range=[start_date,
+                                                                                                            week_start],
+                                                                                               work_type=2).count()
+
+    return JsonResponse(
+        {'date': schedule_data, 'vacation': "현재 남은 휴가 " + str(total_vacations_count - used_vacations_count) + "개"},
+        safe=False)
 
 
 @login_required
 def schedule_list_user(request, user_id, year, month):
     user = User.objects.get(id=user_id)
-    schedule = Schedule.objects.filter(user=user, date__year=year, date__month=month).order_by('user')
-    schedule = schedule | Schedule.objects.filter(user=user, date__year=year,
-                                                  date__month=str(int(month) + 1)).order_by(
-        'user')
+
+    day_start = datetime(year, month, 1).strftime('%Y-%m-%d')
+    day_end = (datetime(year, month, 1) + relativedelta(months=2)).strftime('%Y-%m-%d')
+
+    schedule = Schedule.objects.filter(user=user, date__range=[day_start, day_end]).order_by('user')
+
     user_profile = Profile.objects.get(user=user)
     schedule_list = list(schedule)
     result = []
     for item in schedule_list:
         name = str(user_profile.name)
-        date = str(item.date)
         if item.start is not None and item.end is not None:
             start = str(item.start.strftime("%H:%M"))
             end = str(item.end.strftime("%H:%M"))
@@ -390,11 +398,9 @@ def schedule_list_user(request, user_id, year, month):
             start = "00:00"
             end = "00:00"
         work_type = item.work_type
-        title = ""
-        color = ""
         if work_type == 1:
             title = name + " | " + start + " : " + end
-            color = COLORS[item.user.id % len(COLORS)]
+            color = user_profile.color
         elif work_type == 2:
             title = name + " | 휴가"
             color = COLORS[5]
@@ -464,7 +470,7 @@ def schedule_list_team(request, team_id, year, month):
         url = "/schedule/todo/" + str(item.user.id) + "/" + item.date.strftime('%Y-%m-%d')
         result.append({'title': name + " | " + start + " ~ " + end, 'start': item.date.strftime('%Y-%m-%d'),
                        'end': item.date.strftime('%Y-%m-%d'),
-                       "color": COLORS[item.user.id % len(COLORS)],
+                       "color": Profile.objects.get(user=item.user.id).color,
                        'url': url})
 
     vacation_schedule = Schedule.objects.filter(user__in=users, date__range=[day_start, day_end], work_type=2) \
@@ -538,11 +544,10 @@ def schedule_summary_team(request):
 
         events = Event.objects.filter(date__range=[day_start, day_end]).values()
         for event in events:
-            print(event['title'])
             result.append({'title': '일정 | ' + event['title'],
                            'start': event['date'].strftime('%Y-%m-%d'),
                            'end': event['date'].strftime('%Y-%m-%d'),
-                           "color": '#fecb76', 'url':'/schedule/event/edit/' + str(event['id']) + '/' ,})
+                           "color": '#fecb76', 'url': '/schedule/event/edit/' + str(event['id']) + '/', })
 
     return JsonResponse(result, safe=False)
 
@@ -582,7 +587,6 @@ def schedule_todo(request, user_id, date):
         todo.save()
 
         return JsonResponse({"result": True}, safe=False)
-
 
 
 @login_required
@@ -639,6 +643,7 @@ def register_schedule_today(request, year, month, day):
 
         return HttpResponse(template.render(context, request))
 
+
 @login_required
 def schedule_event_add(request):
     if request.method == "GET":
@@ -656,14 +661,14 @@ def schedule_event_add(request):
             title = form.cleaned_data.get('title')
             date = form.cleaned_data.get('date')
             start = form.cleaned_data.get('start')
-            end =  form.cleaned_data.get('end')
-            content =  form.cleaned_data.get('content')
+            end = form.cleaned_data.get('end')
+            content = form.cleaned_data.get('content')
 
             user = User.objects.get(pk=user_id)
 
             Event.objects.get_or_create(user=user, title=title, date=date, start=start, end=end, context=content)
 
-        return render(request, 'schedule_event_add.html', {'form':EventForm()})
+        return render(request, 'schedule_event_add.html', {'form': EventForm()})
 
 
 @login_required
@@ -675,11 +680,12 @@ def schedule_event_edit(request, event_id):
 
         event = Event.objects.get(pk=event_id)
 
-        if request.user.id is event.user.id or request.user.is_superuser or TeamManager.objects.filter(user_id=request.user.id).exists():
+        if request.user.id is event.user.id or request.user.is_superuser or TeamManager.objects.filter(
+                user_id=request.user.id).exists():
             self_view = True
 
         context = {
-            'event_id' : event_id,
+            'event_id': event_id,
             'self_view': self_view,
             'title': event.title,
             'date': event.date.strftime("%Y-%m-%d"),

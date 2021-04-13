@@ -47,30 +47,34 @@ function CheckWorkTime(){
 }
 
 function getWorkTimes(){
+vacation_count = document.getElementsByClassName("vacation_count")[0];
 var week_start_date = document.getElementById('week_start_date').value.split('-');
-   $.ajax({
-        type: 'GET',
-        url: '/schedule/register/list/week/' +  week_start_date[0] + '/' + week_start_date[1] + '/' + week_start_date[2],
-        dataType: 'json',
 
-        success: function(data){
-                if(data.length == 0){
-                    for(let i=0;i<date.length;i++){
-                        work_type[i].value = 0;
-                        start_time[i].value = null;
-                        end_time[i].value = null;
-                    }
+$.ajax({
+    type: 'GET',
+    url: '/schedule/register/list/week/' +  week_start_date[0] + '/' + week_start_date[1] + '/' + week_start_date[2],
+    dataType: 'json',
+
+    success: function(data){
+            vacation_count.innerText = data.vacation
+            schedule = data.date
+            if(data.length == 0){
+                for(let i=0;i<date.length;i++){
+                    work_type[i].value = 0;
+                    start_time[i].value = null;
+                    end_time[i].value = null;
                 }
-                else{
-                    for(let i=0;i<date.length;i++){
-                        work_type[i].value = data[i].work_type;
-                        start_time[i].value = data[i].start;
-                        end_time[i].value = data[i].end;
-                    };
-                }
-                CheckWorkTime();
             }
-        });
+            else{
+                for(let i=0;i<date.length;i++){
+                    work_type[i].value = schedule[i].work_type;
+                    start_time[i].value = schedule[i].start;
+                    end_time[i].value = schedule[i].end;
+                };
+            }
+            CheckWorkTime();
+        }
+    });
 }
 
 
@@ -97,10 +101,7 @@ document.getElementById('week_start_date').value = result_str;
 function setDateBefore(){
 var d = new Date(document.getElementById('week_start_date').value);
 d.setDate(d.getDate() - 1);
-if (d <= Date.now()){
-alert("이번주 이전 날자는 신청이 불가능 합니다.");
-return;
-}
+
 result_str = d.getFullYear() + "-" +("0" +  (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
 document.getElementById('week_start_date').value = result_str;
 
@@ -227,8 +228,9 @@ window.addEventListener('DOMContentLoaded', init);
                             </div>
                         </div>
                         <div class="column is-4">
-
-
+                            <div class="notification is-dark" style="height:36px; text-align: center;">
+                                <h1 class="subtitle is-4 vacation_count" style="margin-top : -16px;">남은 휴가 / 총 휴가 | 10 / 12</h1>
+                            </div>
                         </div>
 
                         <div class="column is-4">

@@ -107,25 +107,25 @@
     {% csrf_token %}
     <div style="padding:30px;">
 
-        <div style="width:120px;  display:flex; flex-direction:row;" class="select_team_user" >
+        <div style="width:120px;  display:flex; flex-direction:row;" class="select_team_user">
 
             <div class="select is-dark" style="margin-right:10px;">
-                <select id="team_select" name="team">
+                <select id="team_select" name="team" required>
                     <option value="-1" selected>team</option>
                 </select>
             </div>
             <div class="select is-dark">
-                <select id="user_select" name="user">
+                <select id="user_select" name="user" required>
                 </select>
             </div>
         </div>
     </div>
     <article class="media" style="display:block; padding:0px 30px;">
-      <input class="input" type="text" name="title" placeholder="제목을 입력해주세요." style="margin-bottom:20px;">
+      <input class="input" type="text" name="title" placeholder="제목을 입력해주세요." style="margin-bottom:20px;" required>
       <div class="media-content">
         <div class="field">
           <p class="control">
-            <textarea class="textarea" name="body" style="height:400px; margin-bottom:35px;" placeholder="내용을 작성해주세요."></textarea>
+            <textarea class="textarea" name="body" style="height:400px; margin-bottom:35px;" placeholder="내용을 작성해주세요." required></textarea>
           </p>
         </div>
         <nav class="level">

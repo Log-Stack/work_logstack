@@ -56,11 +56,13 @@ class UserCreateForm(forms.ModelForm):
 class ProfileForm(forms.ModelForm):
     picture = forms.ImageField(required=False)
     color = forms.CharField(widget=forms.TextInput(attrs={'class': 'is-dark', 'type': 'color'}))
+    start_date = forms.DateField(widget=forms.DateInput(attrs={'type': "date", 'class': 'input', 'id': 'start_date', 'name': 'start_date'}))
+    birth_day = forms.DateField(widget=forms.DateInput(attrs={'type': "date", 'class': 'input', 'id': 'birth_day', 'name': 'birth_day'}))
 
     def __init__(self, *args, **kwargs):
         super(ProfileForm, self).__init__(*args, **kwargs)
         # Making location required
-        self.fields['picture'].required = True
+        # self.fields['picture'].required = True
         self.fields['name'].required = True
         self.fields['birth_day'].required = True
         self.fields['phone_number'].required = True

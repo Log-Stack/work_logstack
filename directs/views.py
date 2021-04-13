@@ -36,7 +36,6 @@ from directs.models import Message
 class DirectsListReceived(ListView):
 
     template_name = 'directs_list_received.html'
-    ordering = '-date'
     paginate_by = 10
 
     def post(self, request, *args, **kwargs):
@@ -51,7 +50,7 @@ class DirectsListReceived(ListView):
             return redirect('directlist_received')
 
     def get_queryset(self):
-        return Message.objects.all().filter(user=self.request.user,recipient=self.request.user)
+        return Message.objects.all().filter(user=self.request.user,recipient=self.request.user).order_by('-date')
 
 
 
@@ -59,7 +58,6 @@ class DirectsListSent(ListView):
 
     #model = Message
     template_name = 'directs_list_sent.html'
-    ordering = '-date'
     paginate_by = 10
 
     def post(self, request, *args, **kwargs):
@@ -72,7 +70,7 @@ class DirectsListSent(ListView):
             return redirect('directlist_sent')
 
     def get_queryset(self):
-        return Message.objects.all().filter(user=self.request.user,sender=self.request.user)
+        return Message.objects.all().filter(user=self.request.user,sender=self.request.user).order_by('-date')
 
 
 
@@ -97,6 +95,32 @@ def directs_send(request):
     template = loader.get_template('directs_send.html')
 
     return HttpResponse(template.render({},request))
+
+
+@login_required
+def directs_reply(request, pk):
+    message_id = pk
+    receiver = Message.objects.get(pk=pk).sender
+
+    if request.method == "POST":
+        from_user_id = request.user.id
+        from_user = User.objects.get(id=from_user_id)
+        title = request.POST.get('title')
+        body = request.POST.get('body')
+        to_user = User.objects.get(username=receiver)
+
+        Message.send_message(from_user,to_user,title,body)
+
+        return redirect('directlist_sent')
+    else:
+        HttpResponseBadRequest()
+
+    context = {
+        'receiver' : receiver
+    }
+    template = loader.get_template('directs_reply.html')
+    return HttpResponse(template.render(context,request))
+
 
 
 

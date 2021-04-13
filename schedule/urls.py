@@ -20,7 +20,7 @@ urlpatterns = [
     path('register/list/week/<int:year>/<int:month>/<int:day>', register_schedule_list_week,
          name='schedule-register-list-user-day'),
 
-    path('list/user/<user_id>/<year>/<month>', schedule_list_user, name='schedule-list-user'),
+    path('list/user/<user_id>/<int:year>/<int:month>', schedule_list_user, name='schedule-list-user'),
     path('list/edit/', schedule_list_edit, name='schedule-list-user'),
     path('list/team/<team_id>/<int:year>/<int:month>', schedule_list_team, name='schedule-list-team'),
     path('list/summary/', schedule_summary_team, name='schedule-summary-team'),

@@ -234,7 +234,7 @@ def EditProfileView(request):
             print("not ok")
             print(form.errors)
     else:
-        form = ProfileForm()
+        form = ProfileForm(instance=profile)
         print("not POST")
 
     context = {
