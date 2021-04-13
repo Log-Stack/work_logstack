@@ -28,7 +28,16 @@
     }
 
 </style>
-    <body>
+
+<script>
+    function resizeWindow(win){
+        var wid = win.document.body.offsetWidth;
+        var hei = win.document.body.offsetHeight + 58;
+        win.resizeTo(wid,hei);
+    }
+</script>
+
+    <body onload='resizeWindow(this)'>
 
         <div class="container">
             <div class="hero is-dark is-small">
