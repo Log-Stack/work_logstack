@@ -78,6 +78,13 @@
 
         window.addEventListener('DOMContentLoaded', init);
 
+        function popoff(){
+        var user = document.getElementById('user_select');
+        console.log(user);
+<!--            document.forms['message'].submit();-->
+<!--            sleep(3000);-->
+<!--            window.close();-->
+        }
     </script>
 </head>
 <body>
@@ -93,17 +100,17 @@
             </div>
         </div>
 
-        <div class="tabs">
-          <ul>
-              <li><a href="{% url 'directlist_received' %}">받은 쪽지함</a></li>
-              <li><a href="{% url 'directlist_sent' %}">보낸 쪽지함</a></li>
-              <li class="is-active"><a href="{% url 'senddirect' %}">쪽지 쓰기</a></li>
+<!--        <div class="tabs">-->
+<!--          <ul>-->
+<!--              <li><a href="{% url 'directlist_received' %}">받은 쪽지함</a></li>-->
+<!--              <li><a href="{% url 'directlist_sent' %}">보낸 쪽지함</a></li>-->
+<!--              <li class="is-active"><a href="{% url 'senddirect' %}">쪽지 쓰기</a></li>-->
 
-          </ul>
-        </div>
+<!--          </ul>-->
+<!--        </div>-->
 
 
-<form method="post" role="form">
+<form method="post" role="form" name="message">
     {% csrf_token %}
     <div style="padding:30px;">
 
@@ -131,7 +138,7 @@
         <nav class="level">
           <div class="level-left">
             <div class="level-item">
-              <input class="button is-dark" type="submit" value="보내기"></input>
+              <input class="button is-dark"  type="submit" value="보내기" ></input>
             </div>
           </div>
         </nav>

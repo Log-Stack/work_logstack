@@ -38,6 +38,12 @@
 
 
 };
+function popup(){
+    var url = "{% url 'senddirect' %}"
+    var name = "쪽지 쓰기";
+    var option = "location=no, directories=no, status=no, toolbar=no, menubar=no, scrollbars=no, resizable=yes, width=550, height=800";
+    window.open(url, name, option);
+}
 </script>
 <style>
     table{
@@ -55,6 +61,8 @@
                     MESSAGES
 
                 </p>
+                <a href="javascript:popup()" style="margin-right:20px;"><i style="float:right; margin-top:14px;" class="far fa-edit fa-1x"></i></a>
+
 <!--                <a href="{% url 'senddirect' %}" style="margin-right:20px;"><i style="float:right;" class="far fa-edit fa-2x"></i></a>-->
             </div>
         </div>
@@ -63,7 +71,7 @@
           <ul>
               <li><a href="{% url 'directlist_received' %}">받은 쪽지함</a></li>
               <li class="is-active"><a href="{% url 'directlist_sent' %}">보낸 쪽지함</a></li>
-              <li><a href="{% url 'senddirect' %}">쪽지 쓰기</a></li>
+<!--              <li><a href="{% url 'senddirect' %}">쪽지 쓰기</a></li>-->
         <!--    <li><a href="{% url 'searchselect' %}">by Team</a></li>-->
 
           </ul>
