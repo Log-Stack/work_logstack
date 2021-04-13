@@ -13,14 +13,32 @@
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css"
       />
-<!--<script>-->
-<!--        function popup(){-->
-<!--            var url = "{% url 'senddirect' %}";-->
-<!--            var name = "쪽지 보내기";-->
-<!--            var option = "location=no, directories=no, status=no, toolbar=no, menubar=no, scrollbars=no, resizable=yes, width=550, height=800";-->
-<!--            window.open(url, name, option);-->
-<!--        }-->
-<!--</script>-->
+<script>
+
+function selectAll(){
+    var checkboxes = document.querySelectorAll('input[id="select"]');
+    var first_box = document.querySelectorAll('input[id="select_all"]')[0];
+<!--    console.log(first_box);-->
+<!--    console.log(first_box.checked);-->
+
+
+    if (first_box.checked==true) {
+        for (var checkbox of checkboxes){
+            checkbox.checked = true;
+        }
+
+    }
+    else {
+        for (var checkbox of checkboxes){
+            checkbox.checked = false;
+        }
+
+    }
+
+
+
+};
+</script>
 <body>
 
         <div class="hero is-dark is-small" >
@@ -46,62 +64,12 @@
 
 
 
-<!--     <div style="display:flex; justify-content:center;">-->
-<!--        <table style="width:90%">-->
-<!--          <tr class="table_head">-->
-<!--              <th><div>선택</div></th>-->
-<!--            <th><div>제목</div></th>-->
-<!--            <th><div>보낸 이</div></th>-->
-<!--            <th><div>날짜</div></th>-->
-<!--          </tr>-->
-<!--           <form method="post">-->
-<!--            {% csrf_token %}-->
-<!--          {% for message in message_list %}-->
-
-<!--              <tr class="table_list">-->
-<!--                  <td><input type="checkbox" name="delete" value="{{message.id}}"></td>-->
-
-<!--                  <td><a href="{% url 'readdirect' message.pk %}"><div name="title">{{ message.title }}</div></a></td>-->
-
-<!--                <td><div name="user">{{ message.recipient }}</div></td>-->
-<!--                <td><div name="date">{{ message.date|date:"m-d h:m" }}</div></td>-->
-
-<!--              </tr>-->
-
-
-<!--          {% endfor %}-->
-<!--               <button class="button is-light">삭제</button>-->
-<!--               </form>-->
-<!--        </table>-->
-<!--     </div>-->
-
-
-<!--            <hr>-->
-<!--            <div  style="display:flex; flex-direction:row; margin:5px;">-->
-<!--                <figure class="image is-64x64" style="margin-right:15px;">-->
-<!--                    <img class="is-rounded" src="https://bulma.io/images/placeholders/128x128.png">-->
-<!--                </figure>-->
-<!--                <a href="#" style="display:flex; flex-direction:column;">-->
-<!--                    <span>김기환 팀장</span>-->
-<!--                    <strong><span class="content" style="margin-top:3px;">-->
-<!--                     다음주 금요일은 쉬세요.-->
-<!--                    </span></strong>-->
-<!--                </a>-->
-
-<!--                <span style="position:fixed; right:5%;">2021.04.07</span>-->
-
-<!--            </div>-->
-
-<!--            <hr>-->
-<!--        </div>-->
-
-
         <div style="display:flex; justify-content:center;">
             <table class="table is-hoverable" style="width:90%">
                 <thead>
                 <tr>
                     <th>
-                        <div>선택</div>
+                        <div><input type="checkbox" id="select_all" onclick="selectAll()"></div>
                     </th>
                     <th>
                         <div>제목</div>
@@ -120,7 +88,7 @@
                 {% for message in message_list %}
 
                 <tr>
-                    <td><input type="checkbox" name="delete" value="{{message.id}}"></td>
+                    <td><input type="checkbox" name="delete" id="select" value="{{message.id}}"></td>
                     <td><a href="{% url 'readdirect' message.pk %}">
                         <div name="title" style="width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ message.title }}</div>
                     </a></td>
@@ -135,6 +103,7 @@
                 {% endfor %}
 
                 </tbody>
+
             </table>
         </div>
         <br>
