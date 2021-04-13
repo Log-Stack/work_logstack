@@ -79,11 +79,26 @@
         window.addEventListener('DOMContentLoaded', init);
 
         function popoff(){
-        var user = document.getElementById('user_select');
-        console.log(user);
+<!--            var user = document.getElementById('user_select');-->
+<!--            console.log(user);-->
 <!--            document.forms['message'].submit();-->
 <!--            sleep(3000);-->
-<!--            window.close();-->
+            var formData = $('#message').serialize();
+            $.ajax({
+                type: 'POST',
+                url: '{% url "senddirect" %}',
+                data: formData,
+                success: function(data){
+                    if(data=="ok") {
+                        window.opener.location.reload();
+                        window.close();
+                    }
+
+                },
+                error: function(xhr, status) {
+                    alert('error');
+                }
+            })
         }
     </script>
 </head>
@@ -110,12 +125,10 @@
 <!--        </div>-->
 
 
-<form method="post" role="form" name="message">
+<form method="post" role="form" id="message">
     {% csrf_token %}
     <div style="padding:30px;">
-
         <div style="width:120px;  display:flex; flex-direction:row;" class="select_team_user">
-
             <div class="select is-dark" style="margin-right:10px;">
                 <select id="team_select" name="team" required>
                     <option value="-1" selected>team</option>
@@ -138,7 +151,7 @@
         <nav class="level">
           <div class="level-left">
             <div class="level-item">
-              <input class="button is-dark"  type="submit" value="보내기" ></input>
+              <input class="button is-dark" type="button" onclick='popoff();' value="보내기">
             </div>
           </div>
         </nav>
