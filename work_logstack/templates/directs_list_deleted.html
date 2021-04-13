@@ -39,8 +39,6 @@ function popup(){
     var option = "location=no, directories=no, status=no, toolbar=no, menubar=no, scrollbars=no, resizable=yes, width=550, height=800";
     window.open(url, name, option);
 }
-
-
 </script>
 <body>
 
@@ -53,16 +51,17 @@ function popup(){
                 </p>
 
                 <a href="javascript:popup()" style="margin-right:20px;"><i style="float:right; margin-top:14px;" class="far fa-edit fa-1x"></i></a>
-
             </div>
 
         </div>
 
         <div class="tabs">
           <ul>
-              <li class="is-active"><a href="#">받은 쪽지함</a></li>
+              <li><a href="{% url 'directlist_received' %}">받은 쪽지함</a></li>
               <li><a href="{% url 'directlist_sent' %}">보낸 쪽지함</a></li>
-              <li><a href="{% url 'directs_deleted' %}">삭제함</a></li>
+              <li class="is-active"><a href="{% url 'directs_deleted' %}">삭제함</a></li>
+
+        <!--    <li><a href="{% url 'searchselect' %}">by Team</a></li>-->
 
           </ul>
         </div>

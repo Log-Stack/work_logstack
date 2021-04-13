@@ -69,10 +69,10 @@ function popup(){
 
         <div class="tabs">
           <ul>
-              <li><a href="{% url 'directlist_received' %}">받은 쪽지함</a></li>
+               <li><a href="{% url 'directlist_received' %}">받은 쪽지함</a></li>
               <li class="is-active"><a href="{% url 'directlist_sent' %}">보낸 쪽지함</a></li>
-<!--              <li><a href="{% url 'senddirect' %}">쪽지 쓰기</a></li>-->
-        <!--    <li><a href="{% url 'searchselect' %}">by Team</a></li>-->
+              <li><a href="{% url 'directs_deleted' %}">삭제함</a></li>
+
 
           </ul>
         </div>
@@ -110,7 +110,7 @@ function popup(){
                         <div name="user" style="width:80px;">{{ message.recipient }}</div>
                     </td>
                     <td>
-                        <div name="date">{{ message.date|date:"m-d a f" }}</div>
+                        <div name="date">{{ message.date|date:"m-d H:i" }}</div>
                     </td>
                 </tr>
 

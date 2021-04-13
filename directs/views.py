@@ -43,14 +43,16 @@ class DirectsListReceived(ListView):
             q = request.POST.getlist('delete')
             for pk in q:
                 message = get_object_or_404(Message, pk=pk)
-                message.delete()
+                message.is_delete= True
+                message.save()
+                # message.delete()
 
 
 
             return redirect('directlist_received')
 
     def get_queryset(self):
-        return Message.objects.all().filter(user=self.request.user,recipient=self.request.user).order_by('-date')
+        return Message.objects.all().filter(user=self.request.user,recipient=self.request.user, is_delete=False).order_by('-date')
 
 
 
@@ -65,13 +67,33 @@ class DirectsListSent(ListView):
             q = request.POST.getlist('delete')
             for pk in q:
                 message = get_object_or_404(Message, pk=pk)
+                message.is_delete = True
+
                 message.delete()
 
             return redirect('directlist_sent')
 
     def get_queryset(self):
-        return Message.objects.all().filter(user=self.request.user,sender=self.request.user).order_by('-date')
+        return Message.objects.all().filter(user=self.request.user,sender=self.request.user, is_delete=False).order_by('-date')
 
+
+class DirectsListDeleted(ListView):
+
+    #model = Message
+    template_name = 'directs_list_deleted.html'
+    paginate_by = 10
+
+    def post(self, request, *args, **kwargs):
+        if request.POST:
+            q = request.POST.getlist('delete')
+            for pk in q:
+                message = get_object_or_404(Message, pk=pk)
+                message.delete()
+
+            return redirect('directs_deleted')
+
+    def get_queryset(self):
+        return Message.objects.all().filter(user=self.request.user, recipient=self.request.user, is_delete=True).order_by('-date')
 
 
 
@@ -88,13 +110,14 @@ def directs_send(request):
 
         Message.send_message(from_user,to_user,title,body)
 
-        return redirect('directlist_sent')
+        # return redirect('directlist_sent')
+        return HttpResponse('ok')
     else:
         HttpResponseBadRequest()
 
     template = loader.get_template('directs_send.html')
 
-    return HttpResponse(template.render({},request))
+    return HttpResponse(template.render({}, request))
 
 
 @login_required
@@ -137,7 +160,7 @@ def directs_detail(request,pk):
     return HttpResponse(template.render(context,request))
 
 
-@login_required
+
 def checkDirects(request):
     directs_count = 0
     if request.user.is_authenticated:

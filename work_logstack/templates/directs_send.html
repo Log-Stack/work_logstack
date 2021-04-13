@@ -79,10 +79,6 @@
         window.addEventListener('DOMContentLoaded', init);
 
         function popoff(){
-<!--            var user = document.getElementById('user_select');-->
-<!--            console.log(user);-->
-<!--            document.forms['message'].submit();-->
-<!--            sleep(3000);-->
             var formData = $('#message').serialize();
             $.ajax({
                 type: 'POST',
