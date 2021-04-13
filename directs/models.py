@@ -12,6 +12,7 @@ class Message(models.Model):
     body = models.TextField(max_length=700, blank=True, null=True)
     date = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
+    is_delete = models.BooleanField(default=False)
 
 
     def __str__(self):
@@ -41,13 +42,13 @@ class Message(models.Model):
         recipient_message.save()
         return recipient_message
 
-    def get_messages(user):
-        messages = Message.objects.filter(user=user).values('recipient').annotate(last=Max('date')).order_by('-last')
-        users = []
-        for message in messages:
-            users.append({
-                'user': User.objects.get(pk=message['recipient']),
-                'last': message['last'],
-                'unread': Message.objects.filter(user=user, recipient__pk=message['recipient'], is_read=False).count()
-            })
-        return users
+    # def get_messages(user):
+    #     messages = Message.objects.filter(user=user).values('recipient').annotate(last=Max('date')).order_by('-last')
+    #     users = []
+    #     for message in messages:
+    #         users.append({
+    #             'user': User.objects.get(pk=message['recipient']),
+    #             'last': message['last'],
+    #             'unread': Message.objects.filter(user=user, recipient__pk=message['recipient'], is_read=False).count()
+    #         })
+    #     return users
