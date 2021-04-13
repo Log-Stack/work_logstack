@@ -6,7 +6,7 @@ from .models import WorkLog, WorkHour
 
 class WorkLogForm(forms.ModelForm):
     content = forms.CharField(
-        widget=forms.Textarea(attrs={'class': 'textarea is-dark', 'placeholder': 'Work Log input'}))
+        widget=forms.Textarea(attrs={'class': 'textarea is-dark', 'placeholder': '퇴근 일지를 작성해주세요.'}))
 
     class Meta:
         model = WorkLog

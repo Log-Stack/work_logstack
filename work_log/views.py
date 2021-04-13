@@ -36,7 +36,10 @@ def end_working(request):
     if work_hour:
         work_hour.end_time = timezone.now()
         work_hour.save()
-    return redirect('work_log_written')
+        work_log = WorkLog.objects.filter(user=request.user).filter(create_time__date=timezone.now().date()).first()
+        return redirect('work_log_detail_page', work_log.pk)
+    else:
+        return redirect('logout')
 
 
 @login_required
@@ -126,7 +129,7 @@ def work_log_written(request):
     return HttpResponse(template.render(context, request))
 
 
-@login_required()
+@login_required
 def work_log_edit(request, pk):
     work_log = get_object_or_404(WorkLog, pk=pk)
     if work_log.user == request.user:
@@ -146,6 +149,25 @@ def work_log_edit(request, pk):
 
 
 @login_required
+def work_log_edit_page(request, pk):
+    work_log = get_object_or_404(WorkLog, pk=pk)
+    if work_log.user == request.user:
+        if request.method == "POST":
+            form = WorkLogForm(request.POST, instance=work_log)
+            if form.is_valid():
+                work_log = form.save(commit=False)
+                work_log.user = request.user
+                work_log.is_updated = True
+                work_log.save()
+                return redirect('work_log_detail_page', pk=work_log.pk)
+        else:
+            form = WorkLogForm(instance=work_log)
+        return render(request, 'work_log_edit_page.html', {'form': form, 'work_log_pk': pk})
+    else:
+        return redirect('work_log_list')
+
+
+@login_required
 def work_log_detail(request, pk):
     work_log = get_object_or_404(WorkLog, pk=pk)
     user = work_log.user
@@ -158,6 +180,21 @@ def work_log_detail(request, pk):
         'work_hour': work_hour
     }
     return render(request, 'work_log_detail.html', context)
+
+
+@login_required
+def work_log_detail_page(request, pk):
+    work_log = get_object_or_404(WorkLog, pk=pk)
+    user = work_log.user
+    profile = Profile.objects.get(user=user)
+    date = work_log.create_time.date()
+    work_hour = WorkHour.objects.filter(user=user).filter(date=date).first()
+    context = {
+        'profile': profile,
+        'work_log': work_log,
+        'work_hour': work_hour
+    }
+    return render(request, 'work_log_detail_page.html', context)
 
 
 @login_required

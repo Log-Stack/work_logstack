@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+        <br>
+        <div class="container">
+            <div class="hero is-dark is-small">
+                <div class="hero-body">
+                    <p class="title">
+                        Work Log Detail
+                    </p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-content">
+                    <div class="content">
+                        <time>Working Time: {{ work_hour.start_time|time }} ~ {{ work_hour.end_time|time }}</time>
+                        <br>
+                        <br>
+                        <pre>{{ work_log.content }}</pre>
+                        {% if work_log.user == request.user %}
+                            <br>
+                            <div class="control">
+                                <a href="{% url 'work_log_edit_page' work_log.pk %}" class="button is-dark">Edit</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+{% endblock %}
+
+
