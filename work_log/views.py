@@ -140,7 +140,7 @@ def work_log_edit(request, pk):
                 return redirect('work_log_detail', pk=work_log.pk)
         else:
             form = WorkLogForm(instance=work_log)
-        return render(request, 'work_log_edit.html', {'form': form})
+        return render(request, 'work_log_edit.html', {'form': form, 'work_log_pk': pk})
     else:
         return redirect('work_log_list')
 
