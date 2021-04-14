@@ -105,7 +105,7 @@ def directs_send(request):
         title = request.POST.get('title')
         body = request.POST.get('body')
         user_id = request.POST.get('user')
-        print(user_id)
+
         to_user = User.objects.get(id=user_id)
 
         Message.send_message(from_user,to_user,title,body)
@@ -154,11 +154,40 @@ def directs_detail(request,pk):
     message.is_read = True
     message.save()
     template = loader.get_template('directs_detail.html')
+    if request.method == "POST":
+        print(request.user)
+    else:
+        HttpResponseBadRequest()
+
     context = {
         'message':message
     }
     return HttpResponse(template.render(context,request))
 
+
+@login_required
+def directs_detail_delete(request,pk,lst):
+
+    if lst==1:
+        message = Message.objects.get(pk=pk)
+        user = message.user
+        message = Message.objects.get(pk=pk,user=user,recipient=user)
+        message.is_delete = True
+        message.save()
+        return redirect('directlist_received')
+    elif lst==2 :
+        message = Message.objects.get(pk=pk)
+        user = message.user
+        message = Message.objects.get(pk=pk, user=user, sender=user)
+        message.is_delete = True
+        message.save()
+        return redirect('directlist_sent')
+    else:
+        message = Message.objects.get(pk=pk)
+        user = message.user
+        message = Message.objects.get(pk=pk, user=user, recipient=user)
+        message.delete()
+        return redirect('directs_deleted')
 
 
 def checkDirects(request):

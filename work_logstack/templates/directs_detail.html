@@ -54,13 +54,19 @@
     </div>
     <nav class="level">
       <div class="level-left" >
-        <div class="level-item">
-            {% if user != message.sender %}
-              <a href="javascript:popup()" class="button is-dark">답장</a>
+        <div class="level-item" style="display:flex; float:right;">
 
-<!--          <a href="{% url 'replydirects' message.pk %}" class="button is-dark">답장</a>-->
-             {% endif %}
-            <a href="#" class="button is-dark">삭제</a>
+        {% if user != message.sender and message.is_delete == False %}
+              <a href="javascript:popup()" class="button is-dark" style="margin-right:8px;">답장</a>
+
+            <a href="{% url 'deletedirect' message.pk  1 %}" class="button is-dark">삭제</a>
+            {% else %}
+                {% if message.is_delete == False %}
+                     <a href="{% url 'deletedirect' message.pk  2 %}" class="button is-dark" >삭제</a>
+                {% else %}
+                     <a href="{% url 'deletedirect' message.pk  3 %}" class="button is-dark" >삭제</a>
+                {% endif %}
+            {% endif %}
         </div>
       </div>
     </nav>
