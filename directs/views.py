@@ -18,30 +18,31 @@ class DirectsListReceived(ListView):
 
     def post(self, request, *args, **kwargs):
         if request.POST['action'] == 'Delete':
-            print('delete')
             q = request.POST.getlist('delete')
             for pk in q:
                 message = get_object_or_404(Message, pk=pk)
+                message.is_read = True
                 message.is_delete = True
                 message.save()
+                if message.link_message:
+                    message_sender = message.link_message
+                    message_sender.is_read = True
+                    message_sender.save()
                 # message.delete()
 
             return redirect('directlist_received')
 
         elif request.POST['action'] == 'Read':
             q = request.POST.getlist('delete')
+            print(q)
             for pk in q:
                 message = get_object_or_404(Message, pk=pk)
-                sender = message.sender
-                body = message.body
-                title = message.title
-                recipient = message.recipient
                 message.is_read = True
                 message.save()
-                message_sender = Message.objects.get(user=sender, sender=sender, title=title, body=body,
-                                                     recipient=recipient)
-                message_sender.is_read = True
-                message_sender.save()
+                if message.link_message:
+                    message_sender = message.link_message
+                    message_sender.is_read = True
+                    message_sender.save()
             return redirect('directlist_received')
 
         elif request.POST['action'] == 'Click':
@@ -160,26 +161,15 @@ def directs_reply(request, pk):
 @login_required
 def directs_detail(request, pk, lst):
     message = Message.objects.get(pk=pk)
-    sender = message.sender
-    body = message.body
-    title = message.title
-    recipient = message.recipient
-    if lst==1:
+    if lst == 1:
         if not message.is_read:
             message.is_read = True
             message.save()
-            message_sender = Message.objects.get(user=sender, sender=sender,title=title,body=body,recipient=recipient)
-            message_sender.is_read=True
+            message_sender = message.link_message
+            message_sender.is_read = True
             message_sender.save()
 
-
-    print(message.is_read_date)
-
     template = loader.get_template('directs_detail.html')
-    if request.method == "POST":
-        print(request.user)
-    else:
-        HttpResponseBadRequest()
 
     context = {
         'message': message
@@ -191,24 +181,17 @@ def directs_detail(request, pk, lst):
 def directs_detail_delete(request, pk, lst):
     if lst == 1:
         message = Message.objects.get(pk=pk)
-        user = message.user
-        message = Message.objects.get(pk=pk, user=user, recipient=user)
+        message.is_read = True
         message.is_delete = True
         message.save()
+        message_sender = message.link_message
+        message_sender.is_read = True
+        message_sender.save()
         return redirect('directlist_received')
-    elif lst == 2:
-        message = Message.objects.get(pk=pk)
-        user = message.user
-        message = Message.objects.get(pk=pk, user=user, sender=user)
-        message.is_delete = True
-        message.save()
-        return redirect('directlist_sent')
     else:
         message = Message.objects.get(pk=pk)
-        user = message.user
-        message = Message.objects.get(pk=pk, user=user, recipient=user)
         message.delete()
-        return redirect('directs_deleted')
+        return redirect('directlist_sent')
 
 
 def checkDirects(request):

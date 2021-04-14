@@ -14,6 +14,7 @@ class Message(models.Model):
     is_read = models.BooleanField(default=False)
     is_read_date = models.DateTimeField(auto_now=True)
     is_delete = models.BooleanField(default=False)
+    link_message = models.ForeignKey("self", on_delete=models.SET_NULL, null=True)
 
 
     def __str__(self):
@@ -29,18 +30,20 @@ class Message(models.Model):
             recipient=to_user,
             title=title,
             body=body,
-            )
-        print(from_user,to_user,title,body)
+        )
         sender_message.save()
-
         #받은 사람의 메세지
         recipient_message = Message(
             user=to_user,
             sender=from_user,
             body=body,
             title=title,
-            recipient=to_user, )
+            recipient=to_user,
+            link_message=sender_message,
+        )
         recipient_message.save()
+        sender_message.link_message = recipient_message
+        sender_message.save()
         return recipient_message
 
 
