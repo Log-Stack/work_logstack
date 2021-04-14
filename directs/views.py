@@ -3,7 +3,8 @@ from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import redirect, render, get_object_or_404
-from django.template import loader
+from django.template import loader, RequestContext
+from django.template.loader import get_template
 from django.views.generic import ListView
 
 from authy.models import Team, Profile
@@ -16,7 +17,8 @@ class DirectsListReceived(ListView):
     paginate_by = 10
 
     def post(self, request, *args, **kwargs):
-        if request.POST['action']=='Delete':
+        if request.POST['action'] == 'Delete':
+            print('delete')
             q = request.POST.getlist('delete')
             for pk in q:
                 message = get_object_or_404(Message, pk=pk)
@@ -41,6 +43,21 @@ class DirectsListReceived(ListView):
                 message_sender.is_read = True
                 message_sender.save()
             return redirect('directlist_received')
+
+        elif request.POST['action'] == 'Click':
+            if request.POST['check'] == 'true':
+                template = get_template('message_list.html')
+                message_list = Message.objects.all().filter(user=self.request.user, recipient=self.request.user,
+                                             is_delete=False, is_read=False).order_by('-date')
+                data = template.render({"message_list": message_list})
+            else:
+                print('no')
+                template = get_template('message_list.html')
+                message_list = Message.objects.all().filter(user=self.request.user, recipient=self.request.user,
+                                                            is_delete=False).order_by('-date')
+                data = template.render({"message_list": message_list})
+            return HttpResponse(data)
+
     def get_queryset(self):
         return Message.objects.all().filter(user=self.request.user, recipient=self.request.user,
                                             is_delete=False).order_by('-date')

@@ -136,7 +136,8 @@
 
                         <!-- log in 했을 시-->
                         {% if user.is_authenticated %}
-                        {% if directs_count %}
+
+                        {% if directs_count > 0 %}
                           <a href="javascript:popup()" style="margin-right:20px; color: blue;"><i class="far fa-envelope"></i></a>
                          {% else %}
                          <a href="javascript:popup()" style="margin-right:20px; color: gray;"><i class="far fa-envelope"></i></a>

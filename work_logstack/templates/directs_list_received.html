@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.gstatic.com">
+    <script src='http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery.min.js'></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100&display=swap" rel="stylesheet">
     <link
         rel="stylesheet"
@@ -40,6 +41,24 @@ function popup(){
     window.open(url, name, option);
 }
 
+function get_unread_message(){
+    var checked = document.getElementById('unread').checked;
+    $.ajax({
+			type: 'POST',
+			url: '{% url "directlist_received" %}',
+			data: {
+			    'action': 'Click',
+			    'check': checked,
+			    csrfmiddlewaretoken: '{{ csrf_token }}'
+			},
+			success: function(data){
+			    $('.msgList').html(data);
+	        },
+	        error: function(xhr, status) {
+	            alert('error');
+	        }
+    })
+}
 
 </script>
 <body>
@@ -68,8 +87,9 @@ function popup(){
         </div>
 
 
-
-        <div style="display:flex; justify-content:center;">
+     <form method="POST">
+        {% csrf_token %}
+        <div style="display:flex; justify-content:center;" class="msgList">
             <table class="table is-hoverable" style="width:90%">
                 <thead>
                 <tr>
@@ -94,46 +114,39 @@ function popup(){
                 </tr>
                 </thead>
                 <tbody>
-                <form method="post">
-                    {% csrf_token %}
-                {% for message in message_list %}
+                    {% for message in message_list %}
+                        <tr>
+                            <td><input type="checkbox" name="delete" id="select" value="{{message.id}}"></td>
+                            <td><a href="{% url 'readdirect' message.pk 1 %}">
+                                <div name="title" style="width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ message.title }}</div>
+                            </a></td>
+                            <td>
+                                <div name="user" style="width:80px;">{{ message.sender }}</div>
+                            </td>
+                            <td>
+                                <div name="date">{{ message.date|date:"m-d H:i" }}</div>
+                            </td>
+                            <td>
+                                {% if message.is_read == True %}
+                                    <div><i class="far fa-envelope-open"></i></div>
+                                {% else %}
+                                    <div><i class="far fa-envelope"></i></div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'deletedirect' message.pk 1 %}">삭제</a>
+                            </td>
+                        </tr>
 
-                <tr>
-                    <td><input type="checkbox" name="delete" id="select" value="{{message.id}}"></td>
-                    <td><a href="{% url 'readdirect' message.pk 1 %}">
-                        <div name="title" style="width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ message.title }}</div>
-                    </a></td>
-                    <td>
-                        <div name="user" style="width:80px;">{{ message.sender }}</div>
-                    </td>
-                    <td>
-                        <div name="date">{{ message.date|date:"m-d H:i" }}</div>
-                    </td>
-                    <td>
-                        {% if message.is_read == True %}
-                            <div><i class="far fa-envelope-open"></i></div>
-                        {% else %}
-                            <div><i class="far fa-envelope"></i></div>
-                        {% endif %}
-                    </td>
-                    <td>
-                        <a href="{% url 'deletedirect' message.pk 1 %}">삭제</a>
-                    </td>
-                </tr>
-
-                {% endfor %}
-
+                    {% endfor %}
                 </tbody>
-
             </table>
         </div>
         <br>
-
-
-
         <button class="button is-light" style="margin-left:5%;" name="action" value="Read">읽음</button>
         <button class="button is-light" name="action" value="Delete">삭제</button>
-        </form>
+        <label style="float:right; margin-right:40px;"><input type="checkbox" onchange="get_unread_message();" id="unread"> 안 읽은 쪽지</label>
+    </form>
 
         <br>
         <br>
