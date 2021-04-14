@@ -94,7 +94,7 @@ function popup(){
                     <th>
                         <div>보낸 날짜</div>
                     </th>
-                    <th>
+                    <th style="text-align:center;">
                         <div>수신 확인</div>
                     </th>
                     <th>
@@ -118,11 +118,11 @@ function popup(){
                     <td>
                         <div name="date">{{ message.date|date:"m-d H:i" }}</div>
                     </td>
-                    <td>
+                    <td style="text-align:center;">
                         {% if message.is_read == True %}
                             <div><i class="far fa-envelope-open" style="margin-right:5px;"></i>{{ message.is_read_date|date:"m-d H:i" }}</div>
                         {% else %}
-                            <div><i class="far fa-envelope" style="margin-right:5px;"> 확인 안함</i></div>
+                            <div><i class="far fa-envelope" style="margin-right:5px;"></i></div>
                         {% endif %}
                     </td>
                     <td>

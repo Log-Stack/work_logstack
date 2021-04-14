@@ -105,8 +105,8 @@ function get_unread_message(){
                     <th>
                         <div>받은 날짜</div>
                     </th>
-                    <th>
-                        <div>수신 확인</div>
+                    <th style="width:13%; text-align:center;">
+                        <div>읽음</div>
                     </th>
                     <th>
                         <div>삭제</div>
@@ -126,7 +126,7 @@ function get_unread_message(){
                             <td>
                                 <div name="date">{{ message.date|date:"m-d H:i" }}</div>
                             </td>
-                            <td>
+                            <td style="text-align:center;">
                                 {% if message.is_read == True %}
                                     <div><i class="far fa-envelope-open"></i></div>
                                 {% else %}
