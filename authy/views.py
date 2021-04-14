@@ -714,7 +714,7 @@ def calc_work_hours(request):
             total_working_time += (arranged_end_time - arranged_start_time).seconds - 3600
         else:
             arranged_end_time = e_t
-            end_time = ''
+            end_time = '미입력'
 
         work_hour_dict['start_time'] = start_time
         work_hour_dict['end_time'] = end_time
