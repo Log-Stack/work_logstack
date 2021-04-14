@@ -127,11 +127,25 @@ function init(){
 
     var date_select = document.getElementById('date_select');
     var team_select = document.getElementById('team_select_div');
+    var button = document.getElementsByClassName("edit_button");
+
+    document.getElementsByClassName("fc-header-toolbar fc-toolbar")[0].classList.add('columns');
 
     document.getElementsByClassName("fc-toolbar-chunk")[0].innerHTML = "";
     document.getElementsByClassName("fc-toolbar-chunk")[0].appendChild(date_select);
+    document.getElementsByClassName("fc-toolbar-chunk")[1].innerHTML = "";
+    document.getElementsByClassName("fc-toolbar-chunk")[1].append(button[0]);
     document.getElementsByClassName("fc-toolbar-chunk")[2].innerHTML = "";
-    document.getElementsByClassName("fc-toolbar-chunk")[2].appendChild(team_select);
+    document.getElementsByClassName("fc-toolbar-chunk")[2].append(team_select);
+
+    document.getElementsByClassName("fc-toolbar-chunk")[0].classList.add('column');
+    document.getElementsByClassName("fc-toolbar-chunk")[0].classList.add('is-9');
+    document.getElementsByClassName("fc-toolbar-chunk")[1].classList.add('column');
+    document.getElementsByClassName("fc-toolbar-chunk")[1].classList.add('is-1');
+    document.getElementsByClassName("fc-toolbar-chunk")[1].classList.add('has-text-right');
+    document.getElementsByClassName("fc-toolbar-chunk")[2].classList.add('column');
+    document.getElementsByClassName("fc-toolbar-chunk")[2].classList.add('is-2');
+    document.getElementsByClassName("fc-toolbar-chunk")[2].classList.add('has-text-right');
 
     dateChange();
 }
@@ -234,9 +248,108 @@ document.getElementById('team_select').addEventListener("change", dateChange);
 document.getElementById('user_select').addEventListener("change", userChange);
 }
 
+
+function setModifyScheduleCalendar(){
+    $.ajax({
+                type: 'GET',
+                url: '/work_log/list_edit',
+                dataType: 'json',
+                data :{
+                    year : (calendar.getDate().getYear() + 1900),
+                    month : (calendar.getDate().getMonth()+1),
+			    },
+                success: function(data){
+
+                calendarEl = document.getElementById('calendar');
+                var calendar = new FullCalendar.Calendar(calendarEl, {
+                      initialView: 'dayGridMonth',
+                      events: data.events,
+                      eventClick: function(info) {
+                            info.jsEvent.preventDefault();
+                            if (info.event.url) {
+                                  var popupX = (window.screen.width / 2) - (1000 / 2);
+                                  var popupY= (window.screen.height /2) - (1000 / 2);
+                                  window.open(info.event.url, 'detailPage', 'status=no, height=1000, width=1000, left='+ popupX + ', top='+ popupY + ', screenX='+ popupX + ', screenY= '+ popupY);
+                                  }
+                      }
+                });
+
+                calendar.render();
+
+                var user_select = document.getElementById('user_select');
+                var team_select = document.getElementById('team_select');
+
+                team_select.options[team_select.selectedIndex].innerText = data.team;
+                user_select.options[user_select.selectedIndex].innerText = data.name;
+
+
+                var date_select = document.getElementById('date_select');
+                var team_select = document.getElementById('team_select_div');
+
+                document.getElementsByClassName("fc-toolbar-chunk")[0].innerHTML = "";
+                document.getElementsByClassName("fc-toolbar-chunk")[0].appendChild(date_select);
+                document.getElementsByClassName("fc-toolbar-chunk")[2].innerHTML = "";
+                document.getElementsByClassName("fc-toolbar-chunk")[2].appendChild(team_select);
+                }
+
+    });
+}
+function checkScheduleMode(){
+    var selected_user = document.getElementById('user_select').value;
+    if(selected_user == '-1'){
+        dateChange()
+    }
+    else{
+        setEventsByUser();
+    }
+}
+
+var before_team = null;
+var before_user = null;
+
+function editSchedule(){
+    var button = document.getElementsByClassName("edit_button")[0];
+    var user_select = document.getElementById('user_select');
+    var team_select = document.getElementById('team_select');
+
+    if(button.value == 0){
+
+        before_team = team_select.options[team_select.selectedIndex].innerText;
+        before_user = user_select.options[user_select.selectedIndex].innerText;
+
+        setModifyScheduleCalendar();
+
+        user_select.disabled = true;
+        team_select.disabled = true;
+
+        button.value = 1;
+        button.classList.remove('is-dark');
+        button.classList.add('is-danger');
+        button.innerText = 'View';
+    }
+    else{
+        checkScheduleMode();
+
+        user_select.disabled = false;
+        team_select.disabled = false;
+
+        team_select.options[team_select.selectedIndex].innerText = before_team;
+        user_select.options[user_select.selectedIndex].innerText = before_user;
+
+
+
+        button.value = 0;
+        button.classList.remove('is-danger');
+        button.classList.add('is-dark');
+        button.innerText = 'Edit';
+
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     init();
     addAllEvents();
+    document.getElementsByClassName("edit_button")[0].addEventListener('click', editSchedule);;
 
 });
 
@@ -252,7 +365,6 @@ document.addEventListener('DOMContentLoaded', function() {
             </p>
         </div>
     </div>
-    <br>
     <div id="date_select">
         <div class="field has-addons">
             <p class="control">
@@ -274,6 +386,7 @@ document.addEventListener('DOMContentLoaded', function() {
             </p>
         </div>
     </div>
+    <button class="edit_button button" style="background:#1F2C37; color:white;" value="0">Edit</button>
     <div id="team_select_div" class="columns is-centered">
         <div class="column">
             <div class="select is-dark">
@@ -292,7 +405,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     <div class="columns is-centered">
         <div class="column">
-            <div id='calendar'></div>
+            <div id='calendar' style="margin-top:2rem;"></div>
         </div>
     </div>
 </div>

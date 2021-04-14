@@ -382,3 +382,42 @@ def check_work_log(request):
             return {'work_hours': 'no'}
     else:
         return {'work_hours': 'no'}
+
+
+@login_required
+def work_log_list_edit(request):
+    user = User.objects.get(id=request.user.id)
+    year = int(request.GET.get('year', None))
+    month = int(request.GET.get('month', None))
+
+    day_start = datetime(year, month, 1).strftime('%Y-%m-%d')
+    day_end = (datetime(year, month, 1) + relativedelta(months=2)).strftime('%Y-%m-%d')
+
+    work_log = WorkLog.objects.filter(user=user, create_time__date__range=[day_start, day_end]).order_by('create_time')
+
+    user_profile = Profile.objects.get(user=user)
+
+    events = []
+    for item in work_log:
+
+        work_hour = WorkHour.objects.get(user=user, date=item.create_time.date())
+        s_t = work_hour.start_time
+        arranged_start_time = datetime(s_t.year, s_t.month, s_t.day, s_t.hour, 10 * (s_t.minute // 10))
+        start_time = arranged_start_time.strftime("%H:%M")
+        e_t = work_hour.end_time
+        arranged_end_time = datetime(e_t.year, e_t.month, e_t.day, e_t.hour, 10 * (e_t.minute // 10))
+        end_time = arranged_end_time.strftime("%H:%M")
+
+        name = str(user_profile.name)
+        start = start_time
+        end = end_time
+        title = name + " | " + start + " : " + end
+        color = user_profile.color
+
+        events.append({
+            'url': '/work_log/edit/' + str(item.pk) + '/',
+            'title': title, 'start': item.create_time.strftime('%Y-%m-%d'),
+            'end': item.create_time.strftime('%Y-%m-%d'),
+            "color": color
+        })
+    return JsonResponse({"name": user_profile.name, "team": user_profile.team.name, "events": events}, safe=False)

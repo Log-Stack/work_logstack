@@ -5,6 +5,7 @@ urlpatterns = [
     path('start/', start_working, name='start_working'),
     path('end/', end_working, name='end_working'),
     path('list/', work_log_list, name='work_log_list'),
+    path('list_edit/', work_log_list_edit, name='work_log_list_edit'),
     path('write/', work_log_write, name='work_log_write'),
     path('previous_write/<int:work_hour_pk>/', previous_work_log_write, name='previous_work_log_write'),
     path('written/', work_log_written, name='work_log_written'),
