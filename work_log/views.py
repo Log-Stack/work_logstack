@@ -117,6 +117,29 @@ def work_log_write(request):
 
 
 @login_required
+def previous_work_log_write(request, work_hour_pk):
+    work_hour = WorkHour.objects.get(pk=work_hour_pk)
+    if request.method == "POST":
+        form = WorkLogForm(request.POST)
+        if form.is_valid():
+            schedule = Schedule.objects.get(user=request.user, date=work_hour.date)
+            work_hour.end_time = datetime.combine(work_hour.date, schedule.end)
+            work_hour.save()
+            work_log = form.save(commit=False)
+            work_log.user = request.user
+            work_log.create_time = datetime.combine(work_hour.date, schedule.end)
+            work_log.save()
+            return redirect('work_log_detail_page', work_log.pk)
+    else:
+        form = WorkLogForm()
+    context = {
+        'form': form,
+        'work_hour': work_hour,
+    }
+    return render(request, 'previous_work_log_write.html', context)
+
+
+@login_required
 def work_log_written(request):
     user = request.user
 
@@ -348,3 +371,14 @@ def work_logs_summary_team(request):
             'work_log_count': work_log_count,
         })
     return JsonResponse(result, safe=False)
+
+
+def check_work_log(request):
+    if request.user.is_authenticated:
+        work_hours = WorkHour.objects.filter(user=request.user, end_time__isnull=True, date__lt=timezone.now().date())
+        if work_hours.exists():
+            return {'work_hours': work_hours}
+        else:
+            return {'work_hours': 'no'}
+    else:
+        return {'work_hours': 'no'}

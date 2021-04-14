@@ -13,6 +13,15 @@
             </p>
         </div>
     </div>
+    {% if work_hours != 'no' %}
+        {% for work_hour in work_hours %}
+            <div class="box has-text-centered">
+                <p><strong>{{ work_hour.date }}에 워크로그를 작성하지 않았습니다.</strong></p>
+                <a style="margin-top: 1rem;" href="{% url 'previous_work_log_write' work_hour.pk %}" class="button is-dark is-rounded">워크로그 작성</a>
+            </div>
+        {% endfor %}
+    {% endif %}
+
     {% if schedule.work_type == 1 %}
         <div class="columns">
             <div class="column has-text-centered">

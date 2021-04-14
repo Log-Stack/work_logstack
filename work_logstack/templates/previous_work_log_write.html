@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+<div class="container">
+    <br>
+    <div class="hero is-dark is-small">
+        <div class="hero-body">
+            <p class="title">
+                {{ work_hour.date }} -  Work Log Write
+            </p>
+        </div>
+    </div>
+    <div class="box has-text-centered">
+        <p><strong>퇴근시간과 작성시간은 예정된 스케줄의 End Time으로 자동 입력됩니다.</strong></p>
+    </div>
+    <div class="card">
+        <div class="card-content">
+
+            <form method="post" role="form">
+                {% csrf_token %}
+
+                <div class="content">
+                    <div class="field">
+                        <label class="label">Work Log</label>
+                        <div class="control">
+                            {{ form.content }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content">
+                    <div class="field is-grouped">
+                        <div class="control">
+                            <button type="submit" class="button is-dark">Save</button>
+                        </div>
+                        <div class="control">
+                            <button type="reset" class="button is-dark is-light">Reset</button>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+
+</div>
+
+{% endblock %}
