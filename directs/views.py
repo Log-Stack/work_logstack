@@ -16,7 +16,7 @@ class DirectsListReceived(ListView):
     paginate_by = 10
 
     def post(self, request, *args, **kwargs):
-        if request.POST:
+        if request.POST['action']=='Delete':
             q = request.POST.getlist('delete')
             for pk in q:
                 message = get_object_or_404(Message, pk=pk)
@@ -26,6 +26,21 @@ class DirectsListReceived(ListView):
 
             return redirect('directlist_received')
 
+        elif request.POST['action'] == 'Read':
+            q = request.POST.getlist('delete')
+            for pk in q:
+                message = get_object_or_404(Message, pk=pk)
+                sender = message.sender
+                body = message.body
+                title = message.title
+                recipient = message.recipient
+                message.is_read = True
+                message.save()
+                message_sender = Message.objects.get(user=sender, sender=sender, title=title, body=body,
+                                                     recipient=recipient)
+                message_sender.is_read = True
+                message_sender.save()
+            return redirect('directlist_received')
     def get_queryset(self):
         return Message.objects.all().filter(user=self.request.user, recipient=self.request.user,
                                             is_delete=False).order_by('-date')
@@ -128,11 +143,15 @@ def directs_reply(request, pk):
 @login_required
 def directs_detail(request, pk, lst):
     message = Message.objects.get(pk=pk)
+    sender = message.sender
+    body = message.body
+    title = message.title
+    recipient = message.recipient
     if lst==1:
         if not message.is_read:
-            message_sender = Message.objects.get(pk=pk-1)
             message.is_read = True
             message.save()
+            message_sender = Message.objects.get(user=sender, sender=sender,title=title,body=body,recipient=recipient)
             message_sender.is_read=True
             message_sender.save()
 
