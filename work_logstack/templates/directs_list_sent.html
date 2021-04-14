@@ -14,11 +14,43 @@
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css"
       />
 </head>
+<script>
+    function selectAll(){
+    var checkboxes = document.querySelectorAll('input[id="select"]');
+    var first_box = document.querySelectorAll('input[id="select_all"]')[0];
+    console.log(first_box);
+    console.log(first_box.checked);
+
+
+    if (first_box.checked==true) {
+        for (var checkbox of checkboxes){
+            checkbox.checked = true;
+        }
+
+    }
+    else {
+        for (var checkbox of checkboxes){
+            checkbox.checked = false;
+        }
+
+    }
+
+
+
+};
+function popup(){
+    var url = "{% url 'senddirect' %}"
+    var name = "쪽지 쓰기";
+    var option = "location=no, directories=no, status=no, toolbar=no, menubar=no, scrollbars=no, resizable=yes, width=550, height=800";
+    window.open(url, name, option);
+}
+</script>
 <style>
     table{
         width:100%;
 
     }
+
 </style>
 
 <body>
@@ -29,113 +61,29 @@
                     MESSAGES
 
                 </p>
+                <a href="javascript:popup()" style="margin-right:20px;"><i style="float:right; margin-top:14px;" class="far fa-edit fa-1x"></i></a>
+
 <!--                <a href="{% url 'senddirect' %}" style="margin-right:20px;"><i style="float:right;" class="far fa-edit fa-2x"></i></a>-->
             </div>
         </div>
 
         <div class="tabs">
           <ul>
-              <li><a href="{% url 'directlist_received' %}">받은 쪽지함</a></li>
+               <li><a href="{% url 'directlist_received' %}">받은 쪽지함</a></li>
               <li class="is-active"><a href="{% url 'directlist_sent' %}">보낸 쪽지함</a></li>
-              <li><a href="{% url 'senddirect' %}">쪽지 쓰기</a></li>
-        <!--    <li><a href="{% url 'searchselect' %}">by Team</a></li>-->
+              <li><a href="{% url 'directs_deleted' %}">삭제함</a></li>
+
 
           </ul>
         </div>
 
-<!--     <div style="display:flex; justify-content:center;">-->
-<!--        <table style="width:90%">-->
-<!--          <tr class="table_head">-->
-<!--              <th><div>선택</div></th>-->
-<!--            <th><div>제목</div></th>-->
-<!--            <th><div>받는 이</div></th>-->
-<!--            <th><div>날짜</div></th>-->
-<!--          </tr>-->
-<!--          {% for message in message_list %}-->
-
-<!--              <tr class="table_list">-->
-<!--                  <td><input type="checkbox"></td>-->
-<!--                  <td><a href="{% url 'readdirect' message.pk %}"><div name="title">{{ message.title }}</div></a></td>-->
-<!--                <td><div name="user">{{ message.recipient }}</div></td>-->
-<!--                <td><div name="date">{{ message.date|date:"m-d a f" }}</div></td>-->
-<!--              </tr>-->
-
-
-<!--          {% endfor %}-->
-<!--&lt;!&ndash;          <tr class="table_list">&ndash;&gt;-->
-<!--&lt;!&ndash;              <td><input type="checkbox"></td>&ndash;&gt;-->
-<!--&lt;!&ndash;              <td><a href="#"><div name="title">Jill</div></a></td>&ndash;&gt;-->
-<!--&lt;!&ndash;            <td><div name="user">Smith</div></td>&ndash;&gt;-->
-<!--&lt;!&ndash;            <td><div name="date">50</div></td>&ndash;&gt;-->
-<!--&lt;!&ndash;          </tr>&ndash;&gt;-->
-<!--&lt;!&ndash;          <tr>&ndash;&gt;-->
-<!--&lt;!&ndash;              <td><input type="checkbox"></td>&ndash;&gt;-->
-<!--&lt;!&ndash;            <td><div>Eve</div></td>&ndash;&gt;-->
-<!--&lt;!&ndash;            <td><div>Jackson</div></td>&ndash;&gt;-->
-<!--&lt;!&ndash;            <td><div>94</div></td>&ndash;&gt;-->
-<!--&lt;!&ndash;          </tr>&ndash;&gt;-->
-<!--        </table>-->
-<!--     </div>-->
-<!--&lt;!&ndash;        <div style="padding:10px; margin-top:10px;">&ndash;&gt;-->
-<!--&lt;!&ndash;            <div  style="display:flex; flex-direction:row; margin:5px; ">&ndash;&gt;-->
-<!--&lt;!&ndash;                <figure class="image is-64x64" style="margin-right:15px;">&ndash;&gt;-->
-<!--&lt;!&ndash;                    <img class="is-rounded" src="https://bulma.io/images/placeholders/128x128.png">&ndash;&gt;-->
-<!--&lt;!&ndash;                </figure>&ndash;&gt;-->
-<!--&lt;!&ndash;                <a href="#" style="display:flex; flex-direction:column;">&ndash;&gt;-->
-<!--&lt;!&ndash;                    <span>김기환 팀장</span>&ndash;&gt;-->
-<!--&lt;!&ndash;                    <strong><span class="content" style="margin-top:3px;">&ndash;&gt;-->
-<!--&lt;!&ndash;                     다음주 금요일은 쉬세요.&ndash;&gt;-->
-<!--&lt;!&ndash;                    </span></strong>&ndash;&gt;-->
-<!--&lt;!&ndash;                </a>&ndash;&gt;-->
-
-<!--&lt;!&ndash;                <span style="position:fixed; right:5%;">2021.04.07</span>&ndash;&gt;-->
-
-<!--&lt;!&ndash;            </div>&ndash;&gt;-->
-
-<!--&lt;!&ndash;            <hr>&ndash;&gt;-->
-<!--&lt;!&ndash;            <div  style="display:flex; flex-direction:row; margin:5px;">&ndash;&gt;-->
-<!--&lt;!&ndash;                <figure class="image is-64x64" style="margin-right:15px;">&ndash;&gt;-->
-<!--&lt;!&ndash;                    <img class="is-rounded" src="https://bulma.io/images/placeholders/128x128.png">&ndash;&gt;-->
-<!--&lt;!&ndash;                </figure>&ndash;&gt;-->
-<!--&lt;!&ndash;                <a href="#" style="display:flex; flex-direction:column;">&ndash;&gt;-->
-<!--&lt;!&ndash;                    <span>김기환 팀장</span>&ndash;&gt;-->
-<!--&lt;!&ndash;                    <strong><span class="content" style="margin-top:3px;">&ndash;&gt;-->
-<!--&lt;!&ndash;                     다음주 금요일은 쉬세요.&ndash;&gt;-->
-<!--&lt;!&ndash;                    </span></strong>&ndash;&gt;-->
-<!--&lt;!&ndash;                </a>&ndash;&gt;-->
-
-<!--&lt;!&ndash;                <span style="position:fixed; right:5%;">2021.04.07</span>&ndash;&gt;-->
-
-<!--&lt;!&ndash;            </div>&ndash;&gt;-->
-
-<!--&lt;!&ndash;            <hr>&ndash;&gt;-->
-<!--&lt;!&ndash;        </div>&ndash;&gt;-->
-
-
-<!--<div class="pagination">-->
-<!--    <span class="step-links">-->
-<!--        {% if page_obj.has_previous %}-->
-<!--            <a href="?page=1">&laquo; first</a>-->
-<!--            <a href="?page={{ page_obj.previous_page_number }}">previous</a>-->
-<!--        {% endif %}-->
-
-<!--        <span class="current">-->
-<!--            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.-->
-<!--        </span>-->
-
-<!--        {% if page_obj.has_next %}-->
-<!--            <a href="?page={{ page_obj.next_page_number }}">next</a>-->
-<!--            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>-->
-<!--        {% endif %}-->
-<!--    </span>-->
-<!--</div>-->
 
         <div style="display:flex; justify-content:center;">
             <table class="table is-hoverable" style="width:90%">
                 <thead>
                 <tr>
                     <th>
-                        <div>선택</div>
+                        <div><input type="checkbox" id="select_all" onclick="selectAll()" value="{{message.id}}"></div>
                     </th>
                     <th>
                         <div>제목</div>
@@ -144,7 +92,13 @@
                         <div>받는 이</div>
                     </th>
                     <th>
-                        <div>날짜</div>
+                        <div>보낸 날짜</div>
+                    </th>
+                    <th style="text-align:center;">
+                        <div>수신 확인</div>
+                    </th>
+                    <th>
+                        <div>삭제</div>
                     </th>
                 </tr>
                 </thead>
@@ -154,15 +108,25 @@
                 {% for message in message_list %}
 
                 <tr>
-                    <td><input type="checkbox" name="delete" value="{{message.id}}"></td>
-                    <td><a href="{% url 'readdirect' message.pk %}">
+                    <td><input type="checkbox" name="delete" id="select" value="{{message.id}}"></td>
+                    <td><a href="{% url 'readdirect' message.pk 2 %}">
                         <div name="title" style="width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ message.title }}</div>
                     </a></td>
                     <td>
                         <div name="user" style="width:80px;">{{ message.recipient }}</div>
                     </td>
                     <td>
-                        <div name="date">{{ message.date|date:"m-d a f" }}</div>
+                        <div name="date">{{ message.date|date:"m-d H:i" }}</div>
+                    </td>
+                    <td style="text-align:center;">
+                        {% if message.is_read == True %}
+                            <div><i class="far fa-envelope-open" style="margin-right:5px;"></i>{{ message.is_read_date|date:"m-d H:i" }}</div>
+                        {% else %}
+                            <div><i class="far fa-envelope" style="margin-right:5px;"></i></div>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'deletedirect' message.pk 2 %}">삭제</a>
                     </td>
                 </tr>
 
@@ -171,26 +135,7 @@
             </table>
         </div>
         <br>
-<!--        <div style="display:flex; justify-content:center;">-->
-<!--            <div class="pagination">-->
-<!--                <span class="step-links">-->
-<!--                    {% if page_obj.has_previous %}-->
-<!--                        <a href="?page=1">&laquo; first</a>-->
-<!--                        <a href="?page={{ page_obj.previous_page_number }}">previous</a>-->
-<!--                    {% endif %}-->
 
-<!--                    <span class="current">-->
-<!--                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.-->
-<!--                    </span>-->
-
-<!--                    {% if page_obj.has_next %}-->
-<!--                        <a href="?page={{ page_obj.next_page_number }}">next</a>-->
-<!--                        <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>-->
-<!--                    {% endif %}-->
-<!--                </span>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--        <br>-->
 
         <button class="button is-light" style="margin-left:5%;">삭제</button>
         </form>

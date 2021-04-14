@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.gstatic.com">
-    <script src='http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery.min.js'></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100&display=swap" rel="stylesheet">
     <link
         rel="stylesheet"
@@ -40,26 +39,6 @@ function popup(){
     var option = "location=no, directories=no, status=no, toolbar=no, menubar=no, scrollbars=no, resizable=yes, width=550, height=800";
     window.open(url, name, option);
 }
-
-function get_unread_message(){
-    var checked = document.getElementById('unread').checked;
-    $.ajax({
-			type: 'POST',
-			url: '{% url "directlist_received" %}',
-			data: {
-			    'action': 'Click',
-			    'check': checked,
-			    csrfmiddlewaretoken: '{{ csrf_token }}'
-			},
-			success: function(data){
-			    $('.msgList').html(data);
-	        },
-	        error: function(xhr, status) {
-	            alert('error');
-	        }
-    })
-}
-
 </script>
 <body>
 
@@ -72,24 +51,24 @@ function get_unread_message(){
                 </p>
 
                 <a href="javascript:popup()" style="margin-right:20px;"><i style="float:right; margin-top:14px;" class="far fa-edit fa-1x"></i></a>
-
             </div>
 
         </div>
 
         <div class="tabs">
           <ul>
-              <li class="is-active"><a href="#">받은 쪽지함</a></li>
+              <li><a href="{% url 'directlist_received' %}">받은 쪽지함</a></li>
               <li><a href="{% url 'directlist_sent' %}">보낸 쪽지함</a></li>
-              <li><a href="{% url 'directs_deleted' %}">삭제함</a></li>
+              <li class="is-active"><a href="{% url 'directs_deleted' %}">삭제함</a></li>
+
+        <!--    <li><a href="{% url 'searchselect' %}">by Team</a></li>-->
 
           </ul>
         </div>
 
 
-     <form method="POST">
-        {% csrf_token %}
-        <div style="display:flex; justify-content:center;" class="msgList">
+
+        <div style="display:flex; justify-content:center;">
             <table class="table is-hoverable" style="width:90%">
                 <thead>
                 <tr>
@@ -103,50 +82,60 @@ function get_unread_message(){
                         <div>보낸 이</div>
                     </th>
                     <th>
-                        <div>받은 날짜</div>
-                    </th>
-                    <th style="width:13%; text-align:center;">
-                        <div>읽음</div>
-                    </th>
-                    <th>
-                        <div>삭제</div>
+                        <div>날짜</div>
                     </th>
                 </tr>
                 </thead>
                 <tbody>
-                    {% for message in message_list %}
-                        <tr>
-                            <td><input type="checkbox" name="delete" id="select" value="{{message.id}}"></td>
-                            <td><a href="{% url 'readdirect' message.pk 1 %}">
-                                <div name="title" style="width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ message.title }}</div>
-                            </a></td>
-                            <td>
-                                <div name="user" style="width:80px;">{{ message.sender }}</div>
-                            </td>
-                            <td>
-                                <div name="date">{{ message.date|date:"m-d H:i" }}</div>
-                            </td>
-                            <td style="text-align:center;">
-                                {% if message.is_read == True %}
-                                    <div><i class="far fa-envelope-open"></i></div>
-                                {% else %}
-                                    <div><i class="far fa-envelope"></i></div>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <a href="{% url 'deletedirect' message.pk 1 %}">삭제</a>
-                            </td>
-                        </tr>
+                <form method="post">
+                    {% csrf_token %}
+                {% for message in message_list %}
 
-                    {% endfor %}
+                <tr>
+                    <td><input type="checkbox" name="delete" id="select" value="{{message.id}}"></td>
+                    <td><a href="{% url 'readdirect' message.pk 2 %}">
+                        <div name="title" style="width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ message.title }}</div>
+                    </a></td>
+                    <td>
+                        <div name="user" style="width:80px;">{{ message.sender }}</div>
+                    </td>
+                    <td>
+                        <div name="date">{{ message.date|date:"m-d H:i" }}</div>
+                    </td>
+                    <td>
+                        <a href="{% url 'deletedirect' message.pk 3 %}">삭제</a>
+                    </td>
+                </tr>
+
+                {% endfor %}
+
                 </tbody>
+
             </table>
         </div>
         <br>
-        <button class="button is-light" style="margin-left:5%;" name="action" value="Read">읽음</button>
-        <button class="button is-light" name="action" value="Delete">삭제</button>
-        <label style="float:right; margin-right:40px;"><input type="checkbox" onchange="get_unread_message();" id="unread"> 안 읽은 쪽지</label>
-    </form>
+
+
+<!--<div class="pagination">-->
+<!--    <span class="step-links">-->
+<!--        {% if page_obj.has_previous %}-->
+<!--            <a href="?page=1">&laquo; first</a>-->
+<!--            <a href="?page={{ page_obj.previous_page_number }}">previous</a>-->
+<!--        {% endif %}-->
+
+<!--        <span class="current">-->
+<!--            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.-->
+<!--        </span>-->
+
+<!--        {% if page_obj.has_next %}-->
+<!--            <a href="?page={{ page_obj.next_page_number }}">next</a>-->
+<!--            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>-->
+<!--        {% endif %}-->
+<!--    </span>-->
+<!--</div>-->
+
+        <button class="button is-light" style="margin-left:5%;">삭제</button>
+        </form>
 
         <br>
         <br>

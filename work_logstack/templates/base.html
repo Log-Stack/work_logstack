@@ -19,7 +19,7 @@
         function popup(){
             var url = "{% url 'directlist_received' %}";
             var name = "쪽지함";
-            var option = "location=no, directories=no, status=no, toolbar=no, menubar=no, scrollbars=no, resizable=yes, width=550, height=800";
+            var option = "location=no, directories=no, status=no, toolbar=no, menubar=no, scrollbars=no, resizable=no, width=800, height=800";
             window.open(url, name, option);
         }
 </script>
@@ -136,7 +136,12 @@
 
                         <!-- log in 했을 시-->
                         {% if user.is_authenticated %}
-                         <a href="javascript:popup()" style="margin-right:20px; margin-bottom:7px;"><i class="far fa-envelope"></i></a>
+
+                        {% if directs_count > 0 %}
+                          <a href="javascript:popup()" style="margin-right:20px; margin-bottom:7px; color: blue;"><i class="far fa-envelope"></i></a>
+                         {% else %}
+                         <a href="javascript:popup()" style="margin-right:20px; margin-bottom:7px; color: gray;"><i class="far fa-envelope"></i></a>
+                        {% endif %}
 
                         <div style="margin-right:20px; margin-bottom:0.5rem;">
                             {% if name != None %}

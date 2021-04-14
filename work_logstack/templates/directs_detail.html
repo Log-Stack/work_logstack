@@ -13,7 +13,15 @@
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css"
       />
-
+</head>
+<script>
+    function popup(){
+    var url = "{% url 'replydirects' message.pk %}"
+    var name = "답장 하기";
+    var option = "location=no, directories=no, status=no, toolbar=no, menubar=no, scrollbars=no, resizable=yes, width=800, height=800";
+    window.open(url, name, option);
+}
+</script>
 <body>
 
         <div class="hero is-dark is-small" >
@@ -32,7 +40,11 @@
   <div style=" margin-bottom:6px; padding:10px;">
       <span><strong>{{ message.title }}</strong></span><br>
       <span style="font-size:12px; color: #8e8e8e;">보낸 날짜 : {{ message.date }}</span><br>
-      <span style="font-size:12px; color: #8e8e8e;">보낸 사람 / 받는 사람 : {{ message.sender }} / {{ message.recipient }}</span>
+      {% if user != message.sender %}
+      <span style="font-size:12px; color: #8e8e8e;">보낸 사람 : {{ message.sender }}</span>
+      {% else %}
+      <span style="font-size:12px; color: #8e8e8e;">받는 사람 : {{ message.recipient }}</span>
+      {% endif %}
   </div>
   <div class="media-content">
     <div class="field" style="height:500px; margin-bottom:35px; border: thin solid #EEEEEE; border-radius:10px; padding:10px;">
@@ -42,8 +54,19 @@
     </div>
     <nav class="level">
       <div class="level-left" >
-        <div class="level-item">
-          <a href="{% url 'replydirects' message.pk %}" class="button is-dark">Reply</a>
+        <div class="level-item" style="display:flex; float:right;">
+
+        {% if user != message.sender and message.is_delete == False %}
+              <a href="javascript:popup()" class="button is-dark" style="margin-right:8px;">답장</a>
+
+            <a href="{% url 'deletedirect' message.pk  1 %}" class="button is-dark">삭제</a>
+            {% else %}
+                {% if message.is_delete == False %}
+                     <a href="{% url 'deletedirect' message.pk  2 %}" class="button is-dark" >삭제</a>
+                {% else %}
+                     <a href="{% url 'deletedirect' message.pk  3 %}" class="button is-dark" >삭제</a>
+                {% endif %}
+            {% endif %}
         </div>
       </div>
     </nav>
