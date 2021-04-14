@@ -83,7 +83,13 @@ function popup(){
                         <div>보낸 이</div>
                     </th>
                     <th>
-                        <div>날짜</div>
+                        <div>받은 날짜</div>
+                    </th>
+                    <th>
+                        <div>수신 확인</div>
+                    </th>
+                    <th>
+                        <div>삭제</div>
                     </th>
                 </tr>
                 </thead>
@@ -94,7 +100,7 @@ function popup(){
 
                 <tr>
                     <td><input type="checkbox" name="delete" id="select" value="{{message.id}}"></td>
-                    <td><a href="{% url 'readdirect' message.pk %}">
+                    <td><a href="{% url 'readdirect' message.pk 1 %}">
                         <div name="title" style="width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ message.title }}</div>
                     </a></td>
                     <td>
@@ -102,6 +108,13 @@ function popup(){
                     </td>
                     <td>
                         <div name="date">{{ message.date|date:"m-d H:i" }}</div>
+                    </td>
+                    <td>
+                        {% if message.is_read == True %}
+                            <div><i class="far fa-envelope-open"></i></div>
+                        {% else %}
+                            <div><i class="far fa-envelope"></i></div>
+                        {% endif %}
                     </td>
                     <td>
                         <a href="{% url 'deletedirect' message.pk 1 %}">삭제</a>

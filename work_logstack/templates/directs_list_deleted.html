@@ -93,7 +93,7 @@ function popup(){
 
                 <tr>
                     <td><input type="checkbox" name="delete" id="select" value="{{message.id}}"></td>
-                    <td><a href="{% url 'readdirect' message.pk %}">
+                    <td><a href="{% url 'readdirect' message.pk 2 %}">
                         <div name="title" style="width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ message.title }}</div>
                     </a></td>
                     <td>

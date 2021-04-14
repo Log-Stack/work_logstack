@@ -10,31 +10,8 @@ from authy.models import Team, Profile
 from directs.models import Message
 
 
-# @login_required
-# def directs_list_received(request):
-#
-#     template = loader.get_template('directs_list_received.html')
-#     context = {
-#
-#     }
-#     return HttpResponse(template.render(context,request))
 
-
-# @login_required
-# def directs_list_sent(request):
-#     from_user = request.user
-#
-#     messages_sent = Message.objects.all().filter(sender=from_user)
-#     p = Paginator(messages_sent,10)
-#     print(p.num_pages)
-#     template = loader.get_template('directs_list_sent.html')
-#     context = {
-#         'messages':messages_sent,
-#         'pages':[p.num_pages],
-#     }
-#     return HttpResponse(template.render(context,request))
 class DirectsListReceived(ListView):
-
     template_name = 'directs_list_received.html'
     paginate_by = 10
 
@@ -43,24 +20,24 @@ class DirectsListReceived(ListView):
             q = request.POST.getlist('delete')
             for pk in q:
                 message = get_object_or_404(Message, pk=pk)
-                message.is_delete= True
+                message.is_delete = True
                 message.save()
                 # message.delete()
-
-
 
             return redirect('directlist_received')
 
     def get_queryset(self):
-        return Message.objects.all().filter(user=self.request.user,recipient=self.request.user, is_delete=False).order_by('-date')
+        return Message.objects.all().filter(user=self.request.user, recipient=self.request.user,
+                                            is_delete=False).order_by('-date')
+
 
 
 
 class DirectsListSent(ListView):
-
-    #model = Message
+    # model = Message
     template_name = 'directs_list_sent.html'
     paginate_by = 10
+
 
     def post(self, request, *args, **kwargs):
         if request.POST:
@@ -74,12 +51,15 @@ class DirectsListSent(ListView):
             return redirect('directlist_sent')
 
     def get_queryset(self):
-        return Message.objects.all().filter(user=self.request.user,sender=self.request.user, is_delete=False).order_by('-date')
+
+        return Message.objects.all().filter(user=self.request.user, sender=self.request.user, is_delete=False).order_by(
+            '-date')
+
+
 
 
 class DirectsListDeleted(ListView):
-
-    #model = Message
+    # model = Message
     template_name = 'directs_list_deleted.html'
     paginate_by = 10
 
@@ -93,8 +73,8 @@ class DirectsListDeleted(ListView):
             return redirect('directs_deleted')
 
     def get_queryset(self):
-        return Message.objects.all().filter(user=self.request.user, recipient=self.request.user, is_delete=True).order_by('-date')
-
+        return Message.objects.all().filter(user=self.request.user, recipient=self.request.user,
+                                            is_delete=True).order_by('-date')
 
 
 @login_required
@@ -108,7 +88,7 @@ def directs_send(request):
 
         to_user = User.objects.get(id=user_id)
 
-        Message.send_message(from_user,to_user,title,body)
+        Message.send_message(from_user, to_user, title, body)
 
         # return redirect('directlist_sent')
         return HttpResponse('ok')
@@ -132,27 +112,33 @@ def directs_reply(request, pk):
         body = request.POST.get('body')
         to_user = User.objects.get(username=receiver)
 
-        Message.send_message(from_user,to_user,title,body)
+        Message.send_message(from_user, to_user, title, body)
 
         return redirect('directlist_sent')
     else:
         HttpResponseBadRequest()
 
     context = {
-        'receiver' : receiver
+        'receiver': receiver
     }
     template = loader.get_template('directs_reply.html')
-    return HttpResponse(template.render(context,request))
-
-
+    return HttpResponse(template.render(context, request))
 
 
 @login_required
-def directs_detail(request,pk):
-
+def directs_detail(request, pk, lst):
     message = Message.objects.get(pk=pk)
-    message.is_read = True
-    message.save()
+    if lst==1:
+        if not message.is_read:
+            message_sender = Message.objects.get(pk=pk-1)
+            message.is_read = True
+            message.save()
+            message_sender.is_read=True
+            message_sender.save()
+
+
+    print(message.is_read_date)
+
     template = loader.get_template('directs_detail.html')
     if request.method == "POST":
         print(request.user)
@@ -160,22 +146,21 @@ def directs_detail(request,pk):
         HttpResponseBadRequest()
 
     context = {
-        'message':message
+        'message': message
     }
-    return HttpResponse(template.render(context,request))
+    return HttpResponse(template.render(context, request))
 
 
 @login_required
-def directs_detail_delete(request,pk,lst):
-
-    if lst==1:
+def directs_detail_delete(request, pk, lst):
+    if lst == 1:
         message = Message.objects.get(pk=pk)
         user = message.user
-        message = Message.objects.get(pk=pk,user=user,recipient=user)
+        message = Message.objects.get(pk=pk, user=user, recipient=user)
         message.is_delete = True
         message.save()
         return redirect('directlist_received')
-    elif lst==2 :
+    elif lst == 2:
         message = Message.objects.get(pk=pk)
         user = message.user
         message = Message.objects.get(pk=pk, user=user, sender=user)
@@ -193,6 +178,6 @@ def directs_detail_delete(request,pk,lst):
 def checkDirects(request):
     directs_count = 0
     if request.user.is_authenticated:
-        directs_count = Message.objects.all().filter(user=request.user,recipient=request.user,is_read=False).count()
+        directs_count = Message.objects.all().filter(user=request.user, recipient=request.user, is_read=False).count()
 
     return {'directs_count': directs_count}

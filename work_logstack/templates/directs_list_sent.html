@@ -92,7 +92,13 @@ function popup(){
                         <div>받는 이</div>
                     </th>
                     <th>
-                        <div>날짜</div>
+                        <div>보낸 날짜</div>
+                    </th>
+                    <th>
+                        <div>수신 확인</div>
+                    </th>
+                    <th>
+                        <div>삭제</div>
                     </th>
                 </tr>
                 </thead>
@@ -103,7 +109,7 @@ function popup(){
 
                 <tr>
                     <td><input type="checkbox" name="delete" id="select" value="{{message.id}}"></td>
-                    <td><a href="{% url 'readdirect' message.pk %}">
+                    <td><a href="{% url 'readdirect' message.pk 2 %}">
                         <div name="title" style="width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ message.title }}</div>
                     </a></td>
                     <td>
@@ -111,6 +117,13 @@ function popup(){
                     </td>
                     <td>
                         <div name="date">{{ message.date|date:"m-d H:i" }}</div>
+                    </td>
+                    <td>
+                        {% if message.is_read == True %}
+                            <div><i class="far fa-envelope-open" style="margin-right:5px;"></i>{{ message.is_read_date|date:"m-d H:i" }}</div>
+                        {% else %}
+                            <div><i class="far fa-envelope" style="margin-right:5px;"> 확인 안함</i></div>
+                        {% endif %}
                     </td>
                     <td>
                         <a href="{% url 'deletedirect' message.pk 2 %}">삭제</a>
@@ -122,26 +135,7 @@ function popup(){
             </table>
         </div>
         <br>
-<!--        <div style="display:flex; justify-content:center;">-->
-<!--            <div class="pagination">-->
-<!--                <span class="step-links">-->
-<!--                    {% if page_obj.has_previous %}-->
-<!--                        <a href="?page=1">&laquo; first</a>-->
-<!--                        <a href="?page={{ page_obj.previous_page_number }}">previous</a>-->
-<!--                    {% endif %}-->
 
-<!--                    <span class="current">-->
-<!--                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.-->
-<!--                    </span>-->
-
-<!--                    {% if page_obj.has_next %}-->
-<!--                        <a href="?page={{ page_obj.next_page_number }}">next</a>-->
-<!--                        <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>-->
-<!--                    {% endif %}-->
-<!--                </span>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--        <br>-->
 
         <button class="button is-light" style="margin-left:5%;">삭제</button>
         </form>
