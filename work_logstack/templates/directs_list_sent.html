@@ -112,6 +112,9 @@ function popup(){
                     <td>
                         <div name="date">{{ message.date|date:"m-d H:i" }}</div>
                     </td>
+                    <td>
+                        <a href="{% url 'deletedirect' message.pk 2 %}">삭제</a>
+                    </td>
                 </tr>
 
                 {% endfor %}
