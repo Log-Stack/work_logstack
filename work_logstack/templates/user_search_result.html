@@ -121,14 +121,14 @@ $(document).ready(function(){
 
 </script>
 
-    <style>
-    .log_box {
-        overflow-y: scroll;
-        overflow-x: hidden;
-        height:450px;
-    }
+<!--    <style>-->
+<!--    .log_box {-->
+<!--        overflow-y: scroll;-->
+<!--        overflow-x: hidden;-->
+<!--        height:450px;-->
+<!--    }-->
 
-    </style>
+<!--    </style>-->
 
 <!--탭 메뉴-->
 <div id="top"></div>
@@ -249,18 +249,18 @@ $(document).ready(function(){
                 </div>
                 <div class="column is-6">
 
-                    <div class="log_box">
+                    <div class="box" style="height:100%; overflow-x: hidden; overflow-y: scroll; height:434px;">
                         <p class="title is-4 work_log_date"></p>
                         <hr>
 
-                        <p class="subtitle is-6 work_log_content"></p>
+                        <p class="subtitle is-6 work_log_content" style="background-color: white"></p>
                     </div>
                 </div>
             </div>
         </div>
 
-    <div class="box">
-        <div id='calendar'></div>
+    <div class="card-content">
+        <div id='calendar' style="margin-top:-1rem;"></div>
     </div>
 </div>
 </div>

@@ -147,158 +147,158 @@ $(document).ready(function(){
         <div class="card-content">
             <div class="columns">
                 <div class="column is-6">
-            <div class="media">
-                <div class="media-content">
-                    <p class="title is-4">
-                        <span class="material-icons" style="margin: 0.5rem; vertical-align: middle;">person</span><span style="vertical-align: middle;">
-                        {% if member.name != None %}
-                        {{ member.name }}
-                        {% else %}
-                        이름 미입력
-                        {% endif %}
-                        </span>
-                        &nbsp;
-                        &nbsp;
-                        {% if not is_super %}
-                            {% if is_manager %}
-                                <a href="{% url 'manage_permit' member.pk %}" class="button is-dark">매니저 권한 없애기</a>
-                            {% else %}
-                                <a href="{% url 'manage_permit' member.pk %}" class="button is-dark">매니저 권한 주기</a>
-                            {% endif %}
-                            {% if member.currently_employed %}
-                                <a href="{% url 'manage_delete' member.pk %}" class="button is-dark is-light">퇴사 처리</a>
-                            {% else %}
-                                <a href="{% url 'manage_delete' member.pk %}" class="button is-dark is-light">복귀 처리</a>
-                            {% endif %}
-                            <a href="{% url 'manage_delete_real' member.pk %}" class="button is-dark is-light">삭제</a>
-                        {% endif %}
-                    </p>
-                    <div class="content">
+                    <div class="media">
+                        <div class="media-content">
+                            <p class="title is-4">
+                                <span class="material-icons" style="margin: 0.5rem; vertical-align: middle;">person</span><span style="vertical-align: middle;">
+                                {% if member.name != None %}
+                                {{ member.name }}
+                                {% else %}
+                                이름 미입력
+                                {% endif %}
+                                </span>
+                                &nbsp;
+                                &nbsp;
+                                {% if not is_super %}
+                                    {% if is_manager %}
+                                        <a href="{% url 'manage_permit' member.pk %}" class="button is-dark">매니저 권한 없애기</a>
+                                    {% else %}
+                                        <a href="{% url 'manage_permit' member.pk %}" class="button is-dark">매니저 권한 주기</a>
+                                    {% endif %}
+                                    {% if member.currently_employed %}
+                                        <a href="{% url 'manage_delete' member.pk %}" class="button is-dark is-light">퇴사 처리</a>
+                                    {% else %}
+                                        <a href="{% url 'manage_delete' member.pk %}" class="button is-dark is-light">복귀 처리</a>
+                                    {% endif %}
+                                    <a href="{% url 'manage_delete_real' member.pk %}" class="button is-dark is-light">삭제</a>
+                                {% endif %}
+                            </p>
+                            <div class="content">
 
-                            <form method="POST" role="form" action="{% url 'editprofile_manage' member.pk %}">
+                                    <form method="POST" role="form" action="{% url 'editprofile_manage' member.pk %}">
+                                        {% csrf_token %}
+                                        <ul>
+                                            <li>
+                                                매니저 권한: {% if is_manager %}있음{% else %}없음{% endif %}
+                                            </li>
+                                            <li>
+                                                재직 현황: {% if member.currently_employed == True %}재직 중{% else %}퇴사{% endif %}
+                                            </li>
+        <!--                                    <li id="current_team">-->
+        <!--                                        {% if member.team %}팀: {{ member.team }}{% else %}팀을 설정해주세요.{% endif %}-->
+        <!--                                    </li>-->
+        <!--                                    <li id="current_position">-->
+        <!--                                        {% if member.position %}직급: {{ member.position }}{% else %}직급을 설정해주세요.{% endif %}-->
+        <!--                                    </li>-->
+        <!--                                    <li>-->
+        <!--                                        {% if member.email_address %}이메일: {{ member.email_address }}{% else %}이메일을 설정해주세요.{% endif %}-->
+        <!--                                    </li>-->
+        <!--                                    <li>-->
+        <!--                                        {% if member.phone_number %}전화번호: {{ member.phone_number }}{% else %}전화번호를 설정해주세요.{% endif %}-->
+        <!--                                    </li>-->
+        <!--                                    <li>-->
+        <!--                                        {% if member.start_date %}입사일: {{ member.start_date }}{% else %}입사일을 설정해주세요.{% endif %}-->
+        <!--                                    </li>-->
+        <!--                                    <li>-->
+        <!--                                        {% if member.birth_day %}생년월일: {{ member.birth_day }}{% else %}생년월일을 설정해주세요.{% endif %}-->
+        <!--                                    </li>-->
+                                            <li>
+                                                이메일: {{ profile.email_address }}
+                                            </li>
+                                            <li>
+                                                전화번호: {{ profile.phone_number }}
+                                            </li>
+                                            <li>
+                                                입사일: {{ profile.start_date }}
+                                            </li>
+                                            <li>
+                                                생년월일: {{ profile.birth_day }}
+                                            </li>
+                                        </ul>
+                                        <input class="button is-dark" type="submit" value="Edit" style="float: right;">
+                                    </form>
+
+
+                            </div>
+                        </div>
+                        <div class="media-right">
+                            <figure class="image is-128x128">
+                                <img src="
+                                {% if member.picture %}
+                                {{ member.picture.url }}
+                                {% else %}
+                                https://bulma.io/images/placeholders/128x128.png
+                                {% endif %}">
+                            </figure>
+                        </div>
+                    </div>
+                    <div class="media">
+                        <div class="media-content">
+                            <div class="columns is-multiline">
+                                <div class="column is-5">
+                                    <label class="label">Team</label>
+                                    <div class="select is-dark">
+                                        <select name="team" id="edit_team">
+                                            {% for team in teams %}
+                                            <option {% if member.team == team %} selected="selected" {% endif %}>{{ team.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="column is-5">
+                                    <label class="label">Position</label>
+                                    <div class="select is-dark">
+                                        <select name="position" id="edit_position">
+                                            {% for position in positions %}
+                                            <option {% if member.position == position %} selected="selected" {% endif %}>{{ position.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="media">
+                        <div class="media-content">
+                            <form method="POST" role="form">
                                 {% csrf_token %}
-                                <ul>
-                                    <li>
-                                        매니저 권한: {% if is_manager %}있음{% else %}없음{% endif %}
-                                    </li>
-                                    <li>
-                                        재직 현황: {% if member.currently_employed == True %}재직 중{% else %}퇴사{% endif %}
-                                    </li>
-<!--                                    <li id="current_team">-->
-<!--                                        {% if member.team %}팀: {{ member.team }}{% else %}팀을 설정해주세요.{% endif %}-->
-<!--                                    </li>-->
-<!--                                    <li id="current_position">-->
-<!--                                        {% if member.position %}직급: {{ member.position }}{% else %}직급을 설정해주세요.{% endif %}-->
-<!--                                    </li>-->
-<!--                                    <li>-->
-<!--                                        {% if member.email_address %}이메일: {{ member.email_address }}{% else %}이메일을 설정해주세요.{% endif %}-->
-<!--                                    </li>-->
-<!--                                    <li>-->
-<!--                                        {% if member.phone_number %}전화번호: {{ member.phone_number }}{% else %}전화번호를 설정해주세요.{% endif %}-->
-<!--                                    </li>-->
-<!--                                    <li>-->
-<!--                                        {% if member.start_date %}입사일: {{ member.start_date }}{% else %}입사일을 설정해주세요.{% endif %}-->
-<!--                                    </li>-->
-<!--                                    <li>-->
-<!--                                        {% if member.birth_day %}생년월일: {{ member.birth_day }}{% else %}생년월일을 설정해주세요.{% endif %}-->
-<!--                                    </li>-->
-                                    <li>
-                                        이메일: {{ profile.email_address }}
-                                    </li>
-                                    <li>
-                                        전화번호: {{ profile.phone_number }}
-                                    </li>
-                                    <li>
-                                        입사일: {{ profile.start_date }}
-                                    </li>
-                                    <li>
-                                        생년월일: {{ profile.birth_day }}
-                                    </li>
-                                </ul>
-                                <input class="button is-dark" type="submit" value="Edit" style="float: right;">
+                                <div class="columns">
+                                    <div class="column is-4">
+                                        <div class="field">
+                                            <label class="label">Start date</label>
+                                            <div class="control">
+                                                <input class="input is-dark" type="date" name="work_start_date" value="{{ work_start_date }}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="column is-4">
+                                        <div class="field">
+                                            <label class="label">End date</label>
+                                            <div class="control">
+                                                <input class="input is-dark" type="date" name="work_end_date" value="{{ work_end_date }}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="column">
+                                        <div class="field">
+                                            <label class="label" style="visibility: hidden;">검색</label>
+                                            <div class="control">
+                                                <button class="button is-dark" type="submit">Search</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </form>
-
-
-                    </div>
-                </div>
-                <div class="media-right">
-                    <figure class="image is-128x128">
-                        <img src="
-                        {% if member.picture %}
-                        {{ member.picture.url }}
-                        {% else %}
-                        https://bulma.io/images/placeholders/128x128.png
-                        {% endif %}">
-                    </figure>
-                </div>
-            </div>
-            <div class="media">
-                <div class="media-content">
-                    <div class="columns is-multiline">
-                        <div class="column is-5">
-                            <label class="label">Team</label>
-                            <div class="select is-dark">
-                                <select name="team" id="edit_team">
-                                    {% for team in teams %}
-                                    <option {% if member.team == team %} selected="selected" {% endif %}>{{ team.name }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        </div>
-                        <div class="column is-5">
-                            <label class="label">Position</label>
-                            <div class="select is-dark">
-                                <select name="position" id="edit_position">
-                                    {% for position in positions %}
-                                    <option {% if member.position == position %} selected="selected" {% endif %}>{{ position.name }}</option>
-                                    {% endfor %}
-                                </select>
+                            <div style="margin-top: 1rem;" class="box notification is-dark">
+                                <div class="title total_time has-text-centered"></div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <div class="media">
-                <div class="media-content">
-                    <form method="POST" role="form">
-                        {% csrf_token %}
-                        <div class="columns">
-                            <div class="column is-4">
-                                <div class="field">
-                                    <label class="label">Start date</label>
-                                    <div class="control">
-                                        <input class="input is-dark" type="date" name="work_start_date" value="{{ work_start_date }}">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="column is-4">
-                                <div class="field">
-                                    <label class="label">End date</label>
-                                    <div class="control">
-                                        <input class="input is-dark" type="date" name="work_end_date" value="{{ work_end_date }}">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="column">
-                                <div class="field">
-                                    <label class="label" style="visibility: hidden;">검색</label>
-                                    <div class="control">
-                                        <button class="button is-dark" type="submit">Search</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                    <div style="margin-top: 1rem;" class="box notification is-dark">
-                        <div class="title total_time has-text-centered"></div>
-                    </div>
-                </div>
-            </div>
                 </div>
                 <div class="column is-6">
 
-                    <div style="height:100%; overflow-y: scroll; height: 764px" class="box">
+                    <div style="overflow-y:scroll; overflow-x: hidden; height: 764px;" class="box">
                         <p class="title is-4 work_log_date">{{ last_work_log.create_time|date:"Y-m-d" }}</p>                        <hr>
                         <pre style="background-color: white;" class="subtitle is-6 work_log_content">{{ last_work_log.content }}</pre>
                     </div>
@@ -307,9 +307,9 @@ $(document).ready(function(){
             </div>
         </div>
 
-
-    <div class="box">
-        <div id='calendar'></div>
+        <div class="card-content">
+            <div id='calendar' style="margin-top:-1rem;"></div>
+        </div>
     </div>
-    </div></div>
+</div>
 {% endblock %}
