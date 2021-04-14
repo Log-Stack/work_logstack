@@ -690,7 +690,6 @@ def calc_work_hours(request):
     start_date = request.GET.get('start')
     end_date = request.GET.get('end')
     profile = Profile.objects.get(user=user)
-    team_manager = TeamManager.objects.filter(team=profile.team).filter(user=user).first()
     result = {}
     total_working_time = 0
     work_hours_list = []

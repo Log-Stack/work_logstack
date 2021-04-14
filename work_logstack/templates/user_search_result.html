@@ -43,7 +43,7 @@ $.ajax({
                     end : work_end_date[0].value,
                 },
                 success: function(data){
-                document.getElementsByClassName("total_time")[0].innerText= data.total_working_time;
+<!--                document.getElementsByClassName("total_time")[0].innerText= data.total_working_time;-->
                 var color_list = ['#0096c6', '#ff6939', '#fa3d00', '#6937a1',  '#003458'];
 
                 var titles = Array();
@@ -241,15 +241,15 @@ $(document).ready(function(){
                                 </div>
                             </div>
                         </form>
-                    <div style="margin-top: 1rem;" class="box notification is-dark">
-                        <div class="title total_time has-text-centered"></div>
-                    </div>
+<!--                    <div style="margin-top: 1rem;" class="box notification is-dark">-->
+<!--                        <div class="title total_time has-text-centered"></div>-->
+<!--                    </div>-->
                 </div>
             </div>
                 </div>
                 <div class="column is-6">
 
-                    <div class="box" style="height:100%; overflow-x: hidden; overflow-y: scroll; height:434px;">
+                    <div class="box" style="height:100%; overflow-x: hidden; overflow-y: scroll; height:364px;">
                         <p class="title is-4 work_log_date"></p>
                         <hr>
 
