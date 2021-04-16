@@ -14,7 +14,6 @@ var calendar = null;
 
 
 function goDetailSchedule(date){
-console.log(date);
 var date = new Date(date.split("T")[0]);
 var team_id = document.getElementById('team_select').value;
 
@@ -325,7 +324,7 @@ function setModifyScheduleCalendar(){
                 dateClick: function(info){
                     var url="/schedule/register/day/" + info.dateStr.split('-')[0] + "/" + info.dateStr.split('-')[1] + "/" + info.dateStr.split('-')[2];
 
-                    window.open(url,'modified_day_schedule','width=1250, height=900, toolbar=no, menubar=no, scrollbars=no, resizable=yes');
+                    window.open(url,'modified_day_schedule','width=1250, height=600, toolbar=no, menubar=no, scrollbars=no, resizable=yes');
                 },
                 });
 

@@ -36,6 +36,7 @@ var work_end_date = document.getElementsByName('work_end_date');
 $.ajax({
                 type: 'GET',
                 url: '/authy/calc_work_hours',
+                async: false,
                 dataType: 'json',
                 data : {
                     member_pk : {{ profile.pk }},
@@ -56,6 +57,15 @@ $.ajax({
                 var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 events : titles,
+                eventMouseEnter: function(info) {
+                  var eventObj = info.event;
+                  info.el.style.cursor = 'click';
+                },
+                eventClick:function(info) {
+                    var eventDate = info.event.start;
+                    var eventDateString =  eventDate.getFullYear() + '-' + ("0"+(eventDate.getMonth()+1)).slice(-2) + '-' + ("0"+eventDate.getDate()).slice(-2) ;
+                    getWorkLogContent(eventDateString)
+                },
                 dateClick: function(info) {
                     getWorkLogContent(info.dateStr)
                 },
@@ -64,6 +74,9 @@ $.ajax({
                 calendar.render();
         }
     })
+
+    // day box hover 시 pointer cursor 변경
+    $('.fc-daygrid-day-frame').hover(function(event_obj){this.style.cursor = 'pointer'})
 }
 
 
