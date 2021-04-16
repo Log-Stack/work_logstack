@@ -8,7 +8,7 @@
 <script src='http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery.min.js'></script>
 <script>
 
-var selected_date = {{selected_date}}
+var selected_date = new Date('{{selected_date}}');
 
 var total_time = null;
 
@@ -19,6 +19,21 @@ var working_time = null;
 var start_time = null;
 var end_time = null;
 
+
+function checkDateChange(){
+    now_date = new Date();
+    now_date.setDate(now_date.getDate() - now_date.getDay() - 1);
+    if(now_date > selected_date){
+        console.log(now_date)
+        console.log(selected_date)
+
+        alert("이번주 이전은 신청이 불가능 합니다");
+        return false;
+    }
+    else{
+        return true;
+    }
+}
 
 function CalculateAllWorkTime(){
     for (let i = 0; i < start_time.length; i++) {
@@ -85,42 +100,66 @@ function setFormDate(){
     var week = ['일', '월', '화', '수', '목', '금', '토'];
     var d = new Date(document.getElementById('week_start_date').value);
     d.setDate(d.getDate() - d.getDay());
-    for(let i = 0; i<7;i++){
-        date[i].innerText = (d.getMonth() + 1) + "." + d.getDate() + " (" + week[d.getDay()] + ")";
-        d.setDate(d.getDate() + 1);
+    var temp_date = new Date(selected_date);
+    selected_date = new Date(d);
+    if(checkDateChange()){
+        document.getElementById('week_start_date').value = d.getFullYear() + "-" +("0" +  (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+
+        for(let i = 0; i<7;i++){
+            date[i].innerText = (d.getMonth() + 1) + "." + d.getDate() + " (" + week[d.getDay()] + ")";
+            d.setDate(d.getDate() + 1);
+        }
+        getWorkTimes();
+        CheckWorkTime();
     }
-    getWorkTimes();
-    CheckWorkTime();
+    else{
+        selected_date = new Date(temp_date);
+        d = temp_date;
+
+        document.getElementById('week_start_date').value = d.getFullYear() + "-" +("0" +  (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+
+        for(let i = 0; i<7;i++){
+            date[i].innerText = (d.getMonth() + 1) + "." + d.getDate() + " (" + week[d.getDay()] + ")";
+            d.setDate(d.getDate() + 1);
+        }
+        getWorkTimes();
+        CheckWorkTime();
+    }
 }
 
 function setDateInit(){
-var d = new Date(Date.now());
-d.setDate(d.getDate() - d.getDay() + 7);
-result_str = d.getFullYear() + "-" +("0" +  (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
-document.getElementById('week_start_date').value = result_str;
+    selected_date.setDate(selected_date.getDate() - selected_date.getDay());
+    var d = selected_date;
 
+    result_str = d.getFullYear() + "-" +("0" +  (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+    document.getElementById('week_start_date').value = result_str;
 }
 
 function setDateBefore(){
-var d = new Date(document.getElementById('week_start_date').value);
-d.setDate(d.getDate() - 7);
-if (d <= Date.now()){
-alert("이번주 이전 날자는 신청이 불가능 합니다.");
-return;
-}
-result_str = d.getFullYear() + "-" +("0" +  (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
-document.getElementById('week_start_date').value = result_str;
+    selected_date.setDate(selected_date.getDate() - 7);
+    var d = selected_date;
+    if(checkDateChange()){
+        result_str = d.getFullYear() + "-" +("0" +  (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+        document.getElementById('week_start_date').value = result_str;
 
-setFormDate()
+        setFormDate()
+    }
+    else{
+        selected_date.setDate(selected_date.getDate() + 7);
+
+        setFormDate()
+    }
+
 }
 
 function setDateAfter(){
-var d = new Date(document.getElementById('week_start_date').value);
-d.setDate(d.getDate() + 7);
-result_str = d.getFullYear() + "-" +("0" +  (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
-document.getElementById('week_start_date').value = result_str;
+    selected_date.setDate(selected_date.getDate() + 7);
+    var d = selected_date;
 
-setFormDate()
+    result_str = d.getFullYear() + "-" +("0" +  (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+    document.getElementById('week_start_date').value = result_str;
+
+    setFormDate()
 }
 
 
@@ -525,8 +564,8 @@ window.addEventListener('DOMContentLoaded', init);
                             <h3 class="title is-3">총 예정 근무 시간</h3>
                         </div>
                         <div class="column is-4">
-                            <div class="notification is-dark is-vcentered" style="height:80px; text-align: center;">
-                                <h1 class="title is-2" style="margin-top : -2px;"><p class="sum_time">00:00</p></h1>
+                            <div class="notification is-dark is-vcentered" style="height:60px; text-align: center;">
+                                <h1 class="title is-2" style="margin-top: -8px;"><p class="sum_time">00:00</p></h1>
                             </div>
                         </div>
                         <div class="column is-4">
