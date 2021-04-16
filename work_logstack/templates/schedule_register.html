@@ -21,6 +21,9 @@ var start_time = null;
 var end_time = null;
 
 function checkVacationCount(event){
+    if(event.target.selectedIndex != 2){
+        return;
+    }
     var total_count = Number(vacation_text.innerText.split(" ")[3].split("개")[0]);
     var vacation_count = 0;
     for(var i = 0;i < work_type.length ; i++){

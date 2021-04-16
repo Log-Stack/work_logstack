@@ -12,10 +12,29 @@ var selected_date = "{{selected_date}}";
 
 var date = null;
 
+var vacation_text = null;
 var working_time = null;
 var start_time = null;
 var end_time = null;
 
+function checkVacationCount(event){
+    if(event.target.selectedIndex != 2){
+        return;
+    }
+    var total_count = Number(vacation_text.innerText.split(" ")[3].split("개")[0]);
+    var vacation_count = 0;
+    for(var i = 0;i < work_type.length ; i++){
+        if(work_type[i].selectedIndex == 2){
+            vacation_count += 1;
+        }
+    }
+    console.log(vacation_count);
+
+    if(total_count < vacation_count){
+        alert("남은 휴가가 없습니다!");
+        event.target.selectedIndex = 0;
+    }
+}
 
 function CalculateAllWorkTime(){
     for (let i = 0; i < start_time.length; i++) {
@@ -124,12 +143,14 @@ setFormDate()
 function getAllWorkTimes(){
 
 
-date = document.getElementsByClassName("date");
+    date = document.getElementsByClassName("date");
 
-work_type = document.getElementsByClassName("work_type");
-working_time = document.getElementsByClassName("work_time");
-start_time = document.getElementsByClassName("start_time");
-end_time = document.getElementsByClassName("end_time");
+    vacation_text = document.getElementsByClassName("vacation_count")[0];
+
+    work_type = document.getElementsByClassName("work_type");
+    working_time = document.getElementsByClassName("work_time");
+    start_time = document.getElementsByClassName("start_time");
+    end_time = document.getElementsByClassName("end_time");
 }
 
 function diff(start, end) {
@@ -174,7 +195,9 @@ function addAllEvents(){
         start_time[i].addEventListener('change', CalculateAllWorkTime);
         end_time[i].addEventListener('change', CalculateAllWorkTime);
         work_type[i].addEventListener('change', CheckWorkTime);
+        work_type[i].addEventListener('change', checkVacationCount);
     }
+
 }
 
 function init(){
@@ -230,7 +253,7 @@ window.addEventListener('DOMContentLoaded', init);
                         </div>
                         <div class="column is-4">
                             <div class="notification is-dark" style="height:36px; text-align: center;">
-                                <h1 class="subtitle is-4 vacation_count" style="margin-top : -15px;">현재 남은 휴가 00개</h1>
+                                <h1 class="subtitle is-4 vacation_count" style="margin-top : -15px;">사용 가능 휴가 00개</h1>
                             </div>
                         </div>
 
