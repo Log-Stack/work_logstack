@@ -288,7 +288,7 @@ window.addEventListener('DOMContentLoaded', init);
         {% csrf_token %}
 
 
-        <div class="columns is-centered">
+        <div class="columns is-centered is-vcentered">
             <div class="column">
                 <div class="box">
                     <div class="columns">
@@ -313,10 +313,10 @@ window.addEventListener('DOMContentLoaded', init);
                                 </p>
                             </div>
                         </div>
-                        <div class="column is-5"></div>
-                        <div class="column is-4">
-                            <div class="notification is-dark" style="height:50px; text-align: center;">
-                                <h1 class="subtitle is-4 vacation_count" style="margin-top : -8px;">현재 남은 휴가 00개</h1>
+                        <div class="column is-7"></div>
+                        <div class="column is-2" style="margin-left:-5%;">
+                            <div class="notification is-dark" style="width:230px;height:40px; text-align: center;">
+                                <h1 class="subtitle is-5 vacation_count" style="margin-top : -8px; margin-left : 10px;">현재 남은 휴가 00개</h1>
                             </div>
                         </div>
                     </div>
