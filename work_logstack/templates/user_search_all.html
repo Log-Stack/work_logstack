@@ -70,9 +70,7 @@
                         <li>
                             <a href="{% url 'userdetail' user.user_id %}" class="box column">
                                 <article class="media">
-                                    <div class="media-left">
 
-                                    </div>
                                     <div class="media-content">
                                         <figure class="image" style="display:flex; flex-direction:row; justify-content:center;">
                                             <img class="is-rounded" style="width:160px; height:160px;"src="{% if user.picture %}
@@ -82,7 +80,9 @@
                                         <div class="content" style="text-align:center;">
                                             <p class="title is-5">
                                                 {% if user.name != None %}
-                                                    {{ user.position }} {{ user.name }}
+                                                    {{ user.name }}
+                                                <br>
+                                                    {{ user.position }}
                                                 {% else %}
                                                     이름 미입력
                                                 {% endif %}

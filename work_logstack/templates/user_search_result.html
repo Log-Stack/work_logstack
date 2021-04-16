@@ -5,6 +5,7 @@
 <script src='http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery.min.js'></script>
 
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
 <script>
 
 function getWorkLogContent(targetDate){
@@ -20,10 +21,10 @@ $.ajax({
                 },
                 success: function(data){
                 work_log_date.innerText = targetDate;
-
+                $('.box').hide();
                 work_log_content.innerText = data.content;
                 window.location.href = '#top';
-
+                $('.box').fadeIn(100);
         }
     })
 }
