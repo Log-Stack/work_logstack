@@ -373,7 +373,7 @@ def register_schedule_list_week(request, year, month, day):
                                                                                                work_type=2).count()
 
     return JsonResponse(
-        {'date': schedule_data, 'vacation': "현재 남은 휴가 " + str(total_vacations_count - used_vacations_count) + "개"},
+        {'date': schedule_data, 'vacation': "사용 가능 휴가 " + str(total_vacations_count - used_vacations_count) + "개"},
         safe=False)
 
 
