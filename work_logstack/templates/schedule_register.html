@@ -14,11 +14,26 @@ var total_time = null;
 
 var date = null;
 
-var vacation_count = null;
+var vacation_text = null;
 var working_time = null;
+var work_type = null;
 var start_time = null;
 var end_time = null;
 
+function checkVacationCount(event){
+    var total_count = Number(vacation_text.innerText.split(" ")[3].split("개")[0]);
+    var vacation_count = 0;
+    for(var i = 0;i < work_type.length ; i++){
+        if(work_type[i].selectedIndex == 2){
+            vacation_count += 1;
+        }
+    }
+
+    if(total_count < vacation_count){
+        alert("남은 휴가가 없습니다!");
+        event.target.selectedIndex = 0;
+    }
+}
 
 function checkDateChange(){
     now_date = new Date();
@@ -88,7 +103,7 @@ var week_start_date = document.getElementById('week_start_date').value.split('-'
                     end_time[i].value = schedule[i].end;
                 };
 
-                vacation_count.innerText = vacation
+                vacation_text.innerText = vacation
 
                 CheckWorkTime();
             }
@@ -166,7 +181,7 @@ function setDateAfter(){
 function getAllWorkTimes(){
 
 total_time = document.getElementsByClassName("sum_time")[0];
-vacation_count = document.getElementsByClassName("vacation_count")[0];
+vacation_text = document.getElementsByClassName("vacation_count")[0];
 
 date = document.getElementsByClassName("date");
 
@@ -220,6 +235,7 @@ function addAllEvents(){
         start_time[i].addEventListener('change', CalculateAllWorkTime);
         end_time[i].addEventListener('change', CalculateAllWorkTime);
         work_type[i].addEventListener('change', CheckWorkTime);
+        work_type[i].addEventListener('change', checkVacationCount);
     }
 }
 
@@ -300,7 +316,7 @@ window.addEventListener('DOMContentLoaded', init);
                         <div class="column is-5"></div>
                         <div class="column is-4">
                             <div class="notification is-dark" style="height:50px; text-align: center;">
-                                <h1 class="subtitle is-4 vacation_count" style="margin-top : -8px;">남은 휴가 / 총 휴가 | 10 / 12</h1>
+                                <h1 class="subtitle is-4 vacation_count" style="margin-top : -8px;">현재 남은 휴가 00개</h1>
                             </div>
                         </div>
                     </div>
