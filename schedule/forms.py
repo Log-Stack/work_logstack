@@ -94,7 +94,7 @@ class NewScheduleDayForm(forms.ModelForm):
 
     contents = forms.CharField(
         widget=forms.Textarea(
-            attrs={'class': 'textarea is-dark', 'placeholder': '작성된 ToDo가 없습니다', 'style': "height:100%"}))
+            attrs={'class': 'textarea is-dark', 'placeholder': '작성된 ToDo가 없습니다', 'style': "height:100%; resize:none"}))
 
     class Meta:
         model = Schedule
