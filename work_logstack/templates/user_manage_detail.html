@@ -26,9 +26,12 @@ $.ajax({
                 success: function(data){
                 work_log_date.innerText = targetDate;
 
+                $('.work_log_box').hide();
+
                 work_log_content.innerText = data.content;
                 window.location.href = '#top';
 
+                $('.work_log_box').fadeIn(100);
         }
     })
 }
@@ -41,6 +44,7 @@ var work_end_date = document.getElementsByName('work_end_date');
 $.ajax({
                 type: 'GET',
                 url: '/authy/calc_work_hours',
+                async: false,
                 dataType: 'json',
                 data : {
                     member_pk : {{ member.pk }},
@@ -61,6 +65,12 @@ $.ajax({
                 var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 events : titles,
+
+                eventClick:function(info) {
+                    var eventDate = info.event.start;
+                    var eventDateString =  eventDate.getFullYear() + '-' + ("0"+(eventDate.getMonth()+1)).slice(-2) + '-' + ("0"+eventDate.getDate()).slice(-2) ;
+                    getWorkLogContent(eventDateString)
+                },
                 dateClick: function(info) {
                     getWorkLogContent(info.dateStr)
                 },
@@ -69,6 +79,10 @@ $.ajax({
                 calendar.render();
         }
     })
+
+
+    // day box hover 시 pointer cursor 변경
+    $('.fc-daygrid-day-frame').hover(function(event_obj){this.style.cursor = 'pointer'})
 }
 
 
@@ -298,7 +312,7 @@ $(document).ready(function(){
                 </div>
                 <div class="column is-6">
 
-                    <div style="overflow-y:scroll; overflow-x: hidden; height: 764px;" class="box">
+                    <div style="overflow-y:scroll; overflow-x: hidden; height: 764px;" class="box work_log_box">
                         <p class="title is-4 work_log_date">{{ last_work_log.create_time|date:"Y-m-d" }}</p>                        <hr>
                         <pre style="background-color: white;" class="subtitle is-6 work_log_content">{{ last_work_log.content }}</pre>
                     </div>
