@@ -69,7 +69,7 @@ function SearchUser() {
                     var list = document.createElement('li');
 
                     var a = document.createElement('a');
-                    a.setAttribute('href',"http://127.0.0.1:8000"+url);
+                    a.setAttribute('href', url);
                     list.appendChild(a);
                     p_results.appendChild(list);
 
@@ -78,8 +78,6 @@ function SearchUser() {
                     div_box.style.display = 'flex';
 
                     a.appendChild(div_box);
-
-
 
                     var img = document.createElement("img");
                     img.setAttribute("src",user_pic);
@@ -172,32 +170,6 @@ function SearchUser() {
         <ul id="p_results">
 
         </ul>
-
-
-<!--&lt;!&ndash;  직원 검색 결과 프로필&ndash;&gt;-->
-<!--{% for user in users %}-->
-<!--<a href="{% url 'userdetail' user.user_id %}">-->
-<!--   <div class="box">-->
-<!--      <article class="media">-->
-<!--        <div class="media-left">-->
-<!--        <figure class="image is-128x128">-->
-<!--          <img src="{% if user.picture %}-->
-<!--                {{ user.picture.url }} {% else %} https://bulma.io/images/placeholders/128x128.png {% endif %}">-->
-<!--        </figure>-->
-<!--        </div>-->
-<!--        <div class="media-content">-->
-<!--          <div class="content">-->
-<!--            <p>-->
-<!--              <strong>{{ user.name }}</strong><br> <small>@{{ user.team }}</small>-->
-<!--            </p>-->
-<!--          </div>-->
-
-<!--        </div>-->
-<!--      </article>-->
-<!--  </div>-->
-<!--</a>-->
-<!--{% endfor %}-->
-
 
     </article>
 

@@ -26,7 +26,9 @@ SECRET_KEY = '@#u8m!gx9tpah0sty%5=ixjpv35m7e(8$xkc=^d458f(=hs$lf'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['54.180.101.149', 'www.logstackdev.com', 'logstackdev.com', '172.31.35.107', '3.35.81.66',
+                 'workloadbalancer-1534677985.ap-northeast-2.elb.amazonaws.com', '13.209.142.36', 'localhost',
+                 '3.35.99.185']
 
 
 # Application definition

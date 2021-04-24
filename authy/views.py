@@ -37,13 +37,13 @@ def login(request):
         return redirect('schedule-index')
     if request.method == "POST":
         form = CustomAuthenticationForm(request, request.POST)
-
         if form.is_valid():
             auth_login(request, form.get_user())
             is_manager = TeamManager.objects.filter(user=form.get_user()).exists()
             user = form.get_user()
             profile = Profile.objects.filter(user=user)
-
+            # if not profile.exists():
+            #     return redirect('schedule-index')
             if profile[0].name == None:
                 return redirect('editprofile')
 
@@ -705,11 +705,17 @@ def calc_work_hours(request):
         work_hour_dict = {}
         work_hour_dict['date'] = work_hour['date']
         s_t = work_hour['start_time']
-        arranged_start_time = datetime.datetime(s_t.year, s_t.month, s_t.day, s_t.hour, 10*(s_t.minute // 10))
+        startTime = datetime.datetime(s_t.year, s_t.month, s_t.day, s_t.hour, s_t.minute)\
+                    + datetime.timedelta(minutes=20)
+        arranged_start_time = datetime.datetime(
+            startTime.year, startTime.month, startTime.day, startTime.hour, 30*(startTime.minute//30))
         start_time = arranged_start_time.strftime("%H:%M")
         e_t = work_hour['end_time']
         if e_t:
-            arranged_end_time = datetime.datetime(e_t.year, e_t.month, e_t.day, e_t.hour, 10 * (e_t.minute // 10))
+            endTime = datetime.datetime(e_t.year, e_t.month, e_t.day, e_t.hour, e_t.minute)\
+                      + datetime.timedelta(minutes=5)
+            arranged_end_time = datetime.datetime(
+                endTime.year, endTime.month, endTime.day, endTime.hour, 30*(endTime.minute//30))
             end_time = arranged_end_time.strftime("%H:%M")
             total_working_time += (arranged_end_time - arranged_start_time).seconds - 3600
         else:

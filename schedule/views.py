@@ -535,11 +535,11 @@ def schedule_summary_team(request):
                        'end': work_date.strftime('%Y-%m-%d'), 'color': COLORS[2]})
 
     if team_id == -1:
-        birthday_users = Profile.objects.filter(birth_day__range=[day_start, day_end]).values()
+        birthday_users = Profile.objects.filter(birth_day__month=month).values()
         for day in list(birthday_users):
             result.append({'title': day['name'] + "님의 생일을 축하합니다!",
-                           'start': day['birth_day'].strftime('%Y-%m-%d'),
-                           'end': day['birth_day'].strftime('%Y-%m-%d'),
+                           'start': day['birth_day'].strftime(f'{timezone.now().year}-%m-%d'),
+                           'end': day['birth_day'].strftime(f'{timezone.now().year}-%m-%d'),
                            "color": COLORS[1]})
 
         events = Event.objects.filter(date__range=[day_start, day_end]).values()

@@ -34,7 +34,7 @@ def end_working(request):
     user = request.user
     work_hour = WorkHour.objects.filter(user=user).filter(date=timezone.now().date()).first()
     if work_hour:
-        work_hour.end_time = timezone.now()
+        work_hour.end_time = timezone.now() + timezone.timedelta(minutes=15)
         work_hour.save()
         work_log = WorkLog.objects.filter(user=request.user).filter(create_time__date=timezone.now().date()).first()
         return redirect('work_log_detail_page', work_log.pk)
@@ -295,12 +295,12 @@ def work_logs_by_team(request, team_id, year, month):
             create_date = str(item.create_time.date())
 
             work_hour = WorkHour.objects.get(user_id=user.user.id, date=item.create_time.date())
-            s_t = work_hour.start_time
-            arranged_start_time = datetime(s_t.year, s_t.month, s_t.day, s_t.hour, 10 * (s_t.minute // 10))
-            start_time = arranged_start_time.strftime("%H:%M")
-            e_t = work_hour.end_time
-            arranged_end_time = datetime(e_t.year, e_t.month, e_t.day, e_t.hour, 10 * (e_t.minute // 10))
-            end_time = arranged_end_time.strftime("%H:%M")
+            # s_t = work_hour.start_time
+            # arranged_start_time = datetime(s_t.year, s_t.month, s_t.day, s_t.hour, 10 * (s_t.minute // 10))
+            start_time = work_hour.startTime
+            # e_t = work_hour.end_time
+            # arranged_end_time = datetime(e_t.year, e_t.month, e_t.day, e_t.hour, 10 * (e_t.minute // 10))
+            end_time = work_hour.endTime
 
             result.append(
                 {'url': '/work_log/detail/' + str(work_logs_pk) + '/',
@@ -324,12 +324,12 @@ def work_logs_by_user(request, user_id, year, month):
         create_date = str(item.create_time.date())
 
         work_hour = WorkHour.objects.get(user=user, date=item.create_time.date())
-        s_t = work_hour.start_time
-        arranged_start_time = datetime(s_t.year, s_t.month, s_t.day, s_t.hour, 10 * (s_t.minute // 10))
-        start_time = arranged_start_time.strftime("%H:%M")
-        e_t = work_hour.end_time
-        arranged_end_time = datetime(e_t.year, e_t.month, e_t.day, e_t.hour, 10 * (e_t.minute // 10))
-        end_time = arranged_end_time.strftime("%H:%M")
+        # s_t = work_hour.start_time
+        # arranged_start_time = datetime(s_t.year, s_t.month, s_t.day, s_t.hour, 10 * (s_t.minute // 10))
+        start_time = work_hour.startTime
+        # e_t = work_hour.end_time
+        # arranged_end_time = datetime(e_t.year, e_t.month, e_t.day, e_t.hour, 10 * (e_t.minute // 10))
+        end_time = work_hour.endTime
 
         result.append(
             {'url': '/work_log/detail/' + str(work_logs_pk) + '/',
@@ -401,12 +401,12 @@ def work_log_list_edit(request):
     for item in work_log:
 
         work_hour = WorkHour.objects.get(user=user, date=item.create_time.date())
-        s_t = work_hour.start_time
-        arranged_start_time = datetime(s_t.year, s_t.month, s_t.day, s_t.hour, 10 * (s_t.minute // 10))
-        start_time = arranged_start_time.strftime("%H:%M")
-        e_t = work_hour.end_time
-        arranged_end_time = datetime(e_t.year, e_t.month, e_t.day, e_t.hour, 10 * (e_t.minute // 10))
-        end_time = arranged_end_time.strftime("%H:%M")
+        # s_t = work_hour.start_time
+        # arranged_start_time = datetime(s_t.year, s_t.month, s_t.day, s_t.hour, 10 * (s_t.minute // 10))
+        start_time = work_hour.startTime
+        # e_t = work_hour.end_time
+        # arranged_end_time = datetime(e_t.year, e_t.month, e_t.day, e_t.hour, 10 * (e_t.minute // 10))
+        end_time = work_hour.endTime
 
         name = str(user_profile.name)
         start = start_time

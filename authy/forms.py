@@ -14,6 +14,8 @@ class CustomAuthenticationForm(AuthenticationForm):
     #         'type': "password", ,
     #     }))
     def confirm_login_allowed(self, user):
+        if not Profile.objects.filter(user=user).exists():
+            return True
         profile = Profile.objects.get(user=user)
         if not profile.currently_employed:
             raise forms.ValidationError('There was a problem with your login.', code='invalid_login')
