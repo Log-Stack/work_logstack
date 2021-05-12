@@ -1,4 +1,3 @@
-import itertools
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
@@ -381,8 +380,8 @@ def register_schedule_list_week(request, year, month, day):
 def schedule_list_user(request, user_id, year, month):
     user = User.objects.get(id=user_id)
 
-    day_start = datetime(year, month, 1).strftime('%Y-%m-%d')
-    day_end = (datetime(year, month, 1) + relativedelta(months=2)).strftime('%Y-%m-%d')
+    day_start = datetime(year, month-1, 1).strftime('%Y-%m-%d')
+    day_end = (datetime(year, month+1, 1) + relativedelta(months=2)).strftime('%Y-%m-%d')
 
     schedule = Schedule.objects.filter(user=user, date__range=[day_start, day_end]).order_by('user')
 
@@ -421,8 +420,8 @@ def schedule_list_edit(request):
     year = int(request.GET.get('year', None))
     month = int(request.GET.get('month', None))
 
-    day_start = datetime(year, month, 1).strftime('%Y-%m-%d')
-    day_end = (datetime(year, month, 1) + relativedelta(months=2)).strftime('%Y-%m-%d')
+    day_start = datetime(year, month-1, 1).strftime('%Y-%m-%d')
+    day_end = (datetime(year, month+1, 1) + relativedelta(months=2)).strftime('%Y-%m-%d')
 
     schedule = Schedule.objects.filter(user=user, date__range=[day_start, day_end]).order_by('date')
 
@@ -453,8 +452,8 @@ def schedule_list_edit(request):
 @login_required
 def schedule_list_team(request, team_id, year, month):
     result = []
-    day_start = datetime(year, month, 1).strftime('%Y-%m-%d')
-    day_end = (datetime(year, month, 1) + relativedelta(months=2)).strftime('%Y-%m-%d')
+    day_start = datetime(year, month-1, 1).strftime('%Y-%m-%d')
+    day_end = (datetime(year, month+1, 1) + relativedelta(months=2)).strftime('%Y-%m-%d')
 
     if int(team_id) == -1:
         users = Profile.objects.filter().values_list('user_id', flat=True)
@@ -486,9 +485,9 @@ def schedule_list_team(request, team_id, year, month):
             else:
                 name_list += Profile.objects.get(user=item.user.id).name + ", "
 
-        result.append({'title': "휴가중 | " + name_list[:-2], 'start': item.date.strftime('%Y-%m-%d'),
-                       'end': item.date.strftime('%Y-%m-%d'),
-                       "color": COLORS[5]})
+            result.append({'title': "휴가중 | " + name_list[:-2], 'start': item.date.strftime('%Y-%m-%d'),
+                           'end': item.date.strftime('%Y-%m-%d'),
+                           "color": COLORS[5]})
     return JsonResponse(result, safe=False)
 
 
@@ -499,8 +498,8 @@ def schedule_summary_team(request):
     year = int(request.GET.get('year', None))
     month = int(request.GET.get('month', None))
 
-    day_start = datetime(year, month, 1).strftime('%Y-%m-%d')
-    day_end = (datetime(year, month, 1) + relativedelta(months=2)).strftime('%Y-%m-%d')
+    day_start = datetime(year, month-1, 1).strftime('%Y-%m-%d')
+    day_end = (datetime(year, month+1, 1) + relativedelta(months=2)).strftime('%Y-%m-%d')
     if team_id == -1:
         users = Profile.objects.filter().values_list('user_id', flat=True)
     else:
