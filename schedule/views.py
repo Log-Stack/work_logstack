@@ -370,9 +370,13 @@ def register_schedule_list_week(request, year, month, day):
                                                                                                date__range=[start_date,
                                                                                                             week_start],
                                                                                                work_type=2).count()
+    used_halfway_count = Schedule.objects.annotate(num_work_types=Count('work_type')).filter(user=user,
+                                                                                               date__range=[start_date,
+                                                                                                            week_start],
+                                                                                               work_type=3).count()
 
     return JsonResponse(
-        {'date': schedule_data, 'vacation': "사용 가능 휴가 " + str(total_vacations_count - used_vacations_count) + "개"},
+        {'date': schedule_data, 'vacation': "잔여 휴가 " + str(total_vacations_count - used_vacations_count - used_halfway_count *0.5) + "개"},
         safe=False)
 
 
