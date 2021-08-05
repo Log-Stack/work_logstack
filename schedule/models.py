@@ -4,7 +4,7 @@ from django.db.models.signals import post_save
 
 
 class Schedule(models.Model):
-    WORK_TYPES = ((0, 'holiday'), (1, 'work'), (2, 'vacation'), (3, 'halfway'),)
+    WORK_TYPES = ((0, '휴일'), (1, '근무'), (2, '휴가'), (3, '반차'),)
     # 휴일, 근무, 휴가, 반차
     # 근무, 휴가 ,(추가사항) 외근, ...
     user = models.ForeignKey(User, on_delete=models.CASCADE)
