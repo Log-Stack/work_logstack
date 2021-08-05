@@ -5,7 +5,7 @@
 {% block content %}
 
 
-<script src='http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery.min.js'></script>
+<script src='https://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery.min.js'></script>
 <script>
 
 var selected_date = new Date('{{selected_date}}');
@@ -363,7 +363,7 @@ window.addEventListener('DOMContentLoaded', init);
                         </div>
                         <div class="column is-3">
                             <div onclick="get_last_week_schedule()" class="notification is-dark" style="width:260px;height:40px; text-align: center;">
-                                <h1 class="subtitle is-5" style="margin-top : -10px; margin-left : 14px;">저번주 근무 일정 유지</h1>
+                                <h1 class="subtitle is-5" style="margin-top : -10px; margin-left : 14px; cursor:pointer;">저번주 근무 일정 유지</h1>
                             </div>
                         </div>
                         <div class="column is-2">
