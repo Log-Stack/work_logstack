@@ -294,6 +294,11 @@ def work_logs_by_team(request, team_id, year, month):
             name = str(user.name)
             create_date = str(item.create_time.date())
 
+            # 존재 하지 않는경우 Error Handling
+            WorkHour_exists = WorkHour.objects.filter(user_id=user.user.id, date=item.create_time.date()).exists()
+            if not WorkHour_exists:
+                return JsonResponse([], safe=False)
+
             work_hour = WorkHour.objects.get(user_id=user.user.id, date=item.create_time.date())
             # s_t = work_hour.start_time
             # arranged_start_time = datetime(s_t.year, s_t.month, s_t.day, s_t.hour, 10 * (s_t.minute // 10))
@@ -421,3 +426,53 @@ def work_log_list_edit(request):
             "color": color
         })
     return JsonResponse({"name": user_profile.name, "team": user_profile.team.name, "events": events}, safe=False)
+
+
+
+@login_required
+def work_logs_by_user(request, user_id, year, month):
+    result = []
+    user = User.objects.get(id=user_id)
+    work_logs = WorkLog.objects.filter(user=user, create_time__date__year=year, create_time__date__month=month)
+    user_profile = Profile.objects.get(user=user)
+    for item in list(work_logs):
+        work_logs_pk = str(item.pk)
+        name = str(user_profile.name)
+        create_date = str(item.create_time.date())
+
+        work_hour = WorkHour.objects.get(user=user, date=item.create_time.date())
+        # s_t = work_hour.start_time
+        # arranged_start_time = datetime(s_t.year, s_t.month, s_t.day, s_t.hour, 10 * (s_t.minute // 10))
+        start_time = work_hour.startTime
+        # e_t = work_hour.end_time
+        # arranged_end_time = datetime(e_t.year, e_t.month, e_t.day, e_t.hour, 10 * (e_t.minute // 10))
+        end_time = work_hour.endTime
+
+        result.append(
+            {'url': '/work_log/detail/' + str(work_logs_pk) + '/',
+             'title': name + " | " + start_time + " : " + end_time,
+             'start': create_date,
+             'end': create_date,
+             'color': user_profile.color,
+             })
+    return JsonResponse(result, safe=False)
+
+
+@login_required
+def work_logs_search_by_context(request):
+    result = []
+
+    context = request.GET.get('context')
+
+    for log in  WorkLog.objects.filter(content__contains=context):
+        result_dict = {}
+
+        result_dict['id'] = log.id
+        result_dict['user_id'] = log.user.id
+        result_dict['content'] = log.content
+        result_dict['update_time'] = log.update_time
+
+        result.append(result_dict)
+
+    return JsonResponse(result, safe=False)
+

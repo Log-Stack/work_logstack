@@ -18,4 +18,6 @@ urlpatterns = [
     path('work_logs/user/<user_id>/<year>/<month>', work_logs_by_user, name='work_logs_by_user'),
     path('work_logs/team/<team_id>/<year>/<month>', work_logs_by_team, name='work_logs_by_team'),
     path('work_logs/summary/', work_logs_summary_team, name='work_logs_summary_team'),
+
+    path('search/', work_logs_search_by_context, name='work_logs_search_by_context'),
 ]
