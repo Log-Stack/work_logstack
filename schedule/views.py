@@ -2,7 +2,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 from django.contrib.auth.decorators import login_required
-from django.db.models import Count, Max, Min
+from django.db.models import Count, Max, Min, Q
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.template import loader
@@ -28,7 +28,7 @@ def index(request):
     day = datetime.now().day
     schedule_exist = False
     is_staff = True
-    schedule = Schedule.objects.filter(user=user, date=timezone.now().date(), work_type=1)
+    schedule = Schedule.objects.filter(user=user, date=timezone.now().date()).filter(Q(work_type=1) | Q(work_type=3))
     if user.is_superuser:
         is_staff = False
     else:
@@ -79,7 +79,7 @@ def schedule_day_user_work_time(request):
         users = Profile.objects.filter(team=team_id).values_list('user_id', flat=True)
 
     if team_id == '-1':  # 전체 검색
-        work_users = Schedule.objects.filter(user__in=users, date=selected_date, work_type=1).values_list('user_id')
+        work_users = Schedule.objects.filter(user__in=users, date=selected_date).filter(Q(work_type=1) | Q(work_type=3)).values_list('user_id')
         profiles = Profile.objects.filter(user__in=work_users)
     else:
         profiles = Profile.objects.filter(user__in=users)
@@ -90,7 +90,7 @@ def schedule_day_user_work_time(request):
             {'id': str(item[0]), 'title': item[1]}
         )
 
-    work_times = Schedule.objects.filter(user__in=users, date=selected_date, work_type=1)
+    work_times = Schedule.objects.filter(user__in=users, date=selected_date).filter(Q(work_type=1) | Q(work_type=3))
     events = []
 
     for item in work_times:
@@ -464,7 +464,7 @@ def schedule_list_team(request, team_id, year, month):
     else:
         users = Profile.objects.filter(team=team_id).values_list('user_id', flat=True)
 
-    work_schedule = Schedule.objects.filter(user__in=users, date__range=[day_start, day_end], work_type=1) \
+    work_schedule = Schedule.objects.filter(user__in=users, date__range=[day_start, day_end]).filter(Q(work_type=1) | Q(work_type=3)) \
         .order_by('date')
     for item in list(work_schedule):
         name = Profile.objects.get(user=item.user.id).name
@@ -513,8 +513,7 @@ def schedule_summary_team(request):
         'date')
     for work_date in schedule.values_list('date', flat=True).distinct():
         worker_count = Schedule.objects.annotate(num_work_types=Count('work_type')).filter(user__in=users,
-                                                                                           date=work_date,
-                                                                                           work_type=1).count()
+                                                                                           date=work_date).filter(Q(work_type=1) | Q(work_type=3)).count()
         vacation_count = Schedule.objects.annotate(num_work_types=Count('work_type')).filter(user__in=users,
                                                                                              date=work_date,
                                                                                              work_type=2).count()
