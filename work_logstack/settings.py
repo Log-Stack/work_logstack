@@ -28,7 +28,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['54.180.101.149', 'www.logstackdev.com', 'logstackdev.com', '172.31.35.107', '3.35.81.66',
                  'workloadbalancer-1534677985.ap-northeast-2.elb.amazonaws.com', '13.209.142.36', 'localhost',
-                 '3.35.99.185']
+                 '3.35.99.185', 'logstackdev-179320874.ap-northeast-2.elb.amazonaws.com']
 
 
 # Application definition
