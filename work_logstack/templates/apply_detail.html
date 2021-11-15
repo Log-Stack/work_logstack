@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<div id="top"></div>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.1/main.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.1/main.css">
+<script src='http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery.min.js'></script>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+<style>
+.log_box {
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height:450px;
+}
+</style>
+
+<div class="container">
+    <br>
+    <div class="hero is-dark is-small">
+        <div class="hero-body">
+            <p class="title">
+                <a href="{% url 'applyList' %}" class="button is-dark"><i style="margin-bottom: 0.5rem;" class="material-icons">arrow_back_ios_new</i></a>
+                Apply Detail
+            </p>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-content">
+            <div class="columns">
+                <div class="column">
+                    <div class="media">
+                        <div class="media-content">
+                            <p class="title is-10">
+                                <span class="material-icons" style="margin: 0.5rem; vertical-align: middle;">person</span><span style="vertical-align: middle;">
+                                {{ profile.name }}
+                                </span>
+                            </p>
+                            <div class="content">
+                                <ul>
+                                    <li>
+                                        이메일: {{ profile.email }}
+                                    </li>
+                                    <li>
+                                        전화번호: {{ profile.phone }}
+                                    </li>
+                                    <li>
+                                        지원일: {{ profile.date }}
+                                    </li>
+                                    <li>
+                                        생년월일: {{ profile.year }}.{{ profile.month }}.{{ profile.day }}
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="media-right">
+                            <figure class="image is-256x256">
+                                <img src="
+                                {% if profile.image %}
+                                {{ profile.image.url }}
+                                {% else %}
+                                https://bulma.io/images/placeholders/128x128.png
+                                {% endif %}">
+                            </figure>
+                        </div>
+                    </div>
+                    {% if profile.file %}
+                    <div style="overflow-y:hidden; overflow-x: hidden; width:100%; height: 1175px;" class="box work_log_box">
+                        <embed src="{% url 'pdfviewer' profile.file %}#toolbar=0&navpanes=0&scrollbar=0" style="width:100%; height:100%;" frameborder="0">
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

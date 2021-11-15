@@ -2,7 +2,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 from django.contrib.auth.decorators import login_required
-from django.db.models import Count, Max, Min
+from django.db.models import Count, Max, Min, Q
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.template import loader
@@ -28,7 +28,7 @@ def index(request):
     day = datetime.now().day
     schedule_exist = False
     is_staff = True
-    schedule = Schedule.objects.filter(user=user, date=timezone.now().date(), work_type=1)
+    schedule = Schedule.objects.filter(user=user, date=timezone.now().date()).filter(Q(work_type=1) | Q(work_type=3))
     if user.is_superuser:
         is_staff = False
     else:
@@ -79,7 +79,7 @@ def schedule_day_user_work_time(request):
         users = Profile.objects.filter(team=team_id).values_list('user_id', flat=True)
 
     if team_id == '-1':  # 전체 검색
-        work_users = Schedule.objects.filter(user__in=users, date=selected_date, work_type=1).values_list('user_id')
+        work_users = Schedule.objects.filter(user__in=users, date=selected_date).filter(Q(work_type=1) | Q(work_type=3)).values_list('user_id')
         profiles = Profile.objects.filter(user__in=work_users)
     else:
         profiles = Profile.objects.filter(user__in=users)
@@ -90,7 +90,7 @@ def schedule_day_user_work_time(request):
             {'id': str(item[0]), 'title': item[1]}
         )
 
-    work_times = Schedule.objects.filter(user__in=users, date=selected_date, work_type=1)
+    work_times = Schedule.objects.filter(user__in=users, date=selected_date).filter(Q(work_type=1) | Q(work_type=3))
     events = []
 
     for item in work_times:
@@ -107,7 +107,6 @@ def schedule_day_user_work_time(request):
 
     vacation_times = Schedule.objects.filter(user__in=users, date=selected_date, work_type=2)
     for item in vacation_times.values_list("user_id", "date", "start", "end"):
-        print(item)
         events.append({
             'resourceId': str(item[0]),
             'title': "휴가",
@@ -464,7 +463,7 @@ def schedule_list_team(request, team_id, year, month):
     else:
         users = Profile.objects.filter(team=team_id).values_list('user_id', flat=True)
 
-    work_schedule = Schedule.objects.filter(user__in=users, date__range=[day_start, day_end], work_type=1) \
+    work_schedule = Schedule.objects.filter(user__in=users, date__range=[day_start, day_end]).filter(Q(work_type=1) | Q(work_type=3)) \
         .order_by('date')
     for item in list(work_schedule):
         name = Profile.objects.get(user=item.user.id).name
@@ -489,9 +488,9 @@ def schedule_list_team(request, team_id, year, month):
             else:
                 name_list += Profile.objects.get(user=item.user.id).name + ", "
 
-            result.append({'title': "휴가중 | " + name_list[:-2], 'start': item.date.strftime('%Y-%m-%d'),
-                           'end': item.date.strftime('%Y-%m-%d'),
-                           "color": COLORS[5]})
+        result.append({'title': "휴가중 | " + name_list[:-2], 'start': item.date.strftime('%Y-%m-%d'),
+                       'end': item.date.strftime('%Y-%m-%d'),
+                       "color": COLORS[5]})
     return JsonResponse(result, safe=False)
 
 
@@ -502,19 +501,21 @@ def schedule_summary_team(request):
     year = int(request.GET.get('year', None))
     month = int(request.GET.get('month', None))
 
-    day_start = datetime(year, month-1, 1).strftime('%Y-%m-%d')
-    day_end = (datetime(year, month+1, 1) + relativedelta(months=2)).strftime('%Y-%m-%d')
+    day_start = datetime(year, month-2, 1).strftime('%Y-%m-%d')
+    if month > 9:
+        day_end = datetime(year+1, 3, 1).strftime('%Y-%m-%d')
+    else:
+        day_end = datetime(year, month + 3, 1).strftime('%Y-%m-%d')
     if team_id == -1:
         users = Profile.objects.filter().values_list('user_id', flat=True)
     else:
         users = Profile.objects.filter(team=team_id).values_list('user_id', flat=True)
 
-    schedule = Schedule.objects.filter(user__in=users, date__range=[day_start, day_end], work_type__in=[1, 2]).order_by(
+    schedule = Schedule.objects.filter(user__in=users, date__range=[day_start, day_end], work_type__in=[1, 2, 3]).order_by(
         'date')
     for work_date in schedule.values_list('date', flat=True).distinct():
         worker_count = Schedule.objects.annotate(num_work_types=Count('work_type')).filter(user__in=users,
-                                                                                           date=work_date,
-                                                                                           work_type=1).count()
+                                                                                           date=work_date).filter(Q(work_type=1) | Q(work_type=3)).count()
         vacation_count = Schedule.objects.annotate(num_work_types=Count('work_type')).filter(user__in=users,
                                                                                              date=work_date,
                                                                                              work_type=2).count()
@@ -538,11 +539,15 @@ def schedule_summary_team(request):
                        'end': work_date.strftime('%Y-%m-%d'), 'color': COLORS[2]})
 
     if team_id == -1:
-        birthday_users = Profile.objects.filter(birth_day__month=month).values()
+        birthday_users = Profile.objects.all().values()
         for day in list(birthday_users):
             result.append({'title': day['name'] + "님의 생일을 축하합니다!",
                            'start': day['birth_day'].strftime(f'{timezone.now().year}-%m-%d'),
                            'end': day['birth_day'].strftime(f'{timezone.now().year}-%m-%d'),
+                           "color": COLORS[1]})
+            result.append({'title': day['name'] + "님의 생일을 축하합니다!",
+                           'start': day['birth_day'].strftime(f'{timezone.now().year+1}-%m-%d'),
+                           'end': day['birth_day'].strftime(f'{timezone.now().year+1}-%m-%d'),
                            "color": COLORS[1]})
 
         events = Event.objects.filter(date__range=[day_start, day_end]).values()

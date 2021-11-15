@@ -5,43 +5,165 @@
 {% block content %}
 
 
-<script src='http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery.min.js'></script>
+<script src='https://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery.min.js'></script>
+
+<style>
+    .input_day, .dash, .expected, .select_date {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .expected_p{
+        padding-top:3px;
+    }
+
+</style>
+
 <script>
+    var selected_date = new Date('{{selected_date}}');
 
-var selected_date = new Date('{{selected_date}}');
+    var total_time = null;
 
-var total_time = null;
+    var date = null;
 
-var date = null;
+    var vacation_text = null;
+    var working_time = null;
+    var work_type = null;
+    var start_time = null;
+    var end_time = null;
 
-var vacation_text = null;
-var working_time = null;
-var work_type = null;
-var start_time = null;
-var end_time = null;
-
-function result_alert(){
-    alert('스케줄 신청이 완료되었습니다')
-    for(let i = 0 ; i < work_type.length; i++){
-        if(work_type[i].value == 2 || work_type[i].value == 3){
-            alert('팀장님께 휴가 보고하시길 바랍니다.')
-            return
+    function result_alert(){
+        alert('스케줄 신청이 완료되었습니다')
+        for(let i = 0 ; i < work_type.length; i++){
+            if(work_type[i].value == 2 || work_type[i].value == 3){
+                alert('팀장님께 휴가 보고하시길 바랍니다.')
+                return
+            }
         }
     }
-}
 
 
-function get_last_week_schedule(){
+    function get_last_week_schedule(){
+        var week_start_date = document.getElementById('week_start_date').value.split('-');
+        last_date = new Date(document.getElementById('week_start_date').value);
+        d = new Date(last_date.setDate(last_date.getDate() - 7))
+           $.ajax({
+                type: 'GET',
+                url: 'list/week/' +  d.getFullYear() + '/' +("0" +  (d.getMonth() + 1)).slice(-2) + '/' + ("0" + d.getDate()).slice(-2),
+                dataType: 'json',
+
+                success: function(data){
+                        schedule = data.date;
+
+                        if(date.length == 0){
+                            for(let i=0;i<7;i++){
+                                work_type[i].value = 0;
+                                start_time[i].value = null;
+                                end_time[i].value = null;
+                            }
+                        }
+                        for(let i=0;i<date.length;i++){
+                            work_type[i].value = schedule[i].work_type;
+                            start_time[i].value = schedule[i].start;
+                            end_time[i].value = schedule[i].end;
+                        };
+
+
+                        CheckWorkTime();
+                    }
+                });
+                alert("저번주 스케줄 입력 완료");
+    }
+
+    function checkVacationCount(event){
+        if(event.target.selectedIndex == 0){
+            return;
+        }
+        else if(event.target.selectedIndex == 1){
+            return;
+        }
+        var total_count = parseFloat(vacation_text.innerText.split(" ")[3].split("개")[0]);
+
+        var vacation_count = 0.0;
+        for(var i = 0;i < work_type.length ; i++){
+            if(work_type[i].selectedIndex == 2){
+                vacation_count += 0.5;
+            }
+            else if(work_type[i].selectedIndex == 3){
+                vacation_count += 1.0;
+            }
+        }
+
+        if(total_count < vacation_count){
+            alert("남은 휴가가 없습니다!");
+            event.target.selectedIndex = 0;
+        }
+    }
+
+    function checkDateChange(){
+        now_date = new Date();
+        now_date.setDate(now_date.getDate() - now_date.getDay() - 1);
+        if(now_date > selected_date){
+            console.log(now_date)
+            console.log(selected_date)
+
+            alert("이번주 이전은 신청이 불가능 합니다");
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
+
+    function CalculateAllWorkTime(){
+        for (let i = 0; i < start_time.length; i++) {
+            if(start_time[i].value == "" ||  end_time[i].value == ""){
+                working_time[i].innerText = '00:00';
+            }
+            else{
+            working_time[i].innerText = diff(start_time[i].value, end_time[i].value);
+            }
+        }
+        sumAll();
+    }
+
+    function CheckWorkTime(){
+        for(let i = 0 ; i < work_type.length; i++){
+            if(work_type[i].value != 1 && work_type[i].value != 3){
+                start_time[i].value = '';
+                start_time[i].readOnly = true;
+                end_time[i].value = '';
+                end_time[i].readOnly = true;
+            }
+            if(work_type[i].value == 1 || work_type[i].value == 3){
+                start_time[i].readOnly = false;
+                end_time[i].readOnly = false;
+            }
+            else if(work_type[i].value == 2){
+                start_time[i].readOnly = false;
+                end_time[i].readOnly = false;
+            }
+            else{
+                start_time[i].value = '';
+                start_time[i].readOnly = true;
+                end_time[i].value = '';
+                end_time[i].readOnly = true;
+            }
+        }
+        CalculateAllWorkTime();
+    }
+
+    function getWorkTimes(){
     var week_start_date = document.getElementById('week_start_date').value.split('-');
-    last_date = new Date(document.getElementById('week_start_date').value);
-    d = new Date(last_date.setDate(last_date.getDate() - 7))
        $.ajax({
             type: 'GET',
-            url: 'list/week/' +  d.getFullYear() + '/' +("0" +  (d.getMonth() + 1)).slice(-2) + '/' + ("0" + d.getDate()).slice(-2),
+            url: 'list/week/' +  week_start_date[0] + '/' + week_start_date[1] + '/' + week_start_date[2],
             dataType: 'json',
 
             success: function(data){
-                    schedule = data.date;
+                    vacation = data.vacation
+                    schedule = data.date
 
                     if(date.length == 0){
                         for(let i=0;i<7;i++){
@@ -56,269 +178,152 @@ function get_last_week_schedule(){
                         end_time[i].value = schedule[i].end;
                     };
 
+                    vacation_text.innerText = vacation
 
                     CheckWorkTime();
                 }
             });
-            alert("저번주 스케줄 입력 완료");
-}
-
-function checkVacationCount(event){
-    if(event.target.selectedIndex != 2){
-        return;
-    }
-    var total_count = Number(vacation_text.innerText.split(" ")[3].split("개")[0]);
-    var vacation_count = 0;
-    for(var i = 0;i < work_type.length ; i++){
-        if(work_type[i].selectedIndex == 2){
-            vacation_count += 1;
-        }
     }
 
-    if(total_count < vacation_count){
-        alert("남은 휴가가 없습니다!");
-        event.target.selectedIndex = 0;
-    }
-}
 
-function checkDateChange(){
-    now_date = new Date();
-    now_date.setDate(now_date.getDate() - now_date.getDay() - 1);
-    if(now_date > selected_date){
-        console.log(now_date)
-        console.log(selected_date)
+    function setFormDate(){
+        var week = ['일', '월', '화', '수', '목', '금', '토'];
+        var d = new Date(document.getElementById('week_start_date').value);
+        d.setDate(d.getDate() - d.getDay());
+        var temp_date = new Date(selected_date);
+        selected_date = new Date(d);
+        if(checkDateChange()){
+            document.getElementById('week_start_date').value = d.getFullYear() + "-" +("0" +  (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
 
-        alert("이번주 이전은 신청이 불가능 합니다");
-        return false;
-    }
-    else{
-        return true;
-    }
-}
-
-function CalculateAllWorkTime(){
-    for (let i = 0; i < start_time.length; i++) {
-        if(start_time[i].value == "" ||  end_time[i].value == ""){
-            working_time[i].innerText = '00:00';
-        }
-        else{
-        working_time[i].innerText = diff(start_time[i].value, end_time[i].value);
-        }
-    }
-    sumAll();
-}
-
-function CheckWorkTime(){
-    for(let i = 0 ; i < work_type.length; i++){
-        if(work_type[i].value != 1 && work_type[i].value != 3){
-        start_time[i].value = '';
-        start_time[i].readOnly = true;
-        end_time[i].value = '';
-        end_time[i].readOnly = true;
-        }
-        else{
-        start_time[i].readOnly = false;
-        end_time[i].readOnly = false;
-
-        }
-    }
-    CalculateAllWorkTime();
-}
-
-function getWorkTimes(){
-var week_start_date = document.getElementById('week_start_date').value.split('-');
-   $.ajax({
-        type: 'GET',
-        url: 'list/week/' +  week_start_date[0] + '/' + week_start_date[1] + '/' + week_start_date[2],
-        dataType: 'json',
-
-        success: function(data){
-                vacation = data.vacation
-                schedule = data.date
-
-                if(date.length == 0){
-                    for(let i=0;i<7;i++){
-                        work_type[i].value = 0;
-                        start_time[i].value = null;
-                        end_time[i].value = null;
-                    }
-                }
-                for(let i=0;i<date.length;i++){
-                    work_type[i].value = schedule[i].work_type;
-                    start_time[i].value = schedule[i].start;
-                    end_time[i].value = schedule[i].end;
-                };
-
-                vacation_text.innerText = vacation
-
-                CheckWorkTime();
+            for(let i = 0; i<7;i++){
+                date[i].innerText = (d.getMonth() + 1) + "." + d.getDate() + " (" + week[d.getDay()] + ")";
+                d.setDate(d.getDate() + 1);
             }
-        });
-}
-
-
-function setFormDate(){
-    var week = ['일', '월', '화', '수', '목', '금', '토'];
-    var d = new Date(document.getElementById('week_start_date').value);
-    d.setDate(d.getDate() - d.getDay());
-    var temp_date = new Date(selected_date);
-    selected_date = new Date(d);
-    if(checkDateChange()){
-        document.getElementById('week_start_date').value = d.getFullYear() + "-" +("0" +  (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
-
-        for(let i = 0; i<7;i++){
-            date[i].innerText = (d.getMonth() + 1) + "." + d.getDate() + " (" + week[d.getDay()] + ")";
-            d.setDate(d.getDate() + 1);
+            getWorkTimes();
+            CheckWorkTime();
         }
-        getWorkTimes();
-        CheckWorkTime();
-    }
-    else{
-        selected_date = new Date(temp_date);
-        d = temp_date;
+        else{
+            selected_date = new Date(temp_date);
+            d = temp_date;
 
-        document.getElementById('week_start_date').value = d.getFullYear() + "-" +("0" +  (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+            document.getElementById('week_start_date').value = d.getFullYear() + "-" +("0" +  (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
 
-        for(let i = 0; i<7;i++){
-            date[i].innerText = (d.getMonth() + 1) + "." + d.getDate() + " (" + week[d.getDay()] + ")";
-            d.setDate(d.getDate() + 1);
+            for(let i = 0; i<7;i++){
+                date[i].innerText = (d.getMonth() + 1) + "." + d.getDate() + " (" + week[d.getDay()] + ")";
+                d.setDate(d.getDate() + 1);
+            }
+            getWorkTimes();
+            CheckWorkTime();
         }
-        getWorkTimes();
-        CheckWorkTime();
     }
-}
 
-function setDateInit(){
-    selected_date.setDate(selected_date.getDate() - selected_date.getDay());
-    var d = selected_date;
+    function setDateInit(){
+        selected_date.setDate(selected_date.getDate() - selected_date.getDay());
+        var d = selected_date;
 
-    result_str = d.getFullYear() + "-" +("0" +  (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
-    document.getElementById('week_start_date').value = result_str;
-}
+        result_str = d.getFullYear() + "-" +("0" +  (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+        document.getElementById('week_start_date').value = result_str;
+    }
 
-function setDateBefore(){
-    selected_date.setDate(selected_date.getDate() - 7);
-    var d = selected_date;
-    if(checkDateChange()){
+    function setDateBefore(){
+        selected_date.setDate(selected_date.getDate() - 7);
+        var d = selected_date;
+        if(checkDateChange()){
+            result_str = d.getFullYear() + "-" +("0" +  (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+            document.getElementById('week_start_date').value = result_str;
+
+            setFormDate()
+        }
+        else{
+            selected_date.setDate(selected_date.getDate() + 7);
+
+            setFormDate()
+        }
+
+    }
+
+    function setDateAfter(){
+        selected_date.setDate(selected_date.getDate() + 7);
+        var d = selected_date;
+
         result_str = d.getFullYear() + "-" +("0" +  (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
         document.getElementById('week_start_date').value = result_str;
 
         setFormDate()
     }
-    else{
-        selected_date.setDate(selected_date.getDate() + 7);
 
-        setFormDate()
+
+    function getAllWorkTimes(){
+
+    total_time = document.getElementsByClassName("sum_time")[0];
+    vacation_text = document.getElementsByClassName("vacation_count")[0];
+
+    date = document.getElementsByClassName("date");
+
+    work_type = document.getElementsByClassName("work_type");
+    working_time = document.getElementsByClassName("work_time");
+    start_time = document.getElementsByClassName("start_time");
+    end_time = document.getElementsByClassName("end_time");
     }
 
-}
+    function diff(start, end) {
+        start = start.split(":");
+        end = end.split(":");
+        var startDate = new Date(0, 0, 0, start[0], start[1], 0);
+        var endDate = new Date(0, 0, 0, end[0], end[1], 0);
+        var one_hour = 3600 * 1000;
+        var diff = endDate.getTime() - startDate.getTime() - one_hour;
+        var hours = Math.floor(diff / 1000 / 60 / 60);
+        diff -= hours * 1000 * 60 * 60;
+        var minutes = Math.floor(diff / 1000 / 60);
 
-function setDateAfter(){
-    selected_date.setDate(selected_date.getDate() + 7);
-    var d = selected_date;
+        // If using time pickers with 24 hours format, add the below line get exact hours
+        if (hours < 0)
+           hours = hours + 24;
 
-    result_str = d.getFullYear() + "-" +("0" +  (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
-    document.getElementById('week_start_date').value = result_str;
-
-    setFormDate()
-}
-
-
-function getAllWorkTimes(){
-
-total_time = document.getElementsByClassName("sum_time")[0];
-vacation_text = document.getElementsByClassName("vacation_count")[0];
-
-date = document.getElementsByClassName("date");
-
-work_type = document.getElementsByClassName("work_type");
-working_time = document.getElementsByClassName("work_time");
-start_time = document.getElementsByClassName("start_time");
-end_time = document.getElementsByClassName("end_time");
-}
-
-function diff(start, end) {
-    start = start.split(":");
-    end = end.split(":");
-    var startDate = new Date(0, 0, 0, start[0], start[1], 0);
-    var endDate = new Date(0, 0, 0, end[0], end[1], 0);
-    var one_hour = 3600 * 1000;
-    var diff = endDate.getTime() - startDate.getTime() - one_hour;
-    var hours = Math.floor(diff / 1000 / 60 / 60);
-    diff -= hours * 1000 * 60 * 60;
-    var minutes = Math.floor(diff / 1000 / 60);
-
-    // If using time pickers with 24 hours format, add the below line get exact hours
-    if (hours < 0)
-       hours = hours + 24;
-
-    return (hours <= 9 ? "0" : "") + hours + ":" + (minutes <= 9 ? "0" : "") + minutes;
-}
-
-function sumAll(){
-    var result = "";
-    var sum_hour = 0;
-    var sum_minute = 0;
-
-    for (let i = 0; i < start_time.length; i++) {
-        var time = working_time[i].innerText;
-        sum_hour += time.split(":")[0] *  1;
-        sum_minute += time.split(":")[1] * 1;
-
+        return (hours <= 9 ? "0" : "") + hours + ":" + (minutes <= 9 ? "0" : "") + minutes;
     }
-    sum_hour += Math.floor(sum_minute / 60);
-    sum_minute = sum_minute % 60;
 
-    result =  ("0" +  sum_hour).slice(-2) + ":" + ("0" + sum_minute).slice(-2);
+    function sumAll(){
+        var result = "";
+        var sum_hour = 0;
+        var sum_minute = 0;
+
+        for (let i = 0; i < start_time.length; i++) {
+            var time = working_time[i].innerText;
+            sum_hour += time.split(":")[0] *  1;
+            sum_minute += time.split(":")[1] * 1;
+
+        }
+        sum_hour += Math.floor(sum_minute / 60);
+        sum_minute = sum_minute % 60;
+
+        result =  ("0" +  sum_hour).slice(-2) + ":" + ("0" + sum_minute).slice(-2);
 
 
-    total_time.innerText = result;
-}
-
-function addAllEvents(){
-    document.getElementById('week_start_date').addEventListener('change', setFormDate);
-    for (let i = 0; i < start_time.length; i++) {
-        start_time[i].addEventListener('change', CalculateAllWorkTime);
-        end_time[i].addEventListener('change', CalculateAllWorkTime);
-        work_type[i].addEventListener('change', CheckWorkTime);
-        work_type[i].addEventListener('change', checkVacationCount);
+        total_time.innerText = result;
     }
-}
 
-function init(){
-    setDateInit();
-    getAllWorkTimes();
-    addAllEvents();
+    function addAllEvents(){
+        document.getElementById('week_start_date').addEventListener('change', setFormDate);
+        for (let i = 0; i < start_time.length; i++) {
+            start_time[i].addEventListener('change', CalculateAllWorkTime);
+            end_time[i].addEventListener('change', CalculateAllWorkTime);
+            work_type[i].addEventListener('change', CheckWorkTime);
+            work_type[i].addEventListener('change', checkVacationCount);
+        }
+    }
 
-    setFormDate();
-}
+    function init(){
+        setDateInit();
+        getAllWorkTimes();
+        addAllEvents();
+        setFormDate();
+    }
 
-
-window.addEventListener('DOMContentLoaded', init);
-
-
-
-
-
-
+    window.addEventListener('DOMContentLoaded', init);
 </script>
-<style>
-    .input_day, .dash, .expected, .select_date {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-    }
 
-    .expected_p{
-        padding-top:3px;
-    }
-
-
-
-
-
-
-</style>
 
 <div class="container">
     <br>

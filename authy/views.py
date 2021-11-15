@@ -53,7 +53,7 @@ def login(request):
                 else:
                     return redirect('schedule-index')
             else:
-                schedule = Schedule.objects.filter(user=request.user, date=timezone.now().date(), work_type=1)
+                schedule = Schedule.objects.filter(user=request.user, date=timezone.now().date()).filter(Q(work_type=1)|Q(work_type=3))
                 work_hours = WorkHour.objects.filter(user=request.user, end_time__isnull=True,
                                                      date__lt=timezone.now().date())
                 if schedule.exists() and not work_hours.exists():
@@ -395,7 +395,8 @@ def check_manager(request):
         profile = Profile.objects.get_or_create(user=request.user)[0]
         return {
             'team_manager': TeamManager.objects.filter(user=request.user).exists() or request.user.is_superuser,
-            'name': profile.name
+            'name': profile.name,
+            'hire': "Design" == profile.team.name
         }
     else:
         return {
