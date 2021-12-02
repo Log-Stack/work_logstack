@@ -1,0 +1,753 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Logstack</title><!-- CSS only --><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous"><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	text-indent: -1.7em;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, YuMincho, "Yu Mincho", "Hiragino Mincho ProN", "Hiragino Mincho Pro", "Songti TC", "Songti SC", "SimSun", "Nanum Myeongjo", NanumMyeongjo, Batang, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC', 'Noto Sans CJK KR'; }
+
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC', 'Noto Sans Mono CJK KR'; }
+
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, YuMincho, "Yu Mincho", "Hiragino Mincho ProN", "Hiragino Mincho Pro", "Songti TC", "Songti SC", "SimSun", "Nanum Myeongjo", NanumMyeongjo, Batang, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC', 'Noto Sans CJK KR'; }
+
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC', 'Noto Sans Mono CJK KR'; }
+
+.highlight-default {
+}
+.highlight-gray {
+	color: rgb(155,154,151);
+}
+.highlight-brown {
+	color: rgb(100,71,58);
+}
+.highlight-orange {
+	color: rgb(217,115,13);
+}
+.highlight-yellow {
+	color: rgb(223,171,1);
+}
+.highlight-teal {
+	color: rgb(15,123,108);
+}
+.highlight-blue {
+	color: rgb(11,110,153);
+}
+.highlight-purple {
+	color: rgb(105,64,165);
+}
+.highlight-pink {
+	color: rgb(173,26,114);
+}
+.highlight-red {
+	color: rgb(224,62,62);
+}
+.highlight-gray_background {
+	background: rgb(235,236,237);
+}
+.highlight-brown_background {
+	background: rgb(233,229,227);
+}
+.highlight-orange_background {
+	background: rgb(250,235,221);
+}
+.highlight-yellow_background {
+	background: rgb(251,243,219);
+}
+.highlight-teal_background {
+	background: rgb(221,237,234);
+}
+.highlight-blue_background {
+	background: rgb(221,235,241);
+}
+.highlight-purple_background {
+	background: rgb(234,228,242);
+}
+.highlight-pink_background {
+	background: rgb(244,223,235);
+}
+.highlight-red_background {
+	background: rgb(251,228,228);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(55, 53, 47, 0.6);
+	fill: rgba(55, 53, 47, 0.6);
+}
+.block-color-brown {
+	color: rgb(100,71,58);
+	fill: rgb(100,71,58);
+}
+.block-color-orange {
+	color: rgb(217,115,13);
+	fill: rgb(217,115,13);
+}
+.block-color-yellow {
+	color: rgb(223,171,1);
+	fill: rgb(223,171,1);
+}
+.block-color-teal {
+	color: rgb(15,123,108);
+	fill: rgb(15,123,108);
+}
+.block-color-blue {
+	color: rgb(11,110,153);
+	fill: rgb(11,110,153);
+}
+.block-color-purple {
+	color: rgb(105,64,165);
+	fill: rgb(105,64,165);
+}
+.block-color-pink {
+	color: rgb(173,26,114);
+	fill: rgb(173,26,114);
+}
+.block-color-red {
+	color: rgb(224,62,62);
+	fill: rgb(224,62,62);
+}
+.block-color-gray_background {
+	background: rgb(235,236,237);
+}
+.block-color-brown_background {
+	background: rgb(233,229,227);
+}
+.block-color-orange_background {
+	background: rgb(250,235,221);
+}
+.block-color-yellow_background {
+	background: rgb(251,243,219);
+}
+.block-color-teal_background {
+	background: rgb(221,237,234);
+}
+.block-color-blue_background {
+	background: rgb(221,235,241);
+}
+.block-color-purple_background {
+	background: rgb(234,228,242);
+}
+.block-color-pink_background {
+	background: rgb(244,223,235);
+}
+.block-color-red_background {
+	background: rgb(251,228,228);
+}
+.select-value-color-default { background-color: rgba(206,205,202,0.5); }
+.select-value-color-gray { background-color: rgba(155,154,151, 0.4); }
+.select-value-color-brown { background-color: rgba(140,46,0,0.2); }
+.select-value-color-orange { background-color: rgba(245,93,0,0.2); }
+.select-value-color-yellow { background-color: rgba(233,168,0,0.2); }
+.select-value-color-green { background-color: rgba(0,135,107,0.2); }
+.select-value-color-blue { background-color: rgba(0,120,223,0.2); }
+.select-value-color-purple { background-color: rgba(103,36,222,0.2); }
+.select-value-color-pink { background-color: rgba(221,0,129,0.2); }
+.select-value-color-red { background-color: rgba(255,0,26,0.2); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $( document ).ready(function() {
+            $("input[type='checkbox']").each(function(index, item) {
+                $(item).attr('class', 'form-check-input');
+<!--                $(item).css('width', '15px');-->
+<!--                $(item).css('height', '15px');-->
+                $(item).css('display', 'inline-block');
+            });
+            $("input[type='text']").each(function(index, item) {
+                $(item).attr('class', 'form-control');
+                $(item).css('width', '150px');
+                $(item).css('height', '30px');
+                $(item).css('font-size', '12px');
+                $(item).css('display', 'inline-block');
+            });
+            $("input[type='file']").each(function(index, item) {
+                $(item).attr('class', 'form-control');
+                $(item).css('width', '200px');
+                $(item).css('height', '30px');
+                $(item).css('font-size', '12px');
+                $(item).css('display', 'inline-block');
+            });
+            $("select").each(function(index, item) {
+                $(item).attr('class', 'form-control');
+                if (index != 0)
+                    $(item).css('width', '35px');
+                else
+                    $(item).css('width', '60px');
+                $(item).css('height', '30px');
+                $(item).css('font-size', '13px');
+                $(item).css('display', 'inline-block');
+            });
+        });
+    </script>
+</head><body><article id="3049a1a1-a773-40c4-b07a-2c3b6b958322" class="page sans"><header><div class="page-header-icon undefined"><span class="icon">👨‍💻</span></div><h1 class="page-title">Logstack</h1></header><div class="page-body"><h2 id="4b4acd41-6691-41dd-ad87-ccd038b8dd31" class=""> - looking for designer</h2><h2>{{ error }}</h2><p id="0ed7229d-d190-4559-8084-c90f04f7fafe" class="">
+</p><figure id="aed3a916-47a0-4e3f-941e-b62e9a4cb0cf" class="image"><img style="width:576px" src="/media/cat.jpg"/></figure><p id="68a90a5c-bbc7-4a09-8320-7589fe98e494" class="">
+</p><h3 id="93e892e4-6a66-437e-ac8c-5c6b051cb9ef" class="">Logstack은 이제 걸음마를 시작하려고 합니다.</h3><p id="d9465efa-fee4-42c2-bb3e-f7bd23e6f543" class="">
+</p><p id="5bd348ba-499a-44b5-8a4f-dbc80e823768" class="">  로그스택은 사람들에게 좀 더 나은 세상을 만들어주고 싶은 꿈을 가지고 있는 신생👶조직입니다. 소프트웨어를 통해 더 나은 업무환경을 제공하는 것이 로그스택의 지향점입니다. 그리고 로그스택의 일원 또한 좋은 업무환경에서 일할 수 있도록 노력하고 있습니다.</p><p id="fc54b63e-052f-4ea7-9cdc-d54cce7d4035" class="">
+</p><p id="d262410a-f844-47f9-b708-83cbeb256276" class="">저희가 지향하는 조직의 모습은 다음과 같습니다.</p><ul id="a084d1ec-48b4-438e-8650-ab2b8877ccf0" class="toggle"><li><details open=""><summary>☝ 똑똑한 게으름을 모티브로 열정 넘치게 일하는 조직을 지향합니다.</summary><p id="034e2c2c-6290-46ba-b021-9c30d27b62ba" class="">Logstack은 게으름이 효율적인 알고리즘과 나아가서 효율적인 업무에 일조한다고 믿고 있는 사람들이 모여 있어요. 미래의 나를 위해 조금 더 효율적인 업무방식을 찾아가며, 주어진 일을 빠르고 뜨겁게 처리하고 남은 시간은 온전하게 직장 밖의 자신을 위해 쓰길 원합니다.</p></details></li></ul><ul id="f00a5381-473b-45ed-ab17-08e8ee53aa44" class="toggle"><li><details open=""><summary>✌ 수평적인 문화를 지향합니다.</summary><p id="b248bce5-8848-4673-83fe-68a41820ab97" class="">상호간의 존댓말 같은 겉치레의 규칙만이 아니라, 경험이나 연차에 상관없이 누구나 자유롭게 의견을 내고 피드백을 주고받는 수평적인 업무 공간을 지향합니다. 좋은 아이디어는 직급을 가리지 않고 찾아오기 때문이죠. 그러나 그와 동시에 언제나 주니어 님의 결정을 지지해주고 실수를 책임져줄 리더는 존재하기 때문에 실패에 두려워하지 말고 좋은 아이디어가 있으면 공유하길 원합니다.
+</p></details></li></ul><p id="8d709260-043b-417f-a3e0-4487f66c0b8a" class=""> 디자이너 님이 만들어 나아갈 멋진 커리어의 시작을 로그스택이 함께 할 수 있었으면 좋겠습니다.</p><p id="d88687e9-d4ec-46e3-8e26-bec22a7df345" class="">
+</p><h3 id="166b2f5f-d7bb-45d6-8a69-5630f0000e9e" class="">Logstack은 이런 분들을 찾고 있습니다.</h3><p id="72a4fe17-13b6-474b-a9e8-7763950293d6" class="">
+</p><ul id="b9521573-a24d-49a6-b823-93aa2841cfec" class="to-do-list"><li><div class="checkbox checkbox-off"></div> <span class="to-do-children-unchecked">🎓 <strong>학사</strong> 이상 보유자  </span></li></ul><ul id="0ae24931-7d1b-4a1c-884b-cc17ef0f9a42" class="to-do-list"><li><div class="checkbox checkbox-off"></div> <span class="to-do-children-unchecked">🗓 최소 <strong>6개월 </strong> 웹/앱 전반의 넓은 디자인 바운더리 경험을 쌓고 싶은 <strong>신입 디자이너</strong>분</span></li></ul><ul id="2127a0c0-1f17-46b9-8d94-a7dada32b608" class="to-do-list"><li><div class="checkbox checkbox-off"></div> <span class="to-do-children-unchecked">🔥 美를 좀 친다는.. <strong>디자인 역량과 트렌드 감각</strong>을  美치게 보유한 분</span></li></ul><ul id="a2584c01-d0e3-45dd-9a72-c33b6191f985" class="to-do-list"><li><div class="checkbox checkbox-off"></div> <span class="to-do-children-unchecked">🎨 UI/UX 디자인, 모바일/웹디자인 작업을 위한 <strong> [Adobe Photoshop, Illustrator, XD 등 ]</strong> <strong>기본 디자인 툴 사용 가능자</strong></span></li></ul><ul id="3eebfd8b-74f3-4921-8731-3071fb30adbc" class="to-do-list"><li><div class="checkbox checkbox-off"></div> <span class="to-do-children-unchecked">🎮 게으름이 탑재되어 언제나 효율적이고 빠르게 일을 끝내고 쉴 궁리를 하시는 분 (⭐젊은 나이에 빨리 돈을 벌고 45살 즈음에는 내 땅에서 카페를 차려서 주 2회만 일하는 꿈이 있으신 분 대환영</span></li></ul><p id="62f863b1-09a8-43d8-b86b-645b2aa73d66" class="">
+</p><h3 id="819183fd-c124-424e-b004-6e7a68e69336" class="">Logstack에서의 생활은 이런 모습일 거에요</h3><p id="10b9cd26-815d-4cb4-af13-48c100e92d72" class="">
+</p><p id="b8537ce9-a83c-4817-9308-76466390f8ea" class="">✨ 모바일 / 웹 디자인, 홈페이지, PPT, 문서, 그 외 <strong>스타트업 전반의 모든 디자인</strong>을 담당할 예정이며 [디자인 디렉터와 함께 <strong>개발 중인 웹 서비스 기반 소프트웨어 디자인 제작 및 수정</strong>] 세부 내용은 별도의 대화 시간에 설명드릴 예정입니다.</p><p id="da9af442-bab7-4746-af73-4e0c95b519e7" class="">
+</p><p id="d78e6b9a-3aaf-42e6-9372-ef8f7e97634f" class="">🗓  6개월 간(7월~12월) 의 인턴십으로 진행됩니다. 그 이후에도 계속 저희와 함께 하고 싶으시다면 얼마든지 환영입니다. 물론 더 나은 미래를 찾아 새로운 도전을 하신다면 저희는 디자이너 님을 전력으로 응원할 예정입니다😉</p><p id="ec3ae4c3-9d33-41a7-a640-3fb467e0e6d9" class="">
+</p><h3 id="b6a7034e-1d86-41e6-a8d3-f5d91d8b9966" class="">Logstack만의 당연하고도 특별한 복지 및 혜택  </h3><p id="ad45dadf-c69e-4cfd-95b3-e2d49a6022c8" class="">
+</p><ul id="5fb71e29-3f4c-495d-8076-270cbbeda5d1" class="bulleted-list"><li>🎨 美친듯한 디자인 역량을 마음껏 펼칠 수 있는  🍎 <strong>🖥 iMac 27인치 고급형 제공 </strong>그 외 업무에 필요한 하드웨어 및 소프트웨어가 있다면 언제든 말해주세요! 👌</li></ul><ul id="7baa5035-d63d-4af9-9e78-e0fc9d01885c" class="bulleted-list"><li>🥙 <strong>식사</strong>🍱, <strong>간식</strong>🍪과 <strong>커피</strong>☕는 얼마든지 제공해드리겠습니다. 다 먹자고 하는 일이니까요!</li></ul><ul id="719aaa20-ce7b-43d9-8c97-08d44d651ecd" class="bulleted-list"><li>⏰ <strong>탄력근무제</strong>로 진행됩니다. (주 5일  30시간 이내) 일 끝나셨으면 우리 빨리 인사하고 제 갈 길 갑시다!</li></ul><ul id="0979ed39-7eaa-404e-a931-11b432a4af4b" class="bulleted-list"><li>🎶 <strong>자유로운 업무 분위기!👍 </strong>와 🦸‍♀️<strong>자율 복장 근무!🤸‍♂️ </strong>입니다. 미친듯한 패션 OOTD 👗를 뽑내세요!</li></ul><ul id="ee5890f8-156a-4d31-ac38-af340cc18e36" class="bulleted-list"><li>👩‍💻 일과 🧖‍♀️생활의 균형을 위해 휴가<strong> 사용🏄‍♀️은 언제든지~ 자유롭게!</strong> 눈치👀보지 말고 쓰세요!</li></ul><p id="0280a6b1-329b-473a-8fe2-4e60c61b5c83" class="">
+</p><h3 id="0c933bcb-170f-428e-8955-a050651fd7a6" class="">채용 프로세스, 이렇게 진행됩니다</h3><p id="82faeaf8-3377-46b3-8cc7-d57f51bc3df9" class="">
+</p><ol id="0ef8e4aa-1289-4899-84cb-a70da22396d5" class="numbered-list" start="1"><li>하단에 지원서 작성(지원검토는 상시 진행되며 적합한 분이 채용될 시 채용공고가 조기 마감될 수 있습니다.)</li></ol><ol id="a490e2c2-a07f-489f-b064-037fb48e7009" class="numbered-list" start="2"><li>채용 담당자, 디자인 디렉터와 대화</li></ol><ol id="04ac5ec6-9633-443d-9f1c-f5dc92dde186" class="numbered-list" start="3"><li>채용 확정 및 근무 시작(2021. 7월중)</li></ol><p id="782dd7f6-59c5-4d7e-b4b0-1e9a370d3462" class="">
+</p><h3 id="4d45c09d-1416-4719-9cec-c7ee525fab3c" class="">기타</h3><p id="d95f5e01-dbb7-4c37-bf8a-c093eea9fb82" class="">근무지 : 서강대학교 아루페관 3층 (7~8월 중 역삼역 도보 5분 거리 사무실 이전)</p><p id="ef4e0032-29cd-4467-9dc5-a7bcd0152815" class="">급여 : 월 2,000,000원(4대보험 가입)</p><p id="5c63fec6-dc41-4400-9530-c66a19d02f5d" class="">
+{% if form %}</p><h3 id="e23fbe2c-5ee7-410c-bf7a-cc6acd1d0b3d" class="">지원서 작성</h3>
+<form action="." method="post" enctype="multipart/form-data">{% csrf_token %}<p id="88eb9176-f2b1-4510-8c67-7650d5c2ade5" class=""><label for="name" class="form-label">이름 </label>{{ form.name }}</p><p id="b70b0b46-8476-449e-8243-5e4ec264ebc5" class=""><label for="email" class="form-label">이메일 주소 </label>{{ form.email }}</p><p id="17c16063-6349-4999-99fa-93a4ef4cd492" class=""><label for="phone" class="form-label">휴대폰 번호 </label>{{ form.phone }} ('-' 제외)</p><p id="b72d11a2-df6a-48e8-8a96-df3e46845c27" class="">생년월일 <select id="year" name="year" required>
+            <option value="1985" selected>1985</option>
+            <option value="1986">1986</option>
+            <option value="1987">1987</option>
+            <option value="1988">1988</option>
+            <option value="1989">1989</option>
+            <option value="1990">1990</option>
+            <option value="1991">1991</option>
+            <option value="1992">1992</option>
+            <option value="1993">1993</option>
+            <option value="1994">1994</option>
+            <option value="1995">1995</option>
+            <option value="1996">1996</option>
+            <option value="1997">1997</option>
+            <option value="1998">1998</option>
+            <option value="1999">1999</option>
+            <option value="2000">2000</option>
+            <option value="2001">2001</option>
+            <option value="2002">2002</option>
+        </select> 년 <select id="month" name="month" required>
+            <option value="1" selected>1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+        </select> 월 <select id="day" name="day" required>
+            <option value="1" selected>1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+            <option value="13">13</option>
+            <option value="14">14</option>
+            <option value="15">15</option>
+            <option value="16">16</option>
+            <option value="17">17</option>
+            <option value="18">18</option>
+            <option value="19">19</option>
+            <option value="20">20</option>
+            <option value="21">21</option>
+            <option value="22">22</option>
+            <option value="23">23</option>
+            <option value="24">24</option>
+            <option value="25">25</option>
+            <option value="26">26</option>
+            <option value="27">27</option>
+            <option value="28">28</option>
+            <option value="29">29</option>
+            <option value="30">30</option>
+            <option value="31">31</option>
+        </select> 일
+</p><p id="56afeb51-d9b7-48ee-8c3b-7f2fdb071bc2" class="">사진 {{ form.image }}</p><p id="76b9663f-308a-44e1-9037-9daee3e8dab3" class="">
+<div class="mb-3 form-check form-control-sm"><input type="checkbox" class="form-check-input" id="privateInfo" required><label class="form-check-label" for="privateInfo">본인은 (주)로그스택의 개인정보 수집에 동의합니다.
+(해당 개인정보는 채용 이외에는 사용되지 않으며 채용 프로세스가 끝나면 폐기될 예정입니다.)</label></div><button type="submit" class="col-auto btn btn-outline-secondary">지원하기</button></form>{% endif %}
+
+문의 이메일: logstackad@gmail.com</p><p id="86deba86-07fc-4596-ad82-56775fb8c386" class="">
+</p><p id="9c08e38e-da50-4fa8-969d-cdb1bf5d9035" class="">열정 넘치는 디자이너 분들의 지원을 기다리고 있겠습니다😀 </p><p id="a0b1f0c6-fb40-4a77-89ee-8ea137960507" class=""></p>
+<div data-block-id="be724cc7-0275-4846-9bfb-cb2406ca172c" class="notion-selectable notion-callout-block" style="width: 100%; max-width: 1373px; margin-top: 4px; margin-bottom: 4px;"><div style="display: flex;"><div style="padding: 16px 16px 16px 12px; display: flex; width: 100%; border-radius: 3px; border-width: 1px; border-style: solid; border-color: transparent; background: rgba(235, 236, 237, 0.3);"><div><div class="notion-record-icon notranslate notion-focusable" role="button" aria-disabled="false" tabindex="-1" style="user-select: none; transition: background 20ms ease-in 0s; cursor: pointer; display: flex; align-items: center; justify-content: center; height: 24px; width: 24px; border-radius: 3px; flex-shrink: 0;"><div style="display: flex; align-items: center; justify-content: center; height: 24px; width: 24px;"><div style="height: 21.6px; width: 21.6px; font-size: 21.6px; line-height: 1.1; margin-left: 0px; color: black;"><span role="image" aria-label="🙂" style="font-family: &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, NotoColorEmoji, &quot;Noto Color Emoji&quot;, &quot;Segoe UI Symbol&quot;, &quot;Android Emoji&quot;, EmojiSymbols; line-height: 1em;">🙂</span></div></div></div></div><div contenteditable="true" spellcheck="true" placeholder="내용을 입력하세요" data-root="true" class="notranslate" style="max-width: 100%; width: 100%; white-space: pre-wrap; word-break: break-word; caret-color: rgb(55, 53, 47); margin-left: 8px;"><span>(주)로그스택 / 서울 마포구 백범로 35 서강대학교 아루페관 3층 / 사업자등록번호 591-87-01923
+이메일 : admin@logstack.co.kr</span></div></div></div></div>
+</p></div></article></body></html>

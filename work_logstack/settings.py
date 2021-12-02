@@ -133,8 +133,10 @@ USE_TZ = False
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'instagram_clone/static')
+    os.path.join(BASE_DIR, 'work_logstack/static'),
+    os.path.join(BASE_DIR, 'hire/static'),
 ]
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

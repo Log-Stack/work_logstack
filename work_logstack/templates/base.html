@@ -6,15 +6,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Work Log Stack</title>
-    <link rel="shortcut icon" type="image/png" href="{% static 'img/favicon.ico' %}">
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100&display=swap" rel="stylesheet">
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css"
-      />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css"/>
 <script>
         function popup(){
             var url = "{% url 'directlist_received' %}";
@@ -123,6 +121,13 @@
                         <!-- end -->
                     </div>
                 </div>
+                {% comment %}
+                {% if hire or team_manager %}
+                <a href="{% url 'applyList' %}" class="navbar-item">
+                    Apply
+                </a>
+                {% endif %}
+                {% endcomment %}
             </div>
 
             <div class="navbar-end" style="padding-right:12px;">

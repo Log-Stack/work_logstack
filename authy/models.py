@@ -44,6 +44,7 @@ class TeamManager(models.Model):
 def random_string():
     return "#" + hex(random.randint(0, 16777215))[2:]
 
+
 class Profile(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     # blank = True 추가
@@ -51,7 +52,7 @@ class Profile(models.Model):
     # blank = True 추가
     position = models.ForeignKey(Position, on_delete=models.SET_NULL, blank=True, null=True)
     # blank,null=True (name, birth_day)
-    name = models.CharField(max_length=25, blank=True, null=True)
+    name = models.CharField(max_length=25, blank=True, default="")
     birth_day = models.DateField(blank=True, null=True)
     # blank,null=True (phone_number, email_address)
     phone_number = models.CharField(max_length=50, blank=True, null=True)
@@ -59,7 +60,9 @@ class Profile(models.Model):
     currently_employed = models.BooleanField(default=True)
     picture = models.ImageField(upload_to=user_directory_path, blank=True, null=True, verbose_name='Picture')
     start_date = models.DateField(blank=True, null=True)
-    color = models.TextField(default=random_string, unique=True)
+    color = models.CharField(default=random_string, max_length=100)
+    vacation = models.FloatField(default=0.0)
+
 
     def __str__(self):
         return f"{self.team} - {self.user}"

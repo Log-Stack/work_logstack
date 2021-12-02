@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<style>
+.wrappers{
+    display: inline-grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+.wrappers li {
+    margin: 8px;
+
+
+}
+
+
+</style>
+<div class="container">
+    <br>
+    <div class="hero is-dark is-small">
+        <div class="hero-body">
+             <p class="title">
+                Apply List - {{ date }} 조회수 ({{ hit }})
+            </p>
+        </div>
+    </div>
+    <div style="margin-top:30px;">
+        <ul style="width:100%;" class="wrappers">
+            {% if result %}
+            {% for user in result %}
+             <li>
+                <a href="{% url 'applyDetail' user.pk %}" class="box column">
+                    <article class="media">
+                        <div class="media-content">
+                            <figure class="image" style="display:flex; flex-direction:row; justify-content:center;">
+                                <img class="is-rounded" style="width:160px; height:160px;"src="{% if user.image %}
+                                {{ user.image.url }} {% else %} https://bulma.io/images/placeholders/128x128.png {% endif %}">
+                            </figure>
+                            <hr>
+                            <div class="content" style="text-align:center;">
+                                <div class="title is-5" style="margin-bottom:30px;">
+                                    {% if user.name %}
+                                        {{ user.name }}
+                                    <div style="margin-top:15px;">{{ user.year }}.{{ user.month }}.{{ user.day }}</div>
+                                    {% else %}
+                                        이름 미입력
+                                    {% endif %}
+                                </div>
+                                <div class="subtitle is-6">
+                                    {{ user.phone }}
+                                    <br>
+                                    {{ user.email }}
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </a>
+            </li>
+            {% endfor %}
+            {% else %}
+            <div style="margin-top: 30px; margin-left:10px;">지원자가 없습니다</div>
+            {% endif %}
+        </ul>
+        <br><br><br><br>
+<!--        {% for team_member in result %}-->
+<!--        <div class="column is-one-third">-->
+<!--            <a href="{% url 'manage_detail' team_member.pk %}">-->
+<!--                <div class="box">-->
+<!--                    <article class="media">-->
+<!--                        <div class="media-content">-->
+<!--                            <div class="content">-->
+<!--                                <p>-->
+<!--                                    <strong>{% if team_member.name != None %}-->
+<!--                                        {{ team_member.name }}-->
+<!--                                    {% else %}-->
+<!--                                        {{ team_member.user }}-->
+<!--                                    {% endif %}</strong> - -->
+<!--                                    <small>-->
+<!--                                        {% if team_member.currently_employed %}-->
+<!--                                            {% if team_member.position != None %}-->
+<!--                                            {{ team_member.position }}-->
+<!--                                            {% else %}-->
+<!--                                            직급 미설정-->
+<!--                                            {% endif %}-->
+
+<!--                                        {% else %}-->
+<!--                                            퇴사-->
+<!--                                        {% endif %}-->
+<!--                                    </small>-->
+<!--                                </p>-->
+<!--                                <p><i class="material-icons" style="vertical-align: middle;">email</i>:{% if team_member.email_address %}-->
+<!--                                    {{ team_member.email_address }}-->
+<!--                                {% else %}-->
+<!--                                    이메일 미입력-->
+<!--                                {% endif %}</p>-->
+<!--                                <p><i class="material-icons" style="vertical-align: middle;">phone</i>: {% if team_member.phone_number %}{{ team_member.phone_number }}{% else %}전화번호 미입력{% endif %}</p>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <figure class="media-right">-->
+
+<!--                            <figure class="image is-64x64">-->
+<!--                                <img src="-->
+<!--                                {% if team_member.picture %}-->
+<!--                                {{ team_member.picture.url }}-->
+<!--                                {% else %}-->
+<!--                                https://bulma.io/images/placeholders/64x64.png-->
+<!--                                {% endif %}">-->
+<!--                            </figure>-->
+
+<!--                        </figure>-->
+<!--                    </article>-->
+<!--                </div>-->
+<!--            </a>-->
+<!--        </div>-->
+<!--        {% endfor %}-->
+    </div>
+</div>
+{% endblock %}
