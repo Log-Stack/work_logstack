@@ -545,14 +545,15 @@ def schedule_summary_team(request):
             if not profile.user.is_superuser:
                 from django.forms.models import model_to_dict
                 day = model_to_dict(profile)
-                result.append({'title': day['name'] + "님의 생일을 축하합니다!",
-                               'start': day['birth_day'].strftime(f'{timezone.now().year}-%m-%d'),
-                               'end': day['birth_day'].strftime(f'{timezone.now().year}-%m-%d'),
-                               "color": COLORS[1]})
-                result.append({'title': day['name'] + "님의 생일을 축하합니다!",
-                               'start': day['birth_day'].strftime(f'{timezone.now().year+1}-%m-%d'),
-                               'end': day['birth_day'].strftime(f'{timezone.now().year+1}-%m-%d'),
-                               "color": COLORS[1]})
+                if day:
+                    result.append({'title': day['name'] + "님의 생일을 축하합니다!",
+                                   'start': day['birth_day'].strftime(f'{timezone.now().year}-%m-%d'),
+                                   'end': day['birth_day'].strftime(f'{timezone.now().year}-%m-%d'),
+                                   "color": COLORS[1]})
+                    result.append({'title': day['name'] + "님의 생일을 축하합니다!",
+                                   'start': day['birth_day'].strftime(f'{timezone.now().year+1}-%m-%d'),
+                                   'end': day['birth_day'].strftime(f'{timezone.now().year+1}-%m-%d'),
+                                   "color": COLORS[1]})
 
         events = Event.objects.filter(date__range=[day_start, day_end]).values()
         for event in events:
