@@ -383,8 +383,8 @@ def register_schedule_list_week(request, year, month, day):
 def schedule_list_user(request, user_id, year, month):
     user = User.objects.get(id=user_id)
 
-    day_start = datetime(year, month-1, 1).strftime('%Y-%m-%d')
-    day_end = (datetime(year, month+1, 1) + relativedelta(months=2)).strftime('%Y-%m-%d')
+    day_start = (datetime(year, month, 1) - relativedelta(months=3)).strftime('%Y-%m-%d')
+    day_end = (datetime(year, month, 1) + relativedelta(months=3)).strftime('%Y-%m-%d')
 
     schedule = Schedule.objects.filter(user=user, date__range=[day_start, day_end]).order_by('user')
 
