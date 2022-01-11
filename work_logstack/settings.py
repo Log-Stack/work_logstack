@@ -94,7 +94,7 @@ DATABASES = {
         'NAME': 'django_test',
         'USER': 'userid',
         'PASSWORD': '1234',
-        'HOST': '13.125.216.101',
+        'HOST': '3.35.128.239',
         'PORT': '3306',
         'OPTIONS': {'charset': 'utf8mb4'},
     }
