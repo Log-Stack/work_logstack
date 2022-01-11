@@ -27,7 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['54.180.101.149', 'www.logstackdev.com', 'logstackdev.com', '172.31.35.107', '3.35.81.66',
                  'workloadbalancer-1534677985.ap-northeast-2.elb.amazonaws.com', '13.209.142.36', 'localhost',
-                 '3.35.99.185', '15.164.251.135']
+                 '3.35.99.185', '15.164.251.135', '127.0.0.1']
 
 # Application definition
 
@@ -94,7 +94,7 @@ DATABASES = {
         'NAME': 'django_test',
         'USER': 'userid',
         'PASSWORD': '1234',
-        'HOST': '52.78.231.218',
+        'HOST': '13.125.216.101',
         'PORT': '3306',
         'OPTIONS': {'charset': 'utf8mb4'},
     }
