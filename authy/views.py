@@ -396,7 +396,7 @@ def check_manager(request):
         return {
             'team_manager': TeamManager.objects.filter(user=request.user).exists() or request.user.is_superuser,
             'name': profile.name,
-            'hire': "Design" == profile.team.name
+            # 'hire': "Design" == profile.team.name
         }
     else:
         return {
