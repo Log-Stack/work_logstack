@@ -383,8 +383,8 @@ def register_schedule_list_week(request, year, month, day):
 def schedule_list_user(request, user_id, year, month):
     user = User.objects.get(id=user_id)
 
-    day_start = datetime(year, month-1, 1).strftime('%Y-%m-%d')
-    day_end = (datetime(year, month+1, 1) + relativedelta(months=2)).strftime('%Y-%m-%d')
+    day_start = (datetime(year, month, 1) - relativedelta(months=3)).strftime('%Y-%m-%d')
+    day_end = (datetime(year, month, 1) + relativedelta(months=3)).strftime('%Y-%m-%d')
 
     schedule = Schedule.objects.filter(user=user, date__range=[day_start, day_end]).order_by('user')
 
@@ -423,8 +423,8 @@ def schedule_list_edit(request):
     year = int(request.GET.get('year', None))
     month = int(request.GET.get('month', None))
 
-    day_start = datetime(year, month-1, 1).strftime('%Y-%m-%d')
-    day_end = (datetime(year, month+1, 1) + relativedelta(months=2)).strftime('%Y-%m-%d')
+    day_start = (datetime(year, month, 1) - relativedelta(months=2)).strftime('%Y-%m-%d')
+    day_end = (datetime(year, month, 1) + relativedelta(months=2)).strftime('%Y-%m-%d')
 
     schedule = Schedule.objects.filter(user=user, date__range=[day_start, day_end]).order_by('date')
 
@@ -455,8 +455,8 @@ def schedule_list_edit(request):
 @login_required
 def schedule_list_team(request, team_id, year, month):
     result = []
-    day_start = datetime(year, month-1, 1).strftime('%Y-%m-%d')
-    day_end = (datetime(year, month+1, 1) + relativedelta(months=2)).strftime('%Y-%m-%d')
+    day_start = (datetime(year, month, 1) - relativedelta(months=3)).strftime('%Y-%m-%d')
+    day_end = (datetime(year, month, 1) + relativedelta(months=3)).strftime('%Y-%m-%d')
 
     if int(team_id) == -1:
         users = Profile.objects.filter().values_list('user_id', flat=True)
@@ -501,11 +501,11 @@ def schedule_summary_team(request):
     year = int(request.GET.get('year', None))
     month = int(request.GET.get('month', None))
 
-    day_start = datetime(year, month-2, 1).strftime('%Y-%m-%d')
+    day_start = (datetime(year, month, 1) - relativedelta(months=3)).strftime('%Y-%m-%d')
     if month > 9:
-        day_end = datetime(year+1, 3, 1).strftime('%Y-%m-%d')
+        day_end =(datetime(year, month, 1) + relativedelta(year=1)).strftime('%Y-%m-%d')
     else:
-        day_end = datetime(year, month + 3, 1).strftime('%Y-%m-%d')
+        day_end = (datetime(year, month, 1) + relativedelta(months=3)).strftime('%Y-%m-%d')
     if team_id == -1:
         users = Profile.objects.filter().values_list('user_id', flat=True)
     else:
@@ -539,16 +539,21 @@ def schedule_summary_team(request):
                        'end': work_date.strftime('%Y-%m-%d'), 'color': COLORS[2]})
 
     if team_id == -1:
-        birthday_users = Profile.objects.all().values()
-        for day in list(birthday_users):
-            result.append({'title': day['name'] + "님의 생일을 축하합니다!",
-                           'start': day['birth_day'].strftime(f'{timezone.now().year}-%m-%d'),
-                           'end': day['birth_day'].strftime(f'{timezone.now().year}-%m-%d'),
-                           "color": COLORS[1]})
-            result.append({'title': day['name'] + "님의 생일을 축하합니다!",
-                           'start': day['birth_day'].strftime(f'{timezone.now().year+1}-%m-%d'),
-                           'end': day['birth_day'].strftime(f'{timezone.now().year+1}-%m-%d'),
-                           "color": COLORS[1]})
+        # birthday_users = Profile.objects.all().values()
+        # for day in list(birthday_users):
+        for profile in Profile.objects.all():
+            if not profile.user.is_superuser and profile.currently_employed:
+                from django.forms.models import model_to_dict
+                day = model_to_dict(profile)
+                if day.get('birth_day'):
+                    result.append({'title': day['name'] + "님의 생일을 축하합니다!",
+                                   'start': day['birth_day'].strftime(f'{timezone.now().year}-%m-%d'),
+                                   'end': day['birth_day'].strftime(f'{timezone.now().year}-%m-%d'),
+                                   "color": COLORS[1]})
+                    result.append({'title': day['name'] + "님의 생일을 축하합니다!",
+                                   'start': day['birth_day'].strftime(f'{timezone.now().year+1}-%m-%d'),
+                                   'end': day['birth_day'].strftime(f'{timezone.now().year+1}-%m-%d'),
+                                   "color": COLORS[1]})
 
         events = Event.objects.filter(date__range=[day_start, day_end]).values()
         for event in events:
