@@ -466,14 +466,17 @@ def schedule_list_team(request, team_id, year, month):
     work_schedule = Schedule.objects.filter(user__in=users, date__range=[day_start, day_end]).filter(Q(work_type=1) | Q(work_type=3)) \
         .order_by('date')
     for item in list(work_schedule):
-        name = Profile.objects.get(user=item.user.id).name
-        start = str(item.start.strftime("%H:%M"))
-        end = str(item.end.strftime("%H:%M"))
-        url = "/schedule/todo/" + str(item.user.id) + "/" + item.date.strftime('%Y-%m-%d')
-        result.append({'title': name + " | " + start + " ~ " + end, 'start': item.date.strftime('%Y-%m-%d'),
-                       'end': item.date.strftime('%Y-%m-%d'),
-                       "color": Profile.objects.get(user=item.user.id).color,
-                       'url': url})
+        try:
+            name = Profile.objects.get(user=item.user.id).name
+            start = str(item.start.strftime("%H:%M"))
+            end = str(item.end.strftime("%H:%M"))
+            url = "/schedule/todo/" + str(item.user.id) + "/" + item.date.strftime('%Y-%m-%d')
+            result.append({'title': name + " | " + start + " ~ " + end, 'start': item.date.strftime('%Y-%m-%d'),
+                           'end': item.date.strftime('%Y-%m-%d'),
+                           "color": Profile.objects.get(user=item.user.id).color,
+                           'url': url})
+        except:
+            pass
 
     vacation_schedule = Schedule.objects.filter(user__in=users, date__range=[day_start, day_end], work_type=2) \
         .values("date").distinct()
