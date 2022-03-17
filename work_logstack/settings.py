@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'directs',
     'django_seed',
     'hire',
+
 ]
 
 MIDDLEWARE = [
