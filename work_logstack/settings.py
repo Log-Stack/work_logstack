@@ -44,7 +44,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'directs',
     'django_seed',
-    'hire',
 ]
 
 MIDDLEWARE = [
@@ -85,19 +84,19 @@ WSGI_APPLICATION = 'work_logstack.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
     # 'default': {
-    #     'ENGINE': 'django.db.backends.mysql',
-    #     'NAME': 'django_test',
-    #     'USER': 'userid',
-    #     'PASSWORD': '1234',
-    #     'HOST': '3.35.128.239',
-    #     'PORT': '3306',
-    #     'OPTIONS': {'charset': 'utf8mb4'},
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': BASE_DIR / 'db.sqlite3',
     # }
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'django_test',
+        'USER': 'userid',
+        'PASSWORD': '1234',
+        'HOST': '3.35.128.239',
+        'PORT': '3306',
+        'OPTIONS': {'charset': 'utf8mb4'},
+    }
 }
 
 # Password validation
