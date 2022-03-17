@@ -399,7 +399,6 @@ def work_log_list_edit(request):
 
     events = []
     for item in work_log:
-
         work_hour = WorkHour.objects.get(user=user, date=item.create_time.date())
         # s_t = work_hour.start_time
         # arranged_start_time = datetime(s_t.year, s_t.month, s_t.day, s_t.hour, 10 * (s_t.minute // 10))
