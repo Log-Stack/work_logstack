@@ -25,4 +25,5 @@ urlpatterns = [
     path('schedule/', include('schedule.urls')),
     path('work_log/', include('work_log.urls')),
     path('directs/', include('directs.urls')),
+    path('hire/', include('hire.urls'))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
