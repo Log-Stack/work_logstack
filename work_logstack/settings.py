@@ -16,7 +16,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
@@ -26,10 +25,9 @@ SECRET_KEY = '@#u8m!gx9tpah0sty%5=ixjpv35m7e(8$xkc=^d458f(=hs$lf'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['54.180.101.149', 'www.logstackdev.com', 'logstackdev.com', '172.31.35.107', '3.35.81.66',
+ALLOWED_HOSTS = ['*', '54.180.101.149', 'www.logstackdev.com', 'logstackdev.com', '172.31.35.107', '3.35.81.66',
                  'workloadbalancer-1534677985.ap-northeast-2.elb.amazonaws.com', '13.209.142.36', 'localhost',
-                 '3.35.99.185']
-
+                 '3.35.99.185', '15.164.251.135', '127.0.0.1']
 
 # Application definition
 
@@ -46,7 +44,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'directs',
     'django_seed',
-    'hire'
 ]
 
 MIDDLEWARE = [
@@ -83,17 +80,24 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'work_logstack.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': BASE_DIR / 'db.sqlite3',
+    # }
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'django_test',
+        'USER': 'userid',
+        'PASSWORD': '1234',
+        'HOST': '3.35.128.239',
+        'PORT': '3306',
+        'OPTIONS': {'charset': 'utf8mb4'},
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -113,7 +117,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
@@ -127,7 +130,6 @@ USE_L10N = True
 
 USE_TZ = False
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
@@ -136,6 +138,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'work_logstack/static'),
     os.path.join(BASE_DIR, 'hire/static'),
 ]
+
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_URL = '/media/'

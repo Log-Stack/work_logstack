@@ -5,5 +5,5 @@ urlpatterns = [
     path('apply/', inputPage, name="hireInput"),
     path('list/', applyList, name="applyList"),
     path('detail/<int:pk>/', applyDetail, name="applyDetail"),
-    path('pdf/<name>/', pdf, name="pdfviewer"),
+    path('pdf/<name>/', pdf, name="pdfviewer")
 ]
