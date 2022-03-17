@@ -79,7 +79,8 @@ def schedule_day_user_work_time(request):
         users = Profile.objects.filter(team=team_id).values_list('user_id', flat=True)
 
     if team_id == '-1':  # 전체 검색
-        work_users = Schedule.objects.filter(user__in=users, date=selected_date).filter(Q(work_type=1) | Q(work_type=3)).values_list('user_id')
+        work_users = Schedule.objects.filter(user__in=users, date=selected_date).filter(
+            Q(work_type=1) | Q(work_type=3)).values_list('user_id')
         profiles = Profile.objects.filter(user__in=work_users)
     else:
         profiles = Profile.objects.filter(user__in=users)
@@ -312,8 +313,6 @@ def register_schedule_day(request, year, month, day):
 
         form.fields['contents'].initial = ToDo.objects.get(schedule=schedule).contents
 
-
-
         context = {
             'user': user,
             'selected_date': selected_date,
@@ -370,12 +369,13 @@ def register_schedule_list_week(request, year, month, day):
                                                                                                             week_start],
                                                                                                work_type=2).count()
     used_halfway_count = Schedule.objects.annotate(num_work_types=Count('work_type')).filter(user=user,
-                                                                                               date__range=[start_date,
-                                                                                                            week_start],
-                                                                                               work_type=3).count()
+                                                                                             date__range=[start_date,
+                                                                                                          week_start],
+                                                                                             work_type=3).count()
 
     return JsonResponse(
-        {'date': schedule_data, 'vacation': "잔여 휴가 " + str(total_vacations_count - used_vacations_count - used_halfway_count *0.5) + "개"},
+        {'date': schedule_data,
+         'vacation': "잔여 휴가 " + str(total_vacations_count - used_vacations_count - used_halfway_count * 0.5) + "개"},
         safe=False)
 
 
@@ -463,7 +463,8 @@ def schedule_list_team(request, team_id, year, month):
     else:
         users = Profile.objects.filter(team=team_id).values_list('user_id', flat=True)
 
-    work_schedule = Schedule.objects.filter(user__in=users, date__range=[day_start, day_end]).filter(Q(work_type=1) | Q(work_type=3)) \
+    work_schedule = Schedule.objects.filter(user__in=users, date__range=[day_start, day_end]).filter(
+        Q(work_type=1) | Q(work_type=3)) \
         .order_by('date')
     for item in list(work_schedule):
         try:
@@ -506,7 +507,7 @@ def schedule_summary_team(request):
 
     day_start = (datetime(year, month, 1) - relativedelta(months=3)).strftime('%Y-%m-%d')
     if month > 9:
-        day_end =(datetime(year, month, 1) + relativedelta(year=1)).strftime('%Y-%m-%d')
+        day_end = (datetime(year, month, 1) + relativedelta(year=1)).strftime('%Y-%m-%d')
     else:
         day_end = (datetime(year, month, 1) + relativedelta(months=3)).strftime('%Y-%m-%d')
     if team_id == -1:
@@ -514,11 +515,13 @@ def schedule_summary_team(request):
     else:
         users = Profile.objects.filter(team=team_id).values_list('user_id', flat=True)
 
-    schedule = Schedule.objects.filter(user__in=users, date__range=[day_start, day_end], work_type__in=[1, 2, 3]).order_by(
+    schedule = Schedule.objects.filter(user__in=users, date__range=[day_start, day_end],
+                                       work_type__in=[1, 2, 3]).order_by(
         'date')
     for work_date in schedule.values_list('date', flat=True).distinct():
         worker_count = Schedule.objects.annotate(num_work_types=Count('work_type')).filter(user__in=users,
-                                                                                           date=work_date).filter(Q(work_type=1) | Q(work_type=3)).count()
+                                                                                           date=work_date).filter(
+            Q(work_type=1) | Q(work_type=3)).count()
         vacation_count = Schedule.objects.annotate(num_work_types=Count('work_type')).filter(user__in=users,
                                                                                              date=work_date,
                                                                                              work_type=2).count()
@@ -554,8 +557,8 @@ def schedule_summary_team(request):
                                    'end': day['birth_day'].strftime(f'{timezone.now().year}-%m-%d'),
                                    "color": COLORS[1]})
                     result.append({'title': day['name'] + "님의 생일을 축하합니다!",
-                                   'start': day['birth_day'].strftime(f'{timezone.now().year+1}-%m-%d'),
-                                   'end': day['birth_day'].strftime(f'{timezone.now().year+1}-%m-%d'),
+                                   'start': day['birth_day'].strftime(f'{timezone.now().year + 1}-%m-%d'),
+                                   'end': day['birth_day'].strftime(f'{timezone.now().year + 1}-%m-%d'),
                                    "color": COLORS[1]})
 
         events = Event.objects.filter(date__range=[day_start, day_end]).values()
