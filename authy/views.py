@@ -30,8 +30,6 @@ from django.utils import timezone
 import datetime
 
 
-
-
 def login(request):
     if request.user.is_authenticated:
         return redirect('schedule-index')
@@ -53,7 +51,8 @@ def login(request):
                 else:
                     return redirect('schedule-index')
             else:
-                schedule = Schedule.objects.filter(user=request.user, date=timezone.now().date()).filter(Q(work_type=1)|Q(work_type=3))
+                schedule = Schedule.objects.filter(user=request.user, date=timezone.now().date()).filter(
+                    Q(work_type=1) | Q(work_type=3))
                 work_hours = WorkHour.objects.filter(user=request.user, end_time__isnull=True,
                                                      date__lt=timezone.now().date())
                 if schedule.exists() and not work_hours.exists():
@@ -113,15 +112,13 @@ def CreateUserView(request):
 
     if request.method == 'POST':
         form = SignupForm(request.POST)
-        #form.fields['password'].widget.render_value = True
+        # form.fields['password'].widget.render_value = True
 
         if form.is_valid():
-
             username = form.cleaned_data.get('username')
             # password = form.cleaned_data.get('password')
             password = 'logstack'
             user = User.objects.create_user(username=username, password=password)
-
 
             team_name = request.POST.get('team')
             position_name = request.POST.get('position')
@@ -136,7 +133,7 @@ def CreateUserView(request):
     context = {
         'form': form,
         'teams': teams,
-        'positions' : positions,
+        'positions': positions,
     }
 
     return render(request, 'user_create.html', context)
@@ -191,7 +188,6 @@ def CreatePositionView(request):
     return render(request, 'position_create.html', context)
 
 
-
 @login_required
 def ProfileView(request):
     user_id = request.user.id
@@ -200,7 +196,7 @@ def ProfileView(request):
         'profile': profile
     }
 
-    return render(request,'user_info.html', context)
+    return render(request, 'user_info.html', context)
 
 
 @login_required
@@ -219,7 +215,7 @@ def EditProfileData(request, pk):
 def EditProfileView(request):
     user = request.user
     profile = Profile.objects.filter(user=user)[0]
-    #print(profile.birth_day)2021-03-12
+    # print(profile.birth_day)2021-03-12
 
     if request.method == 'POST':
         form = ProfileForm(request.POST, request.FILES, instance=profile)
@@ -247,8 +243,7 @@ def EditProfileView(request):
     return render(request, 'user_info_edit.html', context)
 
 
-
-#User Change Password
+# User Change Password
 def ChangePWView(request):
     user = request.user
     if request.method == 'POST':
@@ -273,10 +268,9 @@ def ChangePWDoneView(request):
     return render(request, 'change_password_done.html')
 
 
-
 @login_required
 def UserSearchView(request):
-    #직원 이름으로 검
+    # 직원 이름으로 검
     query = request.GET.get('q')
     context = {}
 
@@ -285,7 +279,7 @@ def UserSearchView(request):
         # profiles = list(users)
         # print(list(users)[0].user_id)
 
-        #Pagination
+        # Pagination
         paginator = Paginator(users, 6)
         page_number = request.GET.get('page')
         users_paginator = paginator.get_page(page_number)
@@ -295,7 +289,6 @@ def UserSearchView(request):
             # 'profiles':profiles,
         }
     template = loader.get_template('user_search.html')
-
 
     return HttpResponse(template.render(context, request))
 
@@ -338,10 +331,10 @@ def SearchAllView(request):
 @login_required
 def SearchSelectView(request):
     teams = list(Team.objects.all().values_list('name', flat=True))
-    context={
-        'teams':teams,
+    context = {
+        'teams': teams,
     }
-    return render(request,'user_search_result.html',context)
+    return render(request, 'user_search_result.html', context)
 
 
 @login_required
@@ -358,7 +351,7 @@ def UserDetailView(request, pk):
         # 'work_end_date': work_end_date,
     }
 
-    return render(request,'user_search_result.html', context)
+    return render(request, 'user_search_result.html', context)
 
 
 # api view
@@ -402,11 +395,13 @@ def check_manager(request):
         return {
             'team_manager': False
         }
-        #user = request.user
+        # user = request.user
 
-        #team_manager = TeamManager.objects.filter(user=user).exists()
-        #print(type(team_manager))
+        # team_manager = TeamManager.objects.filter(user=user).exists()
+        # print(type(team_manager))
     # return {'team_manager': team_manager}
+
+
 # @login_required
 # def super_manage_list(request, pk):
 #     user = request.user
@@ -427,7 +422,6 @@ def manage_list(request):
         teams = Team.objects.all().order_by('name')
         team_members = Profile.objects.all().order_by('position', 'name')
 
-
         if request.method == "POST":
             search = request.POST.get('search')
             team_name = request.POST.get('team_name')
@@ -437,7 +431,7 @@ def manage_list(request):
                 team_members = team_members.filter(team=team)
                 teams_exists.append(team)
 
-            else :
+            else:
                 for team in teams:
                     if Profile.objects.all().filter(team=team.pk).exists():
                         teams_exists.append(team)
@@ -450,7 +444,7 @@ def manage_list(request):
                 'team': team_name,
                 'result': result,
                 'search': search,
-                'teams_exists':teams_exists,
+                'teams_exists': teams_exists,
             }
         else:
             for team in teams:
@@ -494,6 +488,7 @@ def manage_list(request):
         return render(request, 'user_manage.html', context)
     else:
         return redirect('schedule-index')
+
 
 # @login_required
 # def manage_list(request):
@@ -577,7 +572,7 @@ def manage_detail(request, pk):
     team_manager = TeamManager.objects.filter(team=profile.team).filter(user=user).exists()
     if team_manager or user.is_superuser:
         member = Profile.objects.get(pk=pk)
-        is_manager = TeamManager.objects.filter(user=member.user).exists()
+        is_manager = User.objects.filter(id=member.user.pk, is_staff=True).exists()
         is_super = User.objects.filter(id=member.user.pk, is_superuser=True).exists()
 
         teams = Team.objects.all()
@@ -638,14 +633,16 @@ def manage_permit(request, pk):
     team_manager = TeamManager.objects.filter(team=profile.team).filter(user=user).first()
     if team_manager or user.is_superuser:
         member = Profile.objects.get(pk=pk)
-        is_manager = TeamManager.objects.filter(user=member.user).exists()
+        is_manager = User.objects.filter(id=member.user.pk, is_staff=True).exists()
 
         if is_manager:
-            permit = TeamManager.objects.filter(user=member.user)
-            permit.delete()
+            user = User.objects.get(id=member.user.pk)
+            user.is_staff = False
+            user.save()
         else:
-            permit = TeamManager(user=member.user, team=member.team)
-            permit.save()
+            user = User.objects.get(id=member.user.pk)
+            user.is_staff = True
+            user.save()
         return redirect('manage_detail', pk)
     else:
         return redirect('schedule-index')
@@ -706,17 +703,17 @@ def calc_work_hours(request):
         work_hour_dict = {}
         work_hour_dict['date'] = work_hour['date']
         s_t = work_hour['start_time']
-        startTime = datetime.datetime(s_t.year, s_t.month, s_t.day, s_t.hour, s_t.minute)\
+        startTime = datetime.datetime(s_t.year, s_t.month, s_t.day, s_t.hour, s_t.minute) \
                     + datetime.timedelta(minutes=20)
         arranged_start_time = datetime.datetime(
-            startTime.year, startTime.month, startTime.day, startTime.hour, 30*(startTime.minute//30))
+            startTime.year, startTime.month, startTime.day, startTime.hour, 30 * (startTime.minute // 30))
         start_time = arranged_start_time.strftime("%H:%M")
         e_t = work_hour['end_time']
         if e_t:
-            endTime = datetime.datetime(e_t.year, e_t.month, e_t.day, e_t.hour, e_t.minute)\
+            endTime = datetime.datetime(e_t.year, e_t.month, e_t.day, e_t.hour, e_t.minute) \
                       + datetime.timedelta(minutes=5)
             arranged_end_time = datetime.datetime(
-                endTime.year, endTime.month, endTime.day, endTime.hour, 30*(endTime.minute//30))
+                endTime.year, endTime.month, endTime.day, endTime.hour, 30 * (endTime.minute // 30))
             end_time = arranged_end_time.strftime("%H:%M")
             total_working_time += (arranged_end_time - arranged_start_time).seconds - 3600
         else:
@@ -727,7 +724,7 @@ def calc_work_hours(request):
         work_hour_dict['end_time'] = end_time
         work_hours_list.append(work_hour_dict)
 
-    result['total_working_time'] = str(round(total_working_time/3600, 1)) + ' 시간 근무'
+    result['total_working_time'] = str(round(total_working_time / 3600, 1)) + ' 시간 근무'
     result['work_hours_list'] = work_hours_list
 
     return JsonResponse(result, safe=False)

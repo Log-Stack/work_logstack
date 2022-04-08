@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'directs',
     'django_seed',
+    'hire',
 ]
 
 MIDDLEWARE = [
@@ -93,7 +94,8 @@ DATABASES = {
         'NAME': 'django_test',
         'USER': 'userid',
         'PASSWORD': '1234',
-        'HOST': '3.35.128.239',
+        # 'HOST': '3.35.128.239',
+        'HOST': '13.125.102.175',
         'PORT': '3306',
         'OPTIONS': {'charset': 'utf8mb4'},
     }
