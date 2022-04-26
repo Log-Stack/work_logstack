@@ -10,7 +10,7 @@ class Person(models.Model):
     email = models.CharField(max_length=200)
     phone = models.CharField(max_length=200)
     image = models.ImageField()
-    file = models.FileField(blank=True, null=True)
+    # file = models.FileField(blank=True, null=True)
     date = models.DateTimeField(default=timezone.now, blank=True)
 
     def __str__(self):
