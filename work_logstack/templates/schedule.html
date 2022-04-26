@@ -420,9 +420,6 @@ window.addEventListener('DOMContentLoaded', init);
 
 
 
-
-
-
 </script>
 <br>
 
@@ -437,22 +434,20 @@ window.addEventListener('DOMContentLoaded', init);
     </div>
 
     {% if is_staff %}
-    {% if not schedule_exist %}
-    <div class="box has-text-centered">
-        <p><strong>오늘 등록된 스케줄이 없습니다.</strong></p>
-        <a style="margin-top: 1rem;" href="{% url 'schedule-register-today' year month day %}"
-           class="button is-dark is-rounded">스케줄 등록</a>
-    </div>
-    {% endif %}
-    {% if work_hours != 'no' %}
-    {% for work_hour in work_hours %}
-    <div class="box has-text-centered">
-        <p><strong>{{ work_hour.date }}에 워크로그를 작성하지 않았습니다.</strong></p>
-        <a style="margin-top: 1rem;" href="{% url 'previous_work_log_write' work_hour.pk %}"
-           class="button is-dark is-rounded">워크로그 작성</a>
-    </div>
-    {% endfor %}
-    {% endif %}
+        {% if not schedule_exist %}
+        <div class="box has-text-centered">
+            <p><strong>오늘 등록된 스케줄이 없습니다.</strong></p>
+            <a style="margin-top: 1rem;" href="{% url 'schedule-register-today' year month day %}" class="button is-dark is-rounded">스케줄 등록</a>
+        </div>
+        {% endif %}
+        {% if work_hours != 'no' %}
+            {% for work_hour in work_hours %}
+                <div class="box has-text-centered">
+                    <p><strong>{{ work_hour.date }}에 워크로그를 작성하지 않았습니다.</strong></p>
+                    <a style="margin-top: 1rem;" href="{% url 'previous_work_log_write' work_hour.pk %}" class="button is-dark is-rounded">워크로그 작성</a>
+                </div>
+            {% endfor %}
+        {% endif %}
     {% endif %}
 
     <div class="columns is-centered">
@@ -469,9 +464,7 @@ window.addEventListener('DOMContentLoaded', init);
                     </select>
                 </div>
             </div>
-            <button class="event_button button" style="background:#314556; color:white;" value="0"
-                    onclick="goEventCreate()">일정 추가
-            </button>
+            <button class="event_button button" style="background:#314556; color:white;" value="0" onclick="goEventCreate()">일정 추가</button>
             <button class="edit_button button" style="background:#1F2C37; color:white;" value="0">Edit</button>
             <div id='calendar' style="margin-top:2rem;"></div>
         </div>
