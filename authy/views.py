@@ -314,7 +314,7 @@ def UserSearchView(request):
 def SearchAllView(request):
     teams = Team.objects.all().order_by('name')
     # profile = Profile.objects.position_order()
-    profile = Profile.objects.all().order_by('position', 'name')
+    profile = Profile.objects.filter(currently_employed=True).order_by('position', 'name')
     teams_exists = []
 
     for team in teams:
