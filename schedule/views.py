@@ -504,11 +504,9 @@ def schedule_summary_team(request):
     year = int(request.GET.get('year', None))
     month = int(request.GET.get('month', None))
 
-    day_start = (datetime(year, month, 1) - relativedelta(months=3)).strftime('%Y-%m-%d')
-    if month > 9:
-        day_end =(datetime(year, month, 1) + relativedelta(year=1)).strftime('%Y-%m-%d')
-    else:
-        day_end = (datetime(year, month, 1) + relativedelta(months=3)).strftime('%Y-%m-%d')
+    day_start = (datetime(year, month, 1) - relativedelta(months=1)).strftime('%Y-%m-%d')
+    day_end = (datetime(year, month, 1) + relativedelta(months=1)).strftime('%Y-%m-%d')
+    
     if team_id == -1:
         users = Profile.objects.filter().values_list('user_id', flat=True)
     else:

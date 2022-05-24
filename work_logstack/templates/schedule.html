@@ -401,19 +401,25 @@ function editSchedule(){
 
 
 function init(){
-        calendarEl = document.getElementById('calendar');
-        calendar = new FullCalendar.Calendar(calendarEl, {
-              initialView: 'dayGridMonth',
-        });
+    calendarEl = document.getElementById('calendar');
+    calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+    });
 
-        calendar.render();
+    calendar.render();
 
-        setTeamSelect();
-        setUserSelect();
-        getEventByTeamSummary();
-        setSelectMoveToCalendar();
-        document.getElementsByClassName("edit_button")[0].addEventListener('click', editSchedule);;
-
+    setTeamSelect();
+    setUserSelect();
+    getEventByTeamSummary();
+    setSelectMoveToCalendar();
+    function test2(){
+        console.log("test2");
+    }
+    function test3(){
+        console.log("test3");
+    }
+    document.querySelector("#calendar > div.fc-header-toolbar.fc-toolbar.columns > div.fc-toolbar-chunk.column.is-4.has-text-right > div > button.fc-prev-button.fc-button.fc-button-primary").addEventListener('click',getEventByTeamSummary);
+    document.querySelector("#calendar > div.fc-header-toolbar.fc-toolbar.columns > div.fc-toolbar-chunk.column.is-4.has-text-right > div > button.fc-next-button.fc-button.fc-button-primary").addEventListener('click',getEventByTeamSummary);
 }
 
 window.addEventListener('DOMContentLoaded', init);
