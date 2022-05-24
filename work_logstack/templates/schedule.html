@@ -8,6 +8,26 @@
     var calendarEl = null;
     var calendar = null;
 
+    var d = new Date();
+    // state value
+    // 달력 그릴때 사용하는 날짜
+    // 해당 변수에 담긴 값을 기준으로 달력을 그립니다.
+
+    function dataFormatToCalendar() {
+        // calendar에서 사용하는 양식대로 data string을 추출합니다.
+        return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2);
+    }
+
+    function setDateBefore() {
+        d.setMonth(d.getMonth() - 1);
+        checkScheduleMode();
+    }
+
+    function setDateAfter() {
+        d.setMonth(d.getMonth() + 1);
+        checkScheduleMode();
+    }
+
 
     function goDetailSchedule(date) {
         var date = new Date(date.split("T")[0]);
@@ -64,6 +84,7 @@
                     var calendarEl = document.getElementById('calendar');
                     var calendar = new FullCalendar.Calendar(calendarEl, {
                         initialView: 'dayGridMonth',
+                        initialDate: dataFormatToCalendar(),
                         eventClick: function(info) {
                             var eventObj = info.event;
 
@@ -102,13 +123,14 @@
         var team_id = team_select.options[team_select.selectedIndex].value;
         $.ajax({
             type: 'GET',
-            url: '/schedule/list/team/' + team_id + "/" + (calendar.getDate().getYear() + 1900) + "/" + (calendar.getDate().getMonth() + 1),
+            url: '/schedule/list/team/' + team_id + "/" + (d.getYear() + 1900) + "/" + (d.getMonth() + 1),
             dataType: 'json',
             success: function(data) {
 
                 var calendarEl = document.getElementById('calendar');
                 var calendar = new FullCalendar.Calendar(calendarEl, {
                     initialView: 'dayGridMonth',
+                    initialDate: dataFormatToCalendar(),
                     eventClick: function(info) {
                         var eventObj = info.event;
 
@@ -147,14 +169,15 @@
                 dataType: 'json',
                 data: {
                     team: team_id,
-                    year: (calendar.getDate().getYear() + 1900),
-                    month: (calendar.getDate().getMonth() + 1),
+                    year: (d.getYear() + 1900),
+                    month: (d.getMonth() + 1),
                 },
                 success: function(data) {
 
                     var calendarEl = document.getElementById('calendar');
                     var calendar = new FullCalendar.Calendar(calendarEl, {
                         initialView: 'dayGridMonth',
+                        initialDate: dataFormatToCalendar(),
                         eventClick: function(info) {
                             var eventObj = info.event;
 
@@ -300,6 +323,7 @@
                 var calendarEl = document.getElementById('calendar');
                 var calendar = new FullCalendar.Calendar(calendarEl, {
                     initialView: 'dayGridMonth',
+                    initialDate: dataFormatToCalendar(),
                     events: data.events,
                     eventMouseEnter: function(info) {
                         var eventObj = info.event;
@@ -396,6 +420,7 @@
     function init() {
         calendarEl = document.getElementById('calendar');
         calendar = new FullCalendar.Calendar(calendarEl, {
+            initialDate: dataFormatToCalendar(),
             initialView: 'dayGridMonth',
         });
 
@@ -406,8 +431,13 @@
         getEventByTeamSummary();
         setSelectMoveToCalendar();
 
-        // document.querySelector("#calendar > div.fc-header-toolbar.fc-toolbar.columns > div.fc-toolbar-chunk.column.is-4.has-text-right > div > button.fc-prev-button.fc-button.fc-button-primary").addEventListener('click', getEventByTeamSummary);
-        // document.querySelector("#calendar > div.fc-header-toolbar.fc-toolbar.columns > div.fc-toolbar-chunk.column.is-4.has-text-right > div > button.fc-next-button.fc-button.fc-button-primary").addEventListener('click', getEventByTeamSummary);
+        function setDateInit() {
+            let d = new Date();
+            result_str = d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2);
+        }
+        setDateInit();
+        document.querySelector("#calendar > div.fc-header-toolbar.fc-toolbar.columns > div.fc-toolbar-chunk.column.is-4.has-text-right > div > button.fc-prev-button.fc-button.fc-button-primary").addEventListener('click', setDateBefore);
+        document.querySelector("#calendar > div.fc-header-toolbar.fc-toolbar.columns > div.fc-toolbar-chunk.column.is-4.has-text-right > div > button.fc-next-button.fc-button.fc-button-primary").addEventListener('click', setDateAfter);
     }
 
     window.addEventListener('DOMContentLoaded', init);
