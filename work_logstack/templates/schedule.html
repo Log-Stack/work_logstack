@@ -1,331 +1,327 @@
-{% extends 'base.html' %}
-
-{% load static %}
-
-{% block content %}
+{% extends 'base.html' %} {% load static %} {% block content %}
 
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.1/main.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.1/main.css">
 <script src='https://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery.min.js'></script>
 
 <script>
-var calendarEl = null;
-var calendar = null;
+    var calendarEl = null;
+    var calendar = null;
 
 
-function goDetailSchedule(date){
-var date = new Date(date.split("T")[0]);
-var team_id = document.getElementById('team_select').value;
+    function goDetailSchedule(date) {
+        var date = new Date(date.split("T")[0]);
+        var team_id = document.getElementById('team_select').value;
 
-var url = '/schedule/day/' + team_id + "/" +
+        var url = '/schedule/day/' + team_id + "/" +
             (date.getFullYear()) + "-" +
-            ("0" +(date.getMonth()+1)).slice(-2)+ "-" +
+            ("0" + (date.getMonth() + 1)).slice(-2) + "-" +
             ("0" + (date.getDate())).slice(-2);
 
-window.open(url,'test','width=1000, height=1300, toolbar=no, menubar=no, scrollbars=no, resizable=yes');
+        window.open(url, 'test', 'width=1000, height=1300, toolbar=no, menubar=no, scrollbars=no, resizable=yes');
 
-}
-
-
-function goEventCreate(){
-var url = '/schedule/event/add';
-
-window.open(url,'event_add','width=800, height=700, toolbar=no, menubar=no, scrollbars=no, resizable=yes');
-
-}
-
-function goTodo(data){
-    var eventObj = info.data;
-    alert("test");
-    if (eventObj.url) {
-      alert(
-        'Clicked ' + eventObj.title + '.\n' +
-        'Will open ' + eventObj.url + ' in a new tab'
-      );
-
-      window.open(eventObj.url, 'test','width=1000, height=1100, toolbar=no, menubar=no, scrollbars=no, resizable=yes');
-
-      info.jsEvent.preventDefault(); // prevents browser from following link in current tab.
-    } else {
-      alert('Clicked ' + eventObj.title);
     }
-}
 
-function getEventByUser(){
-var user_select = document.getElementById('user_select');
 
-var user_id = user_select.options[user_select.selectedIndex].value;
+    function goEventCreate() {
+        var url = '/schedule/event/add';
 
-if(user_id == '-2'){
-    getEventByTeamSummary();
-}
-else if(user_id != '-1'){
-    $.ajax({
+        window.open(url, 'event_add', 'width=800, height=700, toolbar=no, menubar=no, scrollbars=no, resizable=yes');
+
+    }
+
+    function goTodo(data) {
+        var eventObj = info.data;
+        alert("test");
+        if (eventObj.url) {
+            alert(
+                'Clicked ' + eventObj.title + '.\n' +
+                'Will open ' + eventObj.url + ' in a new tab'
+            );
+
+            window.open(eventObj.url, 'test', 'width=1000, height=1100, toolbar=no, menubar=no, scrollbars=no, resizable=yes');
+
+            info.jsEvent.preventDefault(); // prevents browser from following link in current tab.
+        } else {
+            alert('Clicked ' + eventObj.title);
+        }
+    }
+
+    function getEventByUser() {
+        var user_select = document.getElementById('user_select');
+
+        var user_id = user_select.options[user_select.selectedIndex].value;
+
+        if (user_id == '-2') {
+            getEventByTeamSummary();
+        } else if (user_id != '-1') {
+            $.ajax({
                 type: 'GET',
-                url: '/schedule/list/user/' + user_id + "/" + (calendar.getDate().getYear() + 1900) + "/" + (calendar.getDate().getMonth()+1),
+                url: '/schedule/list/user/' + user_id + "/" + (calendar.getDate().getYear() + 1900) + "/" + (calendar.getDate().getMonth() + 1),
                 dataType: 'json',
 
-                success: function(data){
+                success: function(data) {
+                    var calendarEl = document.getElementById('calendar');
+                    var calendar = new FullCalendar.Calendar(calendarEl, {
+                        initialView: 'dayGridMonth',
+                        eventClick: function(info) {
+                            var eventObj = info.event;
+
+                            if (eventObj.url) {
+                                window.open(eventObj.url, 'test', 'width=1000, height=1100, toolbar=no, menubar=no, scrollbars=no, resizable=yes');
+                                info.jsEvent.preventDefault(); // prevents browser from following link in current tab.
+                            }
+                        },
+                        events: data,
+                        eventMouseEnter: function(info) {
+                            var eventObj = info.event;
+                            info.el.style.cursor = 'default';
+                        },
+                        dateClick: function(info) {
+                            goDetailSchedule(info.dateStr);
+                        },
+                        navLinks: true,
+                        navLinkDayClick: function(date, jsEvent) {
+                            date.setDate(date.getDate() + 1);
+                            goDetailSchedule(date.toISOString());
+                        },
+                    });
+
+                    calendar.render();
+                }
+            })
+        } else {
+            getEventByTeamAllUsers();
+
+        }
+    }
+
+    function getEventByTeamAllUsers() {
+        var team_select = document.getElementById('team_select');
+
+        var team_id = team_select.options[team_select.selectedIndex].value;
+        $.ajax({
+            type: 'GET',
+            url: '/schedule/list/team/' + team_id + "/" + (calendar.getDate().getYear() + 1900) + "/" + (calendar.getDate().getMonth() + 1),
+            dataType: 'json',
+            success: function(data) {
+
                 var calendarEl = document.getElementById('calendar');
                 var calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                eventClick: function(info){
-                    var eventObj = info.event;
+                    initialView: 'dayGridMonth',
+                    eventClick: function(info) {
+                        var eventObj = info.event;
 
-                    if (eventObj.url) {
-                        window.open(eventObj.url,'test','width=1000, height=1100, toolbar=no, menubar=no, scrollbars=no, resizable=yes');
-                      info.jsEvent.preventDefault(); // prevents browser from following link in current tab.
-                    }
-                },
-                events : data,
-                eventMouseEnter: function(info) {
-                  var eventObj = info.event;
-                  info.el.style.cursor = 'default';
-                },
-                dateClick: function(info){
-                    goDetailSchedule(info.dateStr);
-                },
-                navLinks: true,
-                navLinkDayClick: function(date, jsEvent) {
-                    date.setDate(date.getDate() + 1);
-                    goDetailSchedule(date.toISOString());
-                  },
+                        if (eventObj.url) {
+                            window.open(eventObj.url, 'in_schedule_month', 'width=1000, height=1100, toolbar=no, menubar=no, scrollbars=no, resizable=yes');
+                            info.jsEvent.preventDefault(); // prevents browser from following link in current tab.
+                        }
+                    },
+                    events: data,
+                    eventMouseEnter: function(info) {
+                        var eventObj = info.event;
+                        info.el.style.cursor = 'default';
+                    },
+                    dateClick: function(info) {
+                        goDetailSchedule(info.dateStr);
+                    },
+                    navLinks: true,
+                    navLinkDayClick: function(date, jsEvent) {
+                        date.setDate(date.getDate() + 1);
+                        goDetailSchedule(date.toISOString());
+                    },
                 });
 
                 calendar.render();
-        }
-    })
-}
-else{
-getEventByTeamAllUsers();
-
-}
-}
-
-function getEventByTeamAllUsers(){
-var team_select = document.getElementById('team_select');
-
-var team_id = team_select.options[team_select.selectedIndex].value;
-$.ajax({
-			type: 'GET',
-			url: '/schedule/list/team/' + team_id + "/"+(calendar.getDate().getYear() + 1900) + "/" + (calendar.getDate().getMonth()+1),
-			dataType: 'json',
-			success: function(data){
-
-            var calendarEl = document.getElementById('calendar');
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
-            eventClick: function(info){
-                var eventObj = info.event;
-
-                if (eventObj.url) {
-                    window.open(eventObj.url,'in_schedule_month','width=1000, height=1100, toolbar=no, menubar=no, scrollbars=no, resizable=yes');
-                  info.jsEvent.preventDefault(); // prevents browser from following link in current tab.
-                }
-            },
-            events : data,
-            eventMouseEnter: function(info) {
-              var eventObj = info.event;
-              info.el.style.cursor = 'default';
-            },
-            dateClick: function(info){
-                goDetailSchedule(info.dateStr);
-            },
-            navLinks: true,
-            navLinkDayClick: function(date, jsEvent) {
-                date.setDate(date.getDate() + 1);
-                goDetailSchedule(date.toISOString());
-              },
-            });
-
-            calendar.render();
-	}
-})
-}
-
-function getEventByTeamSummary(){
-var team_select = document.getElementById('team_select');
-
-var team_id = team_select.options[team_select.selectedIndex].value;
-$.ajax({
-			type: 'GET',
-			url: '/schedule/list/summary/',
-			dataType: 'json',
-			data : {
-			    team : team_id,
-			    year : (calendar.getDate().getYear() + 1900),
-			    month : (calendar.getDate().getMonth()+1),
-			},
-			success: function(data){
-
-            var calendarEl = document.getElementById('calendar');
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
-            eventClick: function(info){
-                var eventObj = info.event;
-
-                if (eventObj.url) {
-                    window.open(eventObj.url,'in_schedule_event','width=800, height=700, toolbar=no, menubar=no, scrollbars=no, resizable=yes');
-                  info.jsEvent.preventDefault(); // prevents browser from following link in current tab.
-                }
-            },
-            events : data,
-            eventOrder: 'color',
-            navLinks: true,
-            dateClick: function(info){
-                goDetailSchedule(info.dateStr);
-            },
-            navLinkDayClick: function(date, jsEvent) {
-                date.setDate(date.getDate() + 1);
-                goDetailSchedule(date.toISOString());
-              },
-            });
-
-            calendar.render();
-	}
-})
-// day box hover 시 pointer cursor 변경
-$('.fc-daygrid-day-frame').hover(function(event_obj){this.style.cursor = 'pointer'})
-}
-
-function setTeamSelect(){
-var team_select = document.getElementById('team_select');
-
-team_select.addEventListener('change', setUserSelect);
-team_select.addEventListener('change', getEventByTeamSummary);
-$.ajax({
-			type: 'GET',
-			url: '/authy/api/teams/',
-			dataType: 'json',
-
-			success: function(data){
-			    for(let i = 1;i<=team_select.options.length;i++){
-                    team_select.remove(1);
-			    }
-                for(let i = 0;i<data.length;i++){
-                var temp = document.createElement("option");
-                temp.value = data[i].id
-                temp.text = data[i].name
-                team_select.add(temp);
-                }
-	        }
+            }
         })
-}
+    }
 
-function setUserSelect(){
-var user_select = document.getElementById('user_select');
-var team_select = document.getElementById('team_select');
+    function getEventByTeamSummary() {
+        var team_select = document.getElementById('team_select');
 
-var team_id = team_select.options[team_select.selectedIndex].value;
-
-user_select.addEventListener('change', getEventByUser);
-
-
-$.ajax({
-			type: 'GET',
-			url: '/authy/byteam/' + team_id,
-			dataType: 'json',
-
-			success: function(data){
-			    var len = user_select.options.length;
-			    for(let i = 0;i<=len;i++){
-                    user_select.remove(0);
-			    }
-
-                var temp = document.createElement("option");
-                temp.value = '-2';
-                temp.text = 'Summary';
-                user_select.add(temp);
-
-                var temp = document.createElement("option");
-                temp.value = -1;
-                temp.text = 'All';
-                user_select.add(temp);
-
-                for(let i = 0;i<data.length;i++){
-                var temp = document.createElement("option");
-                temp.value = data[i].user_id
-                temp.text = data[i].name
-                user_select.add(temp);
-                }
-	        },
-	        error:function(data){
-	            var len = user_select.options.length;
-			    for(let i = 0;i<=len;i++){
-                    user_select.remove(0);
-			    }
-
-                var temp = document.createElement("option");
-                temp.value = '-2';
-                temp.text = 'Summary';
-                user_select.add(temp);
-
-                var temp = document.createElement("option");
-                temp.value = -1;
-                temp.text = 'All';
-                user_select.add(temp);
-	        }
-        })
-}
-
-function setSelectMoveToCalendar(){
-    selector = document.getElementsByClassName("select_team_user");
-    button = document.getElementsByClassName("edit_button");
-    event_button = document.getElementsByClassName("event_button");
-
-    var button_month = document.getElementsByClassName("fc-toolbar-chunk")[2];
-    document.getElementsByClassName("fc-header-toolbar fc-toolbar ")[0].classList.add('columns');
-
-
-    document.getElementsByClassName("fc-toolbar-chunk")[1].appendChild(selector[0]);
-    button_month.insertBefore(button[0], button_month.firstChild);
-    button_month.insertBefore(event_button[0], button_month.firstChild);
-
-
-    document.getElementsByClassName("fc-toolbar-chunk")[0].classList.add('column');
-    document.getElementsByClassName("fc-toolbar-chunk")[0].classList.add('is-2');
-    document.getElementsByClassName("fc-toolbar-chunk")[1].classList.add('column');
-    document.getElementsByClassName("fc-toolbar-chunk")[1].classList.add('is-6');
-    document.getElementsByClassName("fc-toolbar-chunk")[2].classList.add('column');
-    document.getElementsByClassName("fc-toolbar-chunk")[2].classList.add('is-4');
-    document.getElementsByClassName("fc-toolbar-chunk")[2].classList.add('has-text-right');
-}
-
-function setModifyScheduleCalendar(){
-    $.ajax({
+        var team_id = team_select.options[team_select.selectedIndex].value;
+        $.ajax({
                 type: 'GET',
-                url: '/schedule/list/edit',
+                url: '/schedule/list/summary/',
                 dataType: 'json',
-                data :{
-                    year : (calendar.getDate().getYear() + 1900),
-                    month : (calendar.getDate().getMonth()+1),
-			    },
-                success: function(data){
+                data: {
+                    team: team_id,
+                    year: (calendar.getDate().getYear() + 1900),
+                    month: (calendar.getDate().getMonth() + 1),
+                },
+                success: function(data) {
+
+                    var calendarEl = document.getElementById('calendar');
+                    var calendar = new FullCalendar.Calendar(calendarEl, {
+                        initialView: 'dayGridMonth',
+                        eventClick: function(info) {
+                            var eventObj = info.event;
+
+                            if (eventObj.url) {
+                                window.open(eventObj.url, 'in_schedule_event', 'width=800, height=700, toolbar=no, menubar=no, scrollbars=no, resizable=yes');
+                                info.jsEvent.preventDefault(); // prevents browser from following link in current tab.
+                            }
+                        },
+                        events: data,
+                        eventOrder: 'color',
+                        navLinks: true,
+                        dateClick: function(info) {
+                            goDetailSchedule(info.dateStr);
+                        },
+                        navLinkDayClick: function(date, jsEvent) {
+                            date.setDate(date.getDate() + 1);
+                            goDetailSchedule(date.toISOString());
+                        },
+                    });
+
+                    calendar.render();
+                }
+            })
+            // day box hover 시 pointer cursor 변경
+        $('.fc-daygrid-day-frame').hover(function(event_obj) {
+            this.style.cursor = 'pointer'
+        })
+    }
+
+    function setTeamSelect() {
+        var team_select = document.getElementById('team_select');
+
+        team_select.addEventListener('change', setUserSelect);
+        team_select.addEventListener('change', getEventByTeamSummary);
+        $.ajax({
+            type: 'GET',
+            url: '/authy/api/teams/',
+            dataType: 'json',
+
+            success: function(data) {
+                for (let i = 1; i <= team_select.options.length; i++) {
+                    team_select.remove(1);
+                }
+                for (let i = 0; i < data.length; i++) {
+                    var temp = document.createElement("option");
+                    temp.value = data[i].id
+                    temp.text = data[i].name
+                    team_select.add(temp);
+                }
+            }
+        })
+    }
+
+    function setUserSelect() {
+        var user_select = document.getElementById('user_select');
+        var team_select = document.getElementById('team_select');
+
+        var team_id = team_select.options[team_select.selectedIndex].value;
+
+        user_select.addEventListener('change', getEventByUser);
+
+
+        $.ajax({
+            type: 'GET',
+            url: '/authy/byteam/' + team_id,
+            dataType: 'json',
+
+            success: function(data) {
+                var len = user_select.options.length;
+                for (let i = 0; i <= len; i++) {
+                    user_select.remove(0);
+                }
+
+                var temp = document.createElement("option");
+                temp.value = '-2';
+                temp.text = 'Summary';
+                user_select.add(temp);
+
+                var temp = document.createElement("option");
+                temp.value = -1;
+                temp.text = 'All';
+                user_select.add(temp);
+
+                for (let i = 0; i < data.length; i++) {
+                    var temp = document.createElement("option");
+                    temp.value = data[i].user_id
+                    temp.text = data[i].name
+                    user_select.add(temp);
+                }
+            },
+            error: function(data) {
+                var len = user_select.options.length;
+                for (let i = 0; i <= len; i++) {
+                    user_select.remove(0);
+                }
+
+                var temp = document.createElement("option");
+                temp.value = '-2';
+                temp.text = 'Summary';
+                user_select.add(temp);
+
+                var temp = document.createElement("option");
+                temp.value = -1;
+                temp.text = 'All';
+                user_select.add(temp);
+            }
+        })
+    }
+
+    function setSelectMoveToCalendar() {
+        selector = document.getElementsByClassName("select_team_user");
+        button = document.getElementsByClassName("edit_button");
+        event_button = document.getElementsByClassName("event_button");
+
+        var button_month = document.getElementsByClassName("fc-toolbar-chunk")[2];
+        document.getElementsByClassName("fc-header-toolbar fc-toolbar ")[0].classList.add('columns');
+
+
+        document.getElementsByClassName("fc-toolbar-chunk")[1].appendChild(selector[0]);
+        button_month.insertBefore(button[0], button_month.firstChild);
+        button_month.insertBefore(event_button[0], button_month.firstChild);
+
+
+        document.getElementsByClassName("fc-toolbar-chunk")[0].classList.add('column');
+        document.getElementsByClassName("fc-toolbar-chunk")[0].classList.add('is-2');
+        document.getElementsByClassName("fc-toolbar-chunk")[1].classList.add('column');
+        document.getElementsByClassName("fc-toolbar-chunk")[1].classList.add('is-6');
+        document.getElementsByClassName("fc-toolbar-chunk")[2].classList.add('column');
+        document.getElementsByClassName("fc-toolbar-chunk")[2].classList.add('is-4');
+        document.getElementsByClassName("fc-toolbar-chunk")[2].classList.add('has-text-right');
+    }
+
+    function setModifyScheduleCalendar() {
+        $.ajax({
+            type: 'GET',
+            url: '/schedule/list/edit',
+            dataType: 'json',
+            data: {
+                year: (calendar.getDate().getYear() + 1900),
+                month: (calendar.getDate().getMonth() + 1),
+            },
+            success: function(data) {
                 var calendarEl = document.getElementById('calendar');
                 var calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                events : data.events,
-                eventMouseEnter: function(info) {
-                  var eventObj = info.event;
-                  info.el.style.cursor = 'default';
-                },
-                eventClick: function(info){
-                    goTodo(info);
-                },
-                navLinks: true,
-                navLinkDayClick: function(date, jsEvent) {
-                    var year = date.getFullYear();
-                    var month = ("0" + (1 + date.getMonth())).slice(-2);
-                    var day = ("0" + date.getDate()).slice(-2);
-                    var url="/schedule/register/day/" + year + "/" + month + "/" + day;
+                    initialView: 'dayGridMonth',
+                    events: data.events,
+                    eventMouseEnter: function(info) {
+                        var eventObj = info.event;
+                        info.el.style.cursor = 'default';
+                    },
+                    eventClick: function(info) {
+                        goTodo(info);
+                    },
+                    navLinks: true,
+                    navLinkDayClick: function(date, jsEvent) {
+                        var year = date.getFullYear();
+                        var month = ("0" + (1 + date.getMonth())).slice(-2);
+                        var day = ("0" + date.getDate()).slice(-2);
+                        var url = "/schedule/register/day/" + year + "/" + month + "/" + day;
 
-                    window.open(url,'test','width=1000, height=1100, toolbar=no, menubar=no, scrollbars=no, resizable=yes');
-                  },
-                dateClick: function(info){
-                    var url="/schedule/register/day/" + info.dateStr.split('-')[0] + "/" + info.dateStr.split('-')[1] + "/" + info.dateStr.split('-')[2];
+                        window.open(url, 'test', 'width=1000, height=1100, toolbar=no, menubar=no, scrollbars=no, resizable=yes');
+                    },
+                    dateClick: function(info) {
+                        var url = "/schedule/register/day/" + info.dateStr.split('-')[0] + "/" + info.dateStr.split('-')[1] + "/" + info.dateStr.split('-')[2];
 
-                    window.open(url,'modified_day_schedule','width=1250, height=600, toolbar=no, menubar=no, scrollbars=no, resizable=yes');
-                },
+                        window.open(url, 'modified_day_schedule', 'width=1250, height=600, toolbar=no, menubar=no, scrollbars=no, resizable=yes');
+                    },
                 });
 
                 calendar.render();
@@ -335,97 +331,86 @@ function setModifyScheduleCalendar(){
 
                 team_select.options[team_select.selectedIndex].innerText = data.team;
                 user_select.options[user_select.selectedIndex].innerText = data.name;
-                }
-    });
-}
-function checkScheduleMode(){
-    var user_select = document.getElementById('user_select');
-    var team_select = document.getElementById('team_select');
-    if(user_select.value == -2){
-        getEventByTeamSummary();
+            }
+        });
     }
-    else if(user_select.value == -1){
-        getEventByTeamAllUsers();
+
+    function checkScheduleMode() {
+        var user_select = document.getElementById('user_select');
+        var team_select = document.getElementById('team_select');
+        if (user_select.value == -2) {
+            getEventByTeamSummary();
+        } else if (user_select.value == -1) {
+            getEventByTeamAllUsers();
+        } else if (team_select.value == -1) {
+            getEventByTeamSummary();
+        } else if (user_select.value != null) {
+            getEventByUser();
+        }
     }
-    else if(team_select.value == -1 ){
-        getEventByTeamSummary();
+
+
+
+    var before_team = null;
+    var before_user = null;
+
+    function editSchedule() {
+        var button = document.getElementsByClassName("edit_button")[0];
+        var user_select = document.getElementById('user_select');
+        var team_select = document.getElementById('team_select');
+
+        if (button.value == 0) {
+
+            before_team = team_select.options[team_select.selectedIndex].innerText;
+            before_user = user_select.options[user_select.selectedIndex].innerText;
+
+            setModifyScheduleCalendar();
+
+            user_select.disabled = true;
+            team_select.disabled = true;
+
+            button.value = 1;
+            button.classList.remove('is-dark');
+            button.classList.add('is-danger');
+            button.innerText = 'View';
+        } else {
+            checkScheduleMode();
+
+            user_select.disabled = false;
+            team_select.disabled = false;
+
+            team_select.options[team_select.selectedIndex].innerText = before_team;
+            user_select.options[user_select.selectedIndex].innerText = before_user;
+
+
+
+            button.value = 0;
+            button.classList.remove('is-danger');
+            button.classList.add('is-dark');
+            button.innerText = 'Edit';
+
+        }
     }
-    else if(user_select.value != null){
-        getEventByUser();
-    }
-}
 
 
-
-var before_team = null;
-var before_user = null;
-
-function editSchedule(){
-    var button = document.getElementsByClassName("edit_button")[0];
-    var user_select = document.getElementById('user_select');
-    var team_select = document.getElementById('team_select');
-
-    if(button.value == 0){
-
-        before_team = team_select.options[team_select.selectedIndex].innerText;
-        before_user = user_select.options[user_select.selectedIndex].innerText;
-
-        setModifyScheduleCalendar();
-
-        user_select.disabled = true;
-        team_select.disabled = true;
-
-        button.value = 1;
-        button.classList.remove('is-dark');
-        button.classList.add('is-danger');
-        button.innerText = 'View';
-    }
-    else{
-        checkScheduleMode();
-
-        user_select.disabled = false;
-        team_select.disabled = false;
-
-        team_select.options[team_select.selectedIndex].innerText = before_team;
-        user_select.options[user_select.selectedIndex].innerText = before_user;
-
-
-
-        button.value = 0;
-        button.classList.remove('is-danger');
-        button.classList.add('is-dark');
-        button.innerText = 'Edit';
-
-    }
-}
-
-
-function init(){
-    calendarEl = document.getElementById('calendar');
-    calendar = new FullCalendar.Calendar(calendarEl, {
+    function init() {
+        calendarEl = document.getElementById('calendar');
+        calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
-    });
+        });
 
-    calendar.render();
+        calendar.render();
 
-    setTeamSelect();
-    setUserSelect();
-    getEventByTeamSummary();
-    setSelectMoveToCalendar();
-    function test2(){
-        console.log("test2");
+        setTeamSelect();
+        setUserSelect();
+        getEventByTeamSummary();
+        setSelectMoveToCalendar();
+
+        // document.querySelector("#calendar > div.fc-header-toolbar.fc-toolbar.columns > div.fc-toolbar-chunk.column.is-4.has-text-right > div > button.fc-prev-button.fc-button.fc-button-primary").addEventListener('click', getEventByTeamSummary);
+        // document.querySelector("#calendar > div.fc-header-toolbar.fc-toolbar.columns > div.fc-toolbar-chunk.column.is-4.has-text-right > div > button.fc-next-button.fc-button.fc-button-primary").addEventListener('click', getEventByTeamSummary);
     }
-    function test3(){
-        console.log("test3");
-    }
-    document.querySelector("#calendar > div.fc-header-toolbar.fc-toolbar.columns > div.fc-toolbar-chunk.column.is-4.has-text-right > div > button.fc-prev-button.fc-button.fc-button-primary").addEventListener('click',getEventByTeamSummary);
-    document.querySelector("#calendar > div.fc-header-toolbar.fc-toolbar.columns > div.fc-toolbar-chunk.column.is-4.has-text-right > div > button.fc-next-button.fc-button.fc-button-primary").addEventListener('click',getEventByTeamSummary);
-}
 
-window.addEventListener('DOMContentLoaded', init);
-
-
-
+    window.addEventListener('DOMContentLoaded', init);
 </script>
 <br>
 
@@ -439,22 +424,17 @@ window.addEventListener('DOMContentLoaded', init);
         </div>
     </div>
 
-    {% if is_staff %}
-        {% if not schedule_exist %}
-        <div class="box has-text-centered">
-            <p><strong>오늘 등록된 스케줄이 없습니다.</strong></p>
-            <a style="margin-top: 1rem;" href="{% url 'schedule-register-today' year month day %}" class="button is-dark is-rounded">스케줄 등록</a>
-        </div>
-        {% endif %}
-        {% if work_hours != 'no' %}
-            {% for work_hour in work_hours %}
-                <div class="box has-text-centered">
-                    <p><strong>{{ work_hour.date }}에 워크로그를 작성하지 않았습니다.</strong></p>
-                    <a style="margin-top: 1rem;" href="{% url 'previous_work_log_write' work_hour.pk %}" class="button is-dark is-rounded">워크로그 작성</a>
-                </div>
-            {% endfor %}
-        {% endif %}
-    {% endif %}
+    {% if is_staff %} {% if not schedule_exist %}
+    <div class="box has-text-centered">
+        <p><strong>오늘 등록된 스케줄이 없습니다.</strong></p>
+        <a style="margin-top: 1rem;" href="{% url 'schedule-register-today' year month day %}" class="button is-dark is-rounded">스케줄 등록</a>
+    </div>
+    {% endif %} {% if work_hours != 'no' %} {% for work_hour in work_hours %}
+    <div class="box has-text-centered">
+        <p><strong>{{ work_hour.date }}에 워크로그를 작성하지 않았습니다.</strong></p>
+        <a style="margin-top: 1rem;" href="{% url 'previous_work_log_write' work_hour.pk %}" class="button is-dark is-rounded">워크로그 작성</a>
+    </div>
+    {% endfor %} {% endif %} {% endif %}
 
     <div class="columns is-centered">
         <div class="column">
